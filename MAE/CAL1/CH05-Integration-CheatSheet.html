@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Integration — Calculus I Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="cal1.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · CAL1 · Chapter 5</div>
+    <h1>Integration <span>— Chapter 5</span></h1>
+    <p class="page-subtitle">Riemann sums · definite integral · Fundamental Theorem of Calculus · net change · substitution · basic integral formulas</p>
+    <span class="page-badge">CAL1 · CH5 · §5.1–§5.7</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <div class="section">
+    <div class="section-title">§5.1 Approximating Areas &amp; Riemann Sums</div>
+    <div class="grid grid-2">
+
+      <figure class="math-fig" style="text-align:center;margin:0 0 12px">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Riemann_sum_convergence.png" alt="Riemann sum convergence to definite integral" loading="lazy" style="max-width:320px"/>
+        <figcaption style="font-size:.8em;color:#666">Riemann sums converge to the definite integral as $n\to\infty$</figcaption>
+      </figure>
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Riemann Sums</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          Partition [a,b] into n subintervals of width Δx = (b−a)/n. Choose sample point x*ᵢ in [xᵢ₋₁, xᵢ]. The <span class="tt" data-t="Riemann sum: approximates the area under f(x) using rectangles of width Δx and height f(x*ᵢ)">Riemann sum</span> is:
+          Σᵢ₌₁ⁿ f(x*ᵢ) Δx
+        </div>
+        <div class="formula">
+          <span class="formula-label">Common Riemann Sums</span>
+          $$\text{Left: }x_i^* = x_{i-1} = a+(i-1)\Delta x$$
+          $$\text{Right: }x_i^* = x_i = a+i\Delta x$$
+          $$\text{Midpoint: }x_i^* = \tfrac{x_{i-1}+x_i}{2}$$
+          $$\Delta x = \frac{b-a}{n}$$
+        </div>
+        <div class="formula">
+          <span class="formula-label">Useful Summation Formulas</span>
+          $$\sum_{i=1}^n i = \frac{n(n+1)}{2}$$
+          $$\sum_{i=1}^n i^2 = \frac{n(n+1)(2n+1)}{6}$$
+          $$\sum_{i=1}^n i^3 = \left[\frac{n(n+1)}{2}\right]^2$$
+          $$\sum_{i=1}^n c = cn$$
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Definite Integral Definition</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          The <span class="tt" data-t="Definite integral: exact area (signed) under f(x) from a to b, as the limit of Riemann sums">definite integral</span> of f from a to b is:
+          ∫ₐᵇ f(x) dx = lim(n→∞) Σᵢ₌₁ⁿ f(x*ᵢ)Δx
+          (if the limit exists; f is then integrable on [a,b])
+        </div>
+        <div class="note">
+          <div class="note-label">Geometric Meaning</div>
+          For f ≥ 0: ∫ₐᵇ f(x) dx = area under curve above x-axis.<br/>
+          In general: net signed area (area above minus area below x-axis).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Integrability</div>
+          If f is continuous on [a,b], or bounded with finitely many discontinuities, then f is integrable on [a,b].
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§5.2 Properties of the Definite Integral</div>
+    <div class="grid grid-2">
+
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Integral Properties</div>
+        <div class="grid grid-2" style="margin-top:8px">
+          <div>
+            <div class="formula">
+              <span class="formula-label">Basic Properties</span>
+              $$\int_a^a f(x)\,dx = 0$$
+              $$\int_a^b f(x)\,dx = -\int_b^a f(x)\,dx$$
+              $$\int_a^b c\,dx = c(b-a)$$
+              $$\int_a^b [f\pm g]\,dx = \int_a^b f\,dx \pm \int_a^b g\,dx$$
+              $$\int_a^b c\,f\,dx = c\int_a^b f\,dx$$
+              $$\int_a^b f\,dx = \int_a^c f\,dx + \int_c^b f\,dx$$
+            </div>
+          </div>
+          <div>
+            <div class="formula">
+              <span class="formula-label">Comparison Properties</span>
+              $$f(x)\ge 0 \Rightarrow \int_a^b f\,dx \ge 0$$
+              $$f\ge g \Rightarrow \int_a^b f\,dx \ge \int_a^b g\,dx$$
+              $$m(b-a) \le \int_a^b f\,dx \le M(b-a)$$
+              $$\left|\int_a^b f\,dx\right| \le \int_a^b |f|\,dx$$
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§5.3 Fundamental Theorem of Calculus</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>FTC Part 1 — Differentiation of Integrals</div>
+        <div class="theorem">
+          <div class="theorem-label">Fundamental Theorem of Calculus, Part 1</div>
+          If f is continuous on [a,b] and F(x) = ∫ₐˣ f(t) dt, then F is differentiable and:
+          F'(x) = d/dx[∫ₐˣ f(t) dt] = f(x)
+        </div>
+        <div class="note">
+          <div class="note-label">Intuition</div>
+          F(x) accumulates area from a to x. Its rate of change is f(x) — the height of the curve at x. Differentiation and integration are inverse operations.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Chain Rule Extension</span>
+          $$\frac{d}{dx}\!\left[\int_a^{g(x)}\!f(t)\,dt\right] = f(g(x))\cdot g'(x)$$
+          $$\frac{d}{dx}\!\left[\int_{h(x)}^{g(x)}\!f(t)\,dt\right] = f(g(x))g'(x) - f(h(x))h'(x)$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          d/dx[∫₀^(x²) sin t dt] = sin(x²) · 2x
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>FTC Part 2 — Evaluation Theorem</div>
+        <div class="theorem">
+          <div class="theorem-label">Fundamental Theorem of Calculus, Part 2</div>
+          If f is continuous on [a,b] and F is any <span class="tt" data-t="Antiderivative: F'(x) = f(x); FTC Part 2 lets you use any antiderivative — the +C cancels out">antiderivative of f (F' = f)</span>, then:
+          ∫ₐᵇ f(x) dx = F(b) − F(a) = [F(x)]ₐᵇ
+        </div>
+        <div class="note">
+          <div class="note-label">Significance</div>
+          Part 2 connects the definite integral (area, limit of sums) with the antiderivative (indefinite integral). It turns integration into an algebraic process.
+        </div>
+        <div class="example">
+          <div class="example-label">Examples</div>
+          ∫₀³ x² dx = [x³/3]₀³ = 27/3 − 0 = 9
+          ∫₀^(π/2) cos x dx = [sin x]₀^(π/2) = 1 − 0 = 1
+          ∫₁^e (1/x) dx = [ln x]₁^e = ln e − ln 1 = 1
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Net Change Theorem</div>
+        <div class="theorem">
+          <div class="theorem-label">Net Change Theorem</div>
+          <span class="tt" data-t="Net change theorem: integral of rate of change = total change; unifies velocity/displacement/etc">∫ₐᵇ F'(x) dx = F(b) − F(a)</span>
+          The integral of a rate of change gives the total (net) change.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Physical Applications</span>
+          $$\int_a^b v(t)\,dt = s(b)-s(a) \quad \text{(displacement)}$$
+          $$\int_a^b a(t)\,dt = v(b)-v(a) \quad \text{(change in velocity)}$$
+          $$\int_a^b |v(t)|\,dt \quad \text{(total distance)}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Note</div>
+          Net change (displacement) ≠ total distance traveled. For total distance, integrate |v(t)|, splitting at zeros of v.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Mean Value Theorem for Integrals</div>
+        <div class="theorem">
+          <div class="theorem-label">MVT for Integrals</div>
+          If f is continuous on [a,b], there exists c ∈ (a,b) such that:
+          f(c) = (1/(b−a)) ∫ₐᵇ f(x) dx
+          (f(c) is the average value of f on [a,b])
+        </div>
+        <div class="formula">
+          <span class="formula-label">Average Value</span>
+          <span class="tt" data-t="Average value: the constant function equal to f_avg has the same definite integral over [a,b] as f">$$f_{\text{avg}} = \frac{1}{b-a}\int_a^b f(x)\,dx$$</span>
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          f(x) = x² on [0,3]:<br/>
+          f_avg = (1/3)∫₀³ x² dx = (1/3)(9) = 3<br/>
+          f(c) = c² = 3 → c = √3 ∈ (0,3) ✓
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§5.5–5.7 Substitution &amp; Integration Formulas</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Substitution Rule (u-substitution)</div>
+        <div class="theorem">
+          <div class="theorem-label">Substitution Rule</div>
+          If u = g(x) is differentiable and f is continuous on the range of g:
+          ∫ f(g(x))·g'(x) dx = ∫ f(u) du
+          (Reverse of the chain rule for differentiation)
+        </div>
+        <div class="formula">
+          <span class="formula-label">Method</span>
+          1. Choose $u = g(x)$ (<span class="tt" data-t="u-substitution: choose u as the inner function or the part whose derivative also appears">typically the inner function</span>)
+          2. Compute $du = g'(x)\,dx$
+          3. Rewrite integral entirely in terms of $u$
+          4. Integrate in $u$
+          5. Back-substitute: replace $u$ with $g(x)$
+        </div>
+        <div class="formula">
+          <span class="formula-label">Definite Integral with Substitution</span>
+          $$\int_a^b f(g(x))\,g'(x)\,dx = \int_{g(a)}^{g(b)} f(u)\,du$$
+          (Change limits when substituting into definite integral)
+        </div>
+        <div class="example">
+          <div class="example-label">Examples</div>
+          ∫ 2x·(x²+1)³ dx: u=x²+1, du=2x dx
+            = ∫ u³ du = u⁴/4 + C = (x²+1)⁴/4 + C
+          ∫ cos(3x) dx: u=3x, du=3dx
+            = (1/3)∫ cos u du = (1/3)sin(3x) + C
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Basic Integration Formulas</div>
+        <div class="formula">
+          <span class="formula-label">Standard Indefinite Integrals</span>
+          $$\int x^n\,dx = \frac{x^{n+1}}{n+1}+C \;(n\ne{-1})$$
+          $$\int \frac{1}{x}\,dx = \ln|x|+C$$
+          $$\int e^x\,dx = e^x+C, \quad \int a^x\,dx = \frac{a^x}{\ln a}+C$$
+          $$\int\sin x\,dx = -\cos x+C, \quad \int\cos x\,dx = \sin x+C$$
+          $$\int\tan x\,dx = \ln|\sec x|+C$$
+          $$\int\cot x\,dx = \ln|\sin x|+C$$
+          $$\int\sec x\,dx = \ln|\sec x+\tan x|+C$$
+          $$\int\csc x\,dx = -\ln|\csc x+\cot x|+C$$
+          $$\int\sec^2 x\,dx = \tan x+C, \quad \int\csc^2 x\,dx = -\cot x+C$$
+          $$\int\sec x\tan x\,dx = \sec x+C$$
+          $$\int\csc x\cot x\,dx = -\csc x+C$$
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Integrals: Inverse Trig &amp; Exponential/Log</div>
+        <div class="formula">
+          <span class="formula-label">Inverse Trig Integrals (§5.7)</span>
+          $$\int\frac{dx}{\sqrt{1-x^2}} = \sin^{-1}x+C$$
+          $$\int\frac{dx}{1+x^2} = \tan^{-1}x+C$$
+          $$\int\frac{dx}{|x|\sqrt{x^2-1}} = \sec^{-1}|x|+C$$
+          $$\int\frac{dx}{\sqrt{a^2-x^2}} = \sin^{-1}\!\tfrac{x}{a}+C \quad (a>0)$$
+          $$\int\frac{dx}{a^2+x^2} = \tfrac{1}{a}\tan^{-1}\!\tfrac{x}{a}+C$$
+        </div>
+        <div class="formula">
+          <span class="formula-label">Exp &amp; Log Integrals (§5.6)</span>
+          $$\int e^x\,dx = e^x+C, \quad \int e^{kx}\,dx = \frac{e^{kx}}{k}+C$$
+          $$\int\frac{dx}{ax+b} = \frac{1}{a}\ln|ax+b|+C$$
+          $$\int\ln x\,dx = x\ln x - x + C \quad \text{(by parts)}$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          ∫₀¹ 1/(1+x²) dx = [tan⁻¹x]₀¹ = π/4 − 0 = π/4
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Indefinite vs. Definite Integrals</div>
+        <div class="def">
+          <div class="def-label">Key Distinction</div>
+          <span class="tt" data-t="Indefinite integral: a family of functions (antiderivatives), includes +C">Indefinite integral</span> ∫f(x)dx = F(x)+C (a function).<br/>
+          <span class="tt" data-t="Definite integral: a number — the net signed area from a to b">Definite integral</span> ∫ₐᵇf(x)dx = F(b)−F(a) (a number).
+        </div>
+        <div class="note">
+          <div class="note-label">The +C matters</div>
+          Always include the constant C in indefinite integrals. When evaluating a definite integral using FTC Part 2, the constant cancels: [F(b)+C] − [F(a)+C] = F(b)−F(a).
+        </div>
+        <div class="warn">
+          <strong>⚠ Common Mistakes:</strong><br/>
+          ∫ 1/x² dx ≠ ln|x²| (wrong — that's ∫1/x dx twice)<br/>
+          Correct: ∫ x⁻² dx = x⁻¹/(−1) + C = −1/x + C<br/>
+          Don't forget to change limits in definite u-sub.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer class="chapter-footer">
+  <a href="CH04-Applications-Derivatives-CheatSheet.html">← Applications of Derivatives</a>
+  <span class="footer-center">Calculus Volume 1 · OpenStax · CH5</span>
+  <a href="CH06-Applications-Integration-CheatSheet.html">Applications of Integration →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-cal1-5';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

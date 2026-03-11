@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Systems of Linear Equations — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 1</div>
+    <h1>Systems of Linear Equations <span>— Chapter 1</span></h1>
+    <p class="page-subtitle">Linear systems, Gaussian elimination, row echelon forms, rank, homogeneous systems, and applications.</p>
+    <span class="page-badge">LAW · CH1 · §1.1–§1.4</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1 — §1.1 Linear Equations & Systems
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§1.1 Linear Equations &amp; Systems</div>
+    <div class="section-subtitle">Definitions · solutions · consistent and inconsistent systems</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1: Linear Equations & Systems -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Equations &amp; Systems</div>
+        <div class="def">
+          <div class="def-label">Definition 1.1 — Linear Equation</div>
+          An equation of the form <code>a1*x1 + a2*x2 + ... + an*xn = b</code> is called a
+          <strong>linear equation</strong> in variables $x_1, x_2, \ldots, x_n$. The numbers $a_1, \ldots, a_n$ are
+          <em>coefficients</em>; $b$ is the <em>constant term</em>. Each variable occurs to the
+          <strong>first power only</strong>.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition — System &amp; Solution</div>
+          A finite collection of linear equations in variables $x_1, \ldots, x_n$ is a
+          <strong>system of linear equations</strong>. A sequence $s_1, s_2, \ldots, s_n$ is a
+          <strong>solution</strong> if <code>a1*s1 + a2*s2 + ... + an*sn = b</code> holds for
+          <em>every</em> equation in the system.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition — Consistency</div>
+          A system is <span class="tt" data-t="A system is consistent if it has at least one solution">consistent</span>
+          if it has at least one solution. A system with no solution is
+          <span class="tt" data-t="A system is inconsistent if it has no solution — equivalent systems (same row ops) share consistency">inconsistent</span>.
+        </div>
+        <div class="note">
+          <div class="note-label">Three Possibilities</div>
+          For any system, exactly one of the following holds:
+          <ul class="items">
+            <li><span class="pill-red pill">No solution</span> — inconsistent system</li>
+            <li><span class="pill-green pill">Unique solution</span> — one specific sequence $s_1,\ldots,s_n$</li>
+            <li><span class="pill-yellow pill">Infinitely many solutions</span> — parametric family</li>
+          </ul>
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Parametric Solution (Ex. 1.1.1)</div>
+          For $x_1 = t-s+1,\; x_2 = t+s+2,\; x_3 = s,\; x_4 = t$ ($s, t$ arbitrary), substitution into<br/>
+          <code>x1 − 2x2 + 3x3 + x4 = −3</code> and <code>2x1 − x2 + 3x3 − x4 = 0</code>
+          verifies both equations hold for all s, t. This <span class="tt" data-t="The set of all solutions expressed using free parameters s, t, ... — every parameter choice yields a valid solution">parametric form</span>
+          is the <strong>general solution</strong>.
+        </div>
+      </div>
+
+      <!-- Card 2: Augmented Matrix -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Augmented Matrix</div>
+        <div class="def">
+          <div class="def-label">Definition — Matrix Representation</div>
+          For a system of $m$ equations in $n$ variables, the <span class="tt" data-t="The matrix [A|b] formed by appending the constant column b to the right of the coefficient matrix A, separated by a vertical bar">augmented matrix</span>
+          $[A \mid \mathbf{b}]$ is the $m \times (n+1)$ array of all coefficients together with the constants.
+          The <strong>coefficient matrix</strong> $A$ is the $m \times n$ array of variable coefficients;
+          the <strong>constant matrix</strong> $\mathbf{b}$ is the $m \times 1$ column of constants.
+        </div>
+        <div class="formula">
+          <span class="formula-label">System ↔ Augmented Matrix</span>
+          $$\begin{aligned}
+            3x_1 + 2x_2 - x_3 &= -1 \\
+            2x_1 - x_3 &= \phantom{-}0 \\
+            3x_1 + x_2 + 2x_3 &= \phantom{-}2
+          \end{aligned}
+          \quad\Leftrightarrow\quad
+          \left[\begin{array}{rrr|r}
+            3 & 2 & -1 & -1 \\
+            2 & 0 & -1 & 0 \\
+            3 & 1 & 2 & 2
+          \end{array}\right]$$
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Matrix_multiplication_diagram_2.svg" alt="Matrix multiplication diagram" loading="lazy"/>
+          <figcaption>Augmented matrix $[A \mid \mathbf{b}]$ structure for $m \times n$ systems</figcaption>
+        </figure>
+        <div class="note">
+          <div class="note-label">Key Correspondence</div>
+          Each <strong>row</strong> of the augmented matrix = one equation.
+          Each <strong>column</strong> (except the last) = one variable. The vertical bar separates
+          coefficients from constants. Row operations on the matrix correspond exactly to
+          elementary operations on the equations.
+        </div>
+        <div class="warn">
+          If a variable is missing from an equation, its coefficient is <strong>0</strong>
+          — always include a zero entry in the matrix. E.g., <code>2x1 − x3 = 0</code>
+          gives row <code>[2, 0, −1 | 0]</code>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2 — §1.1–§1.2 Row Operations & Echelon Forms
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§1.1–§1.2 Row Operations &amp; Echelon Forms</div>
+    <div class="section-subtitle">Definitions 1.2–1.3 · Theorems 1.1.1 &amp; 1.2.1</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3: Elementary Row Operations -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Elementary Row Operations</div>
+        <div class="def">
+          <div class="def-label">Definition 1.2 — Three Types</div>
+          The following operations on rows of a matrix are called
+          <strong>elementary row operations (EROs)</strong>:
+          <ul class="items">
+            <li><strong>Type I — Interchange:</strong> Swap rows i and j &nbsp;<code>Ri ↔ Rj</code></li>
+            <li><strong>Type II — Scale:</strong> Multiply row i by nonzero k &nbsp;<code>kRi → Ri</code></li>
+            <li><strong>Type III — Replace:</strong> Add k·(row p) to row q &nbsp;<code>Rq + k·Rp → Rq</code>&nbsp; ($p \neq q$)</li>
+          </ul>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 1.1.1 — Equivalence Preservation</div>
+          Any sequence of elementary operations performed on a system of linear equations
+          produces an <strong>equivalent</strong> system (same solution set). Hence row operations
+          on the augmented matrix preserve all solutions.
+        </div>
+        <div class="note">
+          <div class="note-label">Inverses of EROs</div>
+          Every ERO is reversible by an ERO of the <em>same type</em>:
+          <ul class="items">
+            <li>Type I: Interchange the same two rows again.</li>
+            <li>Type II: Multiply by 1/k.</li>
+            <li>Type III: Add (−k)·(row p) to row q.</li>
+          </ul>
+          Invertibility is what guarantees Theorem 1.1.1: both the forward and backward
+          transformations preserve solutions.
+        </div>
+        <div class="warn">
+          In Type III, $p \neq q$ is essential. Adding a multiple of a row to <em>itself</em>
+          is a Type II operation, not Type III.
+        </div>
+      </div>
+
+      <!-- Card 4: REF & RREF -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Row Echelon Form &amp; RREF</div>
+        <div class="def">
+          <div class="def-label">Definition 1.3 — Row Echelon Form (REF)</div>
+          A matrix is in <strong>row echelon form</strong> if:
+          <ol class="steps">
+            <li>All zero rows are at the bottom.</li>
+            <li>The first nonzero entry in each nonzero row is a 1 (the <span class="tt" data-t="The first nonzero entry in a nonzero row, which must equal 1 in row echelon form; determines which variable is 'leading'">leading 1</span> for that row).</li>
+            <li>Each leading 1 is strictly to the right of all leading 1s in rows above it.</li>
+          </ol>
+          A matrix is in <strong>reduced row echelon form (RREF)</strong> if additionally:
+          <ol class="steps" start="4">
+            <li>Each leading 1 is the <em>only</em> nonzero entry in its column.</li>
+          </ol>
+        </div>
+        <div class="formula">
+          <span class="formula-label">REF "staircase" pattern (∗ = arbitrary)</span>
+          $$\left[\begin{array}{cccccc}
+            1 & * & * & * & * & * \\
+            0 & 0 & 1 & * & * & * \\
+            0 & 0 & 0 & 1 & * & * \\
+            0 & 0 & 0 & 0 & 0 & 0
+          \end{array}\right]
+          \begin{array}{l}
+            \leftarrow \text{leading 1 in col 2} \\
+            \leftarrow \text{leading 1 in col 3} \\
+            \leftarrow \text{leading 1 in col 4} \\
+            \leftarrow \text{zero row}
+          \end{array}$$
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Property</th><th>REF</th><th>RREF</th></tr></thead>
+          <tbody>
+            <tr><td>Zero rows at bottom</td><td>✓</td><td>✓</td></tr>
+            <tr><td>Leading 1s staircase</td><td>✓</td><td>✓</td></tr>
+            <tr><td>Zeros below each leading 1</td><td>✓</td><td>✓</td></tr>
+            <tr><td>Zeros above each leading 1</td><td>✗</td><td>✓</td></tr>
+            <tr><td>Result is unique</td><td>✗ (not unique)</td><td>✓ (unique)</td></tr>
+          </tbody>
+        </table>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 1.2.1</div>
+          Every matrix can be brought to (reduced) row echelon form by a finite sequence of
+          elementary row operations.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3 — §1.2 Gaussian Elimination
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§1.2 Gaussian Elimination</div>
+    <div class="section-subtitle">Algorithm · procedure · back-substitution · worked example</div>
+    <div class="grid grid-2">
+
+      <!-- Card 5: Gaussian Algorithm -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Gaussian Algorithm (REF Algorithm)</div>
+        <div class="def">
+          <div class="def-label">Algorithm — Producing Row Echelon Form</div>
+          The following recursive procedure brings any matrix to REF:
+        </div>
+        <code style="display:block;background:#161b22;border:1px solid #30363d;border-radius:6px;padding:12px 16px;font-size:11px;line-height:1.8;color:#e3b341;white-space:pre;overflow-x:auto;">Step 1.  If matrix is all zeros → STOP (already REF).
+Step 2.  Find leftmost nonzero column.
+         Move a row with a nonzero entry there to the TOP.
+Step 3.  Multiply that top row by 1/a to create a leading 1.
+Step 4.  Subtract multiples of the top row from ALL rows below
+         it to make every entry below the leading 1 equal to 0.
+         (Column is now "clean" below the leading 1.)
+Step 5.  REPEAT steps 1–4 on the submatrix formed by all rows
+         BELOW the current leading 1 (ignore rows already done).</code>
+        <div class="note">
+          <div class="note-label">Notes on the Algorithm</div>
+          <ul class="items">
+            <li>Recursive: each iteration fixes one leading 1.</li>
+            <li>In practice, swap rows to avoid fractions (e.g., put the row with a convenient entry on top).</li>
+            <li>Known to ancient Chinese mathematicians; attributed to Gauss (1777–1855).</li>
+          </ul>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Gauss-Jordan Variant (→ RREF)</div>
+          After REF is obtained, continue creating zeros <em>above</em> each leading 1
+          (right to left). This fully reduced form (RREF) is called
+          <strong>Gauss-Jordan elimination</strong>. Result is unique.
+        </div>
+      </div>
+
+      <!-- Card 6: Gaussian Elimination Procedure + Back-Substitution -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Gaussian Elimination Procedure</div>
+        <div class="def">
+          <div class="def-label">Procedure — Full Algorithm</div>
+          To solve a system of linear equations:
+          <ol class="steps">
+            <li>Write the augmented matrix $[A \mid \mathbf{b}]$.</li>
+            <li>Carry $[A \mid \mathbf{b}]$ to <strong>reduced row echelon form</strong> using elementary row operations.</li>
+            <li>If a row <code>[0  0  …  0 | 1]</code> appears, the system is <span class="pill-red pill">inconsistent</span> — stop.</li>
+            <li>Otherwise, assign all <span class="tt" data-t="Nonleading variables — those whose columns have no leading 1 — are called free variables and are assigned arbitrary parameter values s, t, ...">free variables</span> (nonleading variables) as parameters s, t, …</li>
+            <li>Use RREF equations to express each leading variable in terms of the parameters.</li>
+          </ol>
+        </div>
+        <div class="def">
+          <div class="def-label">Back-Substitution Variant</div>
+          Carry $[A \mid \mathbf{b}]$ only to REF (not RREF). Assign nonleading variables as parameters,
+          then solve the <em>last</em> equation for the last <span class="tt" data-t="A variable corresponding to a leading 1 in the row echelon form; it can be solved for in terms of free variables">leading variable</span>,
+          substitute back into preceding equations, and continue upward. Requires $\sim n^3/3$
+          multiplications vs. $\sim n^3/2$ for RREF — preferred for large systems.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 1.2.3 — Parametric Solution</div>
+          System: $x_1-2x_2-x_3+3x_4=1$, $2x_1-4x_2+x_3=5$, $x_1-2x_2+2x_3-3x_4=4$<br/>
+          After RREF: <code>x1 − 2x2 + x4 = 2</code> and <code>x3 − 2x4 = 1</code><br/>
+          Leading vars: $x_1, x_3$. Free vars: $x_2 = s,\; x_4 = t$.<br/>
+          <strong>General solution:</strong> $x_1 = 2+2s-t,\; x_2 = s,\; x_3 = 1+2t,\; x_4 = t$
+        </div>
+        <div class="note">
+          <div class="note-label">Leading vs. Free Variables</div>
+          <strong>Leading variables</strong> — correspond to columns with a leading 1 (pivot columns).
+          Solved for in terms of free variables.<br/>
+          <strong>Free variables</strong> — correspond to non-pivot columns. Assigned as parameters.
+          Each free variable contributes one parameter to the solution family.
+        </div>
+      </div>
+
+      <!-- Card 7: Worked Example with Consistency Condition -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Consistency Condition — Worked Example (Ex. 1.2.4)</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div>
+            <div class="example">
+              <div class="example-label">Problem</div>
+              Find conditions on a, b, c for consistency and solve:<br/>
+              <code>x1 + 3x2 + x3 = a</code><br/>
+              <code>−x1 − 2x2 + x3 = b</code><br/>
+              <code>3x1 + 7x2 − x3 = c</code>
+            </div>
+            <div class="formula">
+              <span class="formula-label">After Gaussian Elimination</span>
+              $$\left[\begin{array}{ccc|c}
+                1 & 3 & 1 & a \\
+                0 & 1 & 2 & a+b \\
+                0 & 0 & 0 & c-a+2b
+              \end{array}\right]$$
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Consistency Condition</div>
+              The last row represents <code>0 = c − a + 2b</code>. The system is consistent
+              <strong>if and only if</strong> <code>c = a − 2b</code>.
+              When satisfied, $x_3 = t$ (parameter) gives:<br/>
+              $x_1 = 5t - (2a+3b)$,&nbsp; $x_2 = (a+b) - 2t$,&nbsp; $x_3 = t$
+            </div>
+            <div class="note">
+              <div class="note-label">Pattern to Remember</div>
+              A zero row in the coefficient part of a REF augmented matrix, combined with a
+              nonzero constant, signals inconsistency. The constraint on parameters
+              (like <code>c = a−2b</code>) is the <em>solvability condition</em>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4 — §1.2 Rank & Solution Theory
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§1.2 Rank &amp; Solution Theory</div>
+    <div class="section-subtitle">Definition 1.4 · Theorem 1.2.2 · solution classification</div>
+    <div class="grid grid-2">
+
+      <!-- Card 8: Rank -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Rank of a Matrix</div>
+        <div class="def">
+          <div class="def-label">Definition 1.4 — Rank</div>
+          The <span class="tt" data-t="Number of leading 1s in any row echelon form of A; well-defined because all REFs of A have the same number of leading 1s">rank</span> of a matrix A, written <code>rank A</code>, is the number of leading 1s
+          in <em>any</em> row echelon form obtained from A by elementary row operations.
+        </div>
+        <div class="note">
+          <div class="note-label">Key Facts</div>
+          <ul class="items">
+            <li>The RREF of A is <strong>unique</strong>; therefore rank A is well-defined (same for all REFs of A).</li>
+            <li>Different REFs of the same A may look different, but they always have the same number of leading 1s.</li>
+            <li>If $A$ is $m \times n$, then $\text{rank}(A) \le m$ (leading 1s in different rows) and $\text{rank}(A) \le n$ (leading 1s in different columns).</li>
+            <li>$\text{rank}(A) = r$ means there are $r$ leading (pivot) columns and $n-r$ free columns.</li>
+          </ul>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 1.2.5 — Computing Rank</div>
+          For $A$ ($3 \times 4$), row reduction gives REF with 2 leading 1s in rows 1 and 2, with row 3 becoming all zeros.
+          Therefore $\text{rank}(A) = 2$.<br/>
+          A system using this $A$ (3 equations, 3 variables) would have $n - r = 3 - 2 = 1$ free parameter.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Rank Bounds</span>
+          For an $m \times n$ matrix $A$:
+          $$0 \le \text{rank}(A) \le \min(m,\, n)$$
+          $$\text{rank}(A) = n \;\Leftrightarrow\; \text{no free variables (all columns are pivot columns)}$$
+          $$\text{rank}(A) = m \;\Leftrightarrow\; \text{no zero rows in REF (every row has a leading 1)}$$
+        </div>
+      </div>
+
+      <!-- Card 9: Solution Types (Theorem 1.2.2) -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Solution Types — Theorem 1.2.2</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 1.2.2 — Rank &amp; Solutions</div>
+          Suppose a system of $m$ equations in $n$ variables is consistent, and the rank of the
+          augmented matrix is $r$. Then:
+          <ol class="steps">
+            <li>The solution set involves exactly <strong>$n - r$ parameters</strong>.</li>
+            <li>If r &lt; n: the system has <span class="pill-yellow pill">infinitely many solutions</span>.</li>
+            <li>If r = n: the system has a <span class="pill-green pill">unique solution</span>.</li>
+          </ol>
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Case</th><th>Condition on REF</th><th>Solutions</th><th>Parameters</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="pill-red pill">Inconsistent</span></td>
+              <td>Row [0 … 0 | 1] appears</td>
+              <td>None</td>
+              <td>—</td>
+            </tr>
+            <tr>
+              <td><span class="pill-green pill">Unique</span></td>
+              <td>r = n; no free variables</td>
+              <td>Exactly 1</td>
+              <td>0</td>
+            </tr>
+            <tr>
+              <td><span class="pill-yellow pill">Infinite</span></td>
+              <td>r &lt; n; free variables exist</td>
+              <td>∞ family</td>
+              <td>$n - r$</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">Important Corollary</div>
+          A system with <strong>more variables than equations</strong> ($n > m$) that is consistent
+          must have infinitely many solutions — because $r \le m < n$ forces $r < n$.
+        </div>
+        <div class="warn">
+          Theorem 1.2.2 applies only to <em>consistent</em> systems. Always check for the
+          inconsistency row $[0 \cdots 0 \mid 1]$ first. Once consistency is confirmed, apply the
+          rank–parameter count.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 5 — §1.3 Homogeneous Systems
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§1.3 Homogeneous Systems</div>
+    <div class="section-subtitle">Definitions 1.5 · Theorems 1.3.1 &amp; 1.3.2 · basic solutions · linear combinations</div>
+    <div class="grid grid-2">
+
+      <!-- Card 10: Homogeneous Systems + Theorem 1.3.1 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Homogeneous Systems</div>
+        <div class="def">
+          <div class="def-label">Definition — Homogeneous System</div>
+          A system is <span class="tt" data-t="A system Ax = 0 where every constant term is zero; always consistent because x = 0 is a solution">homogeneous</span> if all constant terms are zero:
+          <code>a1*x1 + a2*x2 + ... + an*xn = 0</code> for each equation. In matrix form: $A\mathbf{x} = \mathbf{0}$.
+        </div>
+        <div class="def">
+          <div class="def-label">Trivial &amp; Nontrivial Solutions</div>
+          <ul class="items">
+            <li><strong><span class="tt" data-t="The all-zeros solution x1=x2=...=xn=0, which satisfies Ax=0 for any coefficient matrix A">Trivial solution</span>:</strong> $x_1 = x_2 = \cdots = x_n = 0$ (denoted $\mathbf{x} = \mathbf{0}$). Every homogeneous system has it.</li>
+            <li><strong><span class="tt" data-t="A solution to Ax=0 with at least one nonzero component; exists whenever there is a free variable">Nontrivial solution</span>:</strong> at least one variable $x_i \neq 0$.</li>
+          </ul>
+          A homogeneous system is always <span class="pill-orange pill">consistent</span> (trivial solution always exists).
+          The question is whether <em>nontrivial</em> solutions exist.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 1.3.1 — Nontrivial Solutions</div>
+          If a homogeneous system of linear equations has <strong>more variables than equations</strong>
+          ($n > m$), then it has a nontrivial solution (in fact, infinitely many).
+          <br/><br/>
+          <em>Proof sketch:</em> $\text{rank}\, r \le m < n$, so $n - r \geq 1$ free parameter $\Rightarrow$ nontrivial solutions exist.
+        </div>
+        <div class="note">
+          <div class="note-label">Converse is False</div>
+          Nontrivial solutions do <em>not</em> imply $n > m$. Example:
+          <code>x1 + x2 = 0,  2x1 + 2x2 = 0</code> has $n = m = 2$ yet has nontrivial solutions
+          (e.g., $x_1 = 1, x_2 = -1$).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Linear Combination of Solutions</span>
+          If $\mathbf{x}$ and $\mathbf{y}$ are solutions to $A\mathbf{x} = \mathbf{0}$, then $s\mathbf{x} + t\mathbf{y}$ is also a solution for any scalars $s,\, t$.
+          $$A\mathbf{x} = \mathbf{0},\; A\mathbf{y} = \mathbf{0} \;\Rightarrow\; A(s\mathbf{x} + t\mathbf{y}) = \mathbf{0} \quad \forall\, s,\, t$$
+        </div>
+      </div>
+
+      <!-- Card 11: Basic Solutions + Theorem 1.3.2 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Basic Solutions &amp; Theorem 1.3.2</div>
+        <div class="def">
+          <div class="def-label">Definition 1.5 — Basic Solutions</div>
+          The Gaussian algorithm applied to $A\mathbf{x} = \mathbf{0}$ systematically produces particular solutions called
+          <span class="tt" data-t="Particular solutions to Ax=0 generated by the Gaussian algorithm — one for each free parameter, obtained by setting that parameter to 1 and all others to 0">basic solutions</span>, one for each free parameter. Any nonzero scalar multiple of a
+          basic solution is still called a basic solution.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 1.3.2 — Structure of Homogeneous Solutions</div>
+          Let $A$ be an $m \times n$ matrix with rank $r$. For the homogeneous system $A\mathbf{x} = \mathbf{0}$:
+          <ol class="steps">
+            <li>There are exactly <strong>$n - r$ basic solutions</strong>, one per free parameter.</li>
+            <li><strong>Every solution</strong> is a linear combination of these basic solutions.</li>
+          </ol>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 1.3.5 — Basic Solutions (n = 4, rank = 2)</div>
+          After RREF: $x_1 = 2s + \tfrac{1}{5}t,\; x_2 = s,\; x_3 = \tfrac{3}{5}t,\; x_4 = t$. Two free vars $\Rightarrow$ 2 basic solutions:
+          $\mathbf{x}_1 = [2,\, 1,\, 0,\, 0]^\top$ (set $s=1, t=0$) and
+          $\mathbf{x}_2 = [1,\, 0,\, 3,\, 5]^\top$ (scaled; set $s=0, t=5$).<br/>
+          General solution: $\mathbf{x} = s\mathbf{x}_1 + t\mathbf{x}_2$
+        </div>
+        <div class="note">
+          <div class="note-label">How to Find Basic Solutions</div>
+          After RREF of $[A \mid \mathbf{0}]$, set one free parameter = 1 and all others = 0. Read off the
+          leading variables from the RREF equations. Repeat for each free parameter.
+        </div>
+        <div class="formula">
+          <span class="formula-label">General Homogeneous Solution</span>
+          $$\mathbf{x} = s_1\mathbf{b}_1 + s_2\mathbf{b}_2 + \cdots + s_{n-r}\mathbf{b}_{n-r}$$
+          where $\mathbf{b}_1, \ldots, \mathbf{b}_{n-r}$ are the basic solutions and $s_1, \ldots, s_{n-r}$ are arbitrary scalars.
+        </div>
+      </div>
+
+      <!-- Card 12: Parametric Form & Free Variables -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Parametric Form &amp; Free Variables — Summary</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;">
+          <div>
+            <div class="def">
+              <div class="def-label">Identifying Variable Types</div>
+              After carrying the augmented matrix to RREF:
+              <ul class="items">
+                <li><strong>Leading variable:</strong> Its column contains a leading 1 (pivot column). Solved for explicitly.</li>
+                <li><strong>Free variable:</strong> Its column has no leading 1. Assigned as parameter (s, t, …).</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="example">
+              <div class="example-label">Reading from RREF</div>
+              RREF: <code>x1 − 2x2 + x4 = 2</code>,&ensp;<code>x3 − 2x4 = 1</code><br/>
+              Pivot columns: 1, 3 $\Rightarrow$ leading vars $x_1, x_3$<br/>
+              Free columns: 2, 4 $\Rightarrow$ free vars $x_2 = s,\; x_4 = t$<br/>
+              $x_1 = 2 + 2s - t$<br/>
+              $x_3 = 1 + 2t$
+            </div>
+          </div>
+          <div>
+            <div class="note">
+              <div class="note-label">Param Count Rule</div>
+              For a consistent system with augmented matrix of rank r and n variables:<br/>
+              <code>Number of parameters = n − r</code><br/><br/>
+              Each parameter represents one "degree of freedom" in the solution.
+              <ul class="items">
+                <li>$n - r = 0 \Rightarrow$ unique solution</li>
+                <li>$n - r \geq 1 \Rightarrow$ infinite solutions</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 6 — §1.4 Applications
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§1.4 Applications</div>
+    <div class="section-subtitle">Network flow · junction rule · chemical reactions</div>
+    <div class="grid grid-2">
+
+      <!-- Card 13: Network Flow -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Network Flow — §1.4</div>
+        <div class="def">
+          <div class="def-label">Junction Rule (Conservation Law)</div>
+          At each junction in a network, the total <strong>flow in</strong> equals the total
+          <strong>flow out</strong>. This produces a linear equation at each junction involving
+          the flows on connecting edges.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 1.4.1 — One-Way Street Network</div>
+          Network with intersections A, B, C, D and 6 street flows $f_1,\ldots,f_6$.
+          500 cars/hr enter at A; 400 leave at B, 100 at C. Junction equations:
+          <code>f1+f2+f3 = 500</code>&ensp;(A),&ensp;<code>f1+f4+f6 = 400</code>&ensp;(B),<br/>
+          <code>f3+f5−f6 = 100</code>&ensp;(C),&ensp;<code>f2−f4−f5 = 0</code>&ensp;(D)<br/>
+          RREF uses $f_4, f_5, f_6$ as parameters:
+        </div>
+        <div class="formula">
+          <span class="formula-label">General Solution (3 free parameters)</span>
+          $$f_1 = 400 - f_4 - f_6$$
+          $$f_2 = f_4 + f_5$$
+          $$f_3 = 100 - f_5 + f_6$$
+          ($f_4, f_5, f_6$ arbitrary, subject to non-negativity constraints)
+        </div>
+        <div class="note">
+          <div class="note-label">Physical Constraints</div>
+          Real applications impose non-negativity (flows $\geq 0$) and maximum capacity constraints.
+          These are linear inequalities: <code>f4+f6 ≤ 400</code>, <code>f5−f6 ≤ 100</code>, etc.
+          The general solution identifies feasible ranges.
+        </div>
+      </div>
+
+      <!-- Card 14: Chemical Reactions + Kirchhoff Summary -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Chemical Reactions &amp; Kirchhoff's Laws — §1.5–§1.6</div>
+        <div class="def">
+          <div class="def-label">Balancing as a Homogeneous System — §1.6</div>
+          To balance a chemical reaction, write conservation equations for each element
+          (atoms in = atoms out). The unknowns are the stoichiometric coefficients — always
+          positive integers. The resulting system is <em>homogeneous</em>.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 1.6.1 — Burning Octane</div>
+          <code>x·C₈H₁₈ + y·O₂ → z·CO₂ + w·H₂O</code><br/>
+          Atom balance:<br/>
+          C: <code>8x − z = 0</code><br/>
+          H: <code>18x − 2w = 0</code><br/>
+          O: <code>2y − 2z − w = 0</code><br/>
+          Set w = 18 (smallest integer eliminating fractions): x=2, y=25, z=16, w=18.<br/>
+          <strong>Balanced:</strong> 2C₈H₁₈ + 25O₂ → 16CO₂ + 18H₂O
+        </div>
+        <div class="def">
+          <div class="def-label">Kirchhoff's Laws for Electrical Networks — §1.5</div>
+          <ul class="items">
+            <li><strong>Ohm's Law:</strong> Voltage drop V across resistance R carrying current I: <code>V = R·I</code></li>
+            <li><strong>Junction Rule:</strong> Current into junction = current out of junction.</li>
+            <li><strong>Circuit Rule:</strong> Algebraic sum of voltage drops around any closed circuit = sum of voltage increases (from sources).</li>
+          </ul>
+          Applying these rules at every junction and loop produces a system of linear equations
+          in the unknown currents $I_1, I_2, \ldots$
+        </div>
+        <div class="note">
+          <div class="note-label">Modeling Pattern</div>
+          In all application areas — networks, circuits, chemistry — the modeling process is identical:
+          identify conservation laws at each node/loop, write one linear equation per constraint,
+          assemble the augmented matrix, and apply Gaussian elimination.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end .page-body -->
+
+<footer class="chapter-footer">
+  <a href="../ALG.html">← Back to Index</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH1</span>
+  <a href="CH02-Matrix-Algebra-CheatSheet.html">CH2 Matrix Algebra →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-1';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

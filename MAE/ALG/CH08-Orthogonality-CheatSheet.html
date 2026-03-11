@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Orthogonality — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 8</div>
+    <h1>Orthogonality <span>— Chapter 8</span></h1>
+    <p class="page-subtitle">Orthogonal/orthonormal sets, Gram-Schmidt process, QR factorization, orthogonal matrices, least squares, symmetric matrices, and the spectral theorem.</p>
+    <span class="page-badge">LAW · CH8 · §8.1–§8.6</span>
+  </div>
+</header>
+<div class="page-body">
+
+  <!-- ─── §8.1 Orthogonal & Orthonormal Sets ─── -->
+  <div class="section">
+    <div class="section-title">§8.1 Orthogonal &amp; Orthonormal Sets</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Orthogonal &amp; Orthonormal Sets</div>
+        <div class="def">
+          <div class="def-label">Definition — Orthogonal Set</div>
+          A set {<strong>v</strong><sub>1</sub>,…,<strong>v</strong><sub>k</sub>} of nonzero vectors in $\mathbb{R}^n$ is
+          <span class="tt" data-t="Each pair of distinct vectors is perpendicular — their dot product is zero">orthogonal</span>
+          if $\mathbf{v}_i \cdot \mathbf{v}_j = 0$ for all $i \neq j$.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition — Orthonormal Set</div>
+          An orthogonal set is <span class="tt" data-t="Orthogonal + each vector has unit length; δᵢⱼ = 1 if i=j, 0 otherwise">orthonormal</span>
+          if additionally $\|\mathbf{v}_i\| = 1$ for every $i$; equivalently
+          $\mathbf{v}_i \cdot \mathbf{v}_j = \delta_{ij}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.3.5 — Independence</div>
+          Every orthogonal set of nonzero vectors is <strong>linearly independent</strong>.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Normalizing an Orthogonal Set</span>
+          Given orthogonal $\{\mathbf{v}_1, \ldots, \mathbf{v}_k\}$, define
+          $$\mathbf{f}_i = \frac{\mathbf{v}_i}{\|\mathbf{v}_i\|}$$
+          to obtain an orthonormal set with the same span.
+        </div>
+        <div class="note">
+          <div class="note-label">Why it matters</div>
+          Orthogonal bases are the "nice" bases: expansion coefficients are trivial to compute — no solving a linear system needed.
+        </div>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Expansion in an Orthonormal Basis</div>
+        <div class="theorem">
+          <div class="theorem-label">Expansion Theorem (ONB)</div>
+          If {<strong>f</strong><sub>1</sub>,…,<strong>f</strong><sub>n</sub>} is an
+          <span class="tt" data-t="A basis that is orthonormal; every vector expands simply via dot products">orthonormal basis</span>
+          for $\mathbb{R}^n$, then for any $\mathbf{v} \in \mathbb{R}^n$:<br><br>
+          $\mathbf{v} = (\mathbf{v}\cdot\mathbf{f}_1)\mathbf{f}_1 + (\mathbf{v}\cdot\mathbf{f}_2)\mathbf{f}_2 + \cdots + (\mathbf{v}\cdot\mathbf{f}_n)\mathbf{f}_n$
+        </div>
+        <div class="def">
+          <div class="def-label">Fourier Coefficients</div>
+          The scalars <strong>v</strong>·<strong>f</strong><sub>i</sub> are the
+          <span class="tt" data-t="The coordinates of v in an ONB; generalize to Fourier series in infinite dimensions">Fourier coefficients</span>
+          — the coordinates of <strong>v</strong> in the ONB.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Parseval's Identity</span>
+          $$\|\mathbf{v}\|^2 = (\mathbf{v} \cdot \mathbf{f}_1)^2 + (\mathbf{v} \cdot \mathbf{f}_2)^2 + \cdots + (\mathbf{v} \cdot \mathbf{f}_n)^2$$
+        </div>
+        <div class="formula">
+          <span class="formula-label">General Orthogonal Basis $\{\mathbf{f}_1,\ldots,\mathbf{f}_m\}$</span>
+          If $U = \text{span}\{\mathbf{f}_1,\ldots,\mathbf{f}_m\}$ is orthogonal and $\mathbf{v} \in U$:
+          $$\mathbf{v} = \sum_k \frac{\mathbf{v} \cdot \mathbf{f}_k}{\|\mathbf{f}_k\|^2} \mathbf{f}_k$$
+        </div>
+        <div class="note">
+          <div class="note-label">Orthonormal columns</div>
+          If Q = [<strong>f</strong><sub>1</sub>|…|<strong>f</strong><sub>n</sub>] (columns ONB), then $Q^T Q = I$ and expansion becomes $\mathbf{v} = Q(Q^T\mathbf{v})$.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.1 Orthogonal Complement & Projection ─── -->
+  <div class="section">
+    <div class="section-title">§8.1 Orthogonal Complement &amp; Projection</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Orthogonal Complement</div>
+        <div class="def">
+          <div class="def-label">Definition 8.1</div>
+          If $U$ is a subspace of $\mathbb{R}^n$, the
+          <span class="tt" data-t="All vectors in ℝⁿ perpendicular to every vector in U; always a subspace of ℝⁿ">orthogonal complement</span>
+          of U is<br>
+          $U^\perp = \{ \mathbf{x} \in \mathbb{R}^n \mid \mathbf{x} \cdot \mathbf{y} = 0 \text{ for all } \mathbf{y} \in U \}$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Lemma 8.1.2 — Properties</div>
+          1. $U^\perp$ is a subspace of $\mathbb{R}^n$.<br>
+          2. $\{\mathbf{0}\}^\perp = \mathbb{R}^n$ and $(\mathbb{R}^n)^\perp = \{\mathbf{0}\}$.<br>
+          3. If $U = \text{span}\{\mathbf{x}_1,\ldots,\mathbf{x}_k\}$, then
+             $U^\perp = \{ \mathbf{x} \mid \mathbf{x} \cdot \mathbf{x}_i = 0,\ \forall i \}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.1.4 — Dimension &amp; Double Complement</div>
+          $\dim U + \dim U^\perp = n$ &nbsp; and &nbsp; $(U^\perp)^\perp = U$
+        </div>
+        <div class="formula">
+          <span class="formula-label">Direct Sum Decomposition</span>
+          $$\mathbb{R}^n = U \oplus U^\perp$$
+          (unique: every $\mathbf{x} = \mathbf{p} + \mathbf{q}$, $\mathbf{p} \in U$, $\mathbf{q} \in U^\perp$)
+        </div>
+        <div class="note">
+          <div class="note-label">Fundamental Theorem of Linear Algebra</div>
+          $\text{null}\, A = (\text{row}\, A)^\perp$ &nbsp; and &nbsp; $\text{null}\, A^T = (\text{col}\, A)^\perp$
+        </div>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Orthogonal Projection</div>
+        <div class="def">
+          <div class="def-label">Definition 8.2</div>
+          Let U have <span class="tt" data-t="Basis where every pair of vectors is perpendicular">orthogonal basis</span>
+          $\{\mathbf{f}_1,\ldots,\mathbf{f}_m\}$. The <strong>orthogonal projection</strong> of $\mathbf{x}$ onto $U$ is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Projection Formula</span>
+          $$\text{proj}_U(\mathbf{x}) = \sum_{k=1}^{m} \frac{\mathbf{x} \cdot \mathbf{f}_k}{\|\mathbf{f}_k\|^2} \mathbf{f}_k$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.1.3 — Projection Theorem</div>
+          Let $\mathbf{p} = \text{proj}_U(\mathbf{x})$. Then:<br>
+          1. $\mathbf{p} \in U$ and $\mathbf{x} - \mathbf{p} \in U^\perp$.<br>
+          2. $\mathbf{p}$ is the <em>closest</em> vector in $U$ to $\mathbf{x}$:
+             $\|\mathbf{x}-\mathbf{p}\| < \|\mathbf{x}-\mathbf{y}\|$ for all $\mathbf{y} \in U$, $\mathbf{y} \neq \mathbf{p}$.<br>
+          (Proof: Pythagorean theorem — $\|\mathbf{x}-\mathbf{y}\|^2 = \|\mathbf{x}-\mathbf{p}\|^2 + \|\mathbf{p}-\mathbf{y}\|^2$)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.1.4 — Projection is Linear</div>
+          $T(\mathbf{x}) = \text{proj}_U(\mathbf{x})$ is a linear operator with
+          $\text{im}\, T = U$ and $\ker T = U^\perp$.
+        </div>
+        <div class="note">
+          <div class="note-label">Independence of basis</div>
+          proj<sub>U</sub>(<strong>x</strong>) depends only on <strong>x</strong> and U, not on which orthogonal basis is chosen for U.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.1 Gram-Schmidt ─── -->
+  <div class="section">
+    <div class="section-title">§8.1 Gram-Schmidt Orthogonalization</div>
+    <div class="grid grid-2">
+
+      <!-- Card 5 — wide -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Gram-Schmidt Algorithm</div>
+        <div class="def">
+          <div class="def-label">Theorem 8.1.2 — Setup</div>
+          Given any basis $\{\mathbf{x}_1,\ldots,\mathbf{x}_m\}$ of subspace $U \subseteq \mathbb{R}^n$,
+          construct an <span class="tt" data-t="Each new vector strips off all projections onto previous orthogonal vectors, leaving a perpendicular residual">orthogonal basis</span>
+          $\{\mathbf{f}_1,\ldots,\mathbf{f}_m\}$ successively:
+        </div>
+        <div class="grid grid-2">
+          <div>
+            <div class="formula">
+              <span class="formula-label">Construction</span>
+              $$\mathbf{f}_1 = \mathbf{x}_1$$
+              $$\mathbf{f}_2 = \mathbf{x}_2 - \frac{\mathbf{x}_2 \cdot \mathbf{f}_1}{\|\mathbf{f}_1\|^2}\mathbf{f}_1$$
+              $$\mathbf{f}_3 = \mathbf{x}_3 - \frac{\mathbf{x}_3 \cdot \mathbf{f}_1}{\|\mathbf{f}_1\|^2}\mathbf{f}_1 - \frac{\mathbf{x}_3 \cdot \mathbf{f}_2}{\|\mathbf{f}_2\|^2}\mathbf{f}_2$$
+              $$\vdots$$
+              $$\mathbf{f}_k = \mathbf{x}_k - \sum_{j=1}^{k-1} \frac{\mathbf{x}_k \cdot \mathbf{f}_j}{\|\mathbf{f}_j\|^2}\mathbf{f}_j$$
+            </div>
+            <div class="note">
+              <div class="note-label">To get an ONB</div>
+              Normalize: $\mathbf{q}_k = \mathbf{f}_k/\|\mathbf{f}_k\|$.
+              Multiplying any $\mathbf{f}_k$ by a nonzero scalar leaves subsequent vectors unchanged — clear fractions freely.
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.1.2 — Guarantees</div>
+              1. $\{\mathbf{f}_1,\ldots,\mathbf{f}_m\}$ is an <strong>orthogonal basis</strong> of $U$.<br>
+              2. $\text{span}\{\mathbf{f}_1,\ldots,\mathbf{f}_k\} = \text{span}\{\mathbf{x}_1,\ldots,\mathbf{x}_k\}$ for each $k$.<br><br>
+              <em>Corollary:</em> Every subspace of $\mathbb{R}^n$ has an orthogonal basis (Theorem 8.1.1).
+            </div>
+            <div class="example">
+              <div class="example-label">Example 8.1.1</div>
+              Rows <strong>x</strong><sub>1</sub>=(1,1,−1,−1), <strong>x</strong><sub>2</sub>=(3,2,0,1), <strong>x</strong><sub>3</sub>=(1,0,1,0):<br>
+              <strong>f</strong><sub>1</sub>=(1,1,−1,−1);&nbsp;
+              <strong>f</strong><sub>2</sub>=(2,1,1,2);&nbsp;
+              <strong>f</strong><sub>3</sub>=(4,−3,7,−6)
+            </div>
+          </div>
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/ee/Gram-Schmidt_orthonormalization_process.gif" alt="Gram-Schmidt orthonormalization" loading="lazy"/>
+          <figcaption>Gram-Schmidt: orthogonalize $\mathbf{v}_1, \mathbf{v}_2, \ldots$ to get orthonormal basis $\mathbf{q}_1, \mathbf{q}_2, \ldots$</figcaption>
+        </figure>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.4 QR-Factorization ─── -->
+  <div class="section">
+    <div class="section-title">§8.4 QR-Factorization</div>
+    <div class="grid grid-2">
+
+      <!-- Card 6 -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>QR-Factorization</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="def">
+              <div class="def-label">Definition 8.6 &amp; Theorem 8.4.1</div>
+              Let A be m×n with <strong>linearly independent columns</strong>. A
+              <span class="tt" data-t="A = QR: Q has orthonormal columns (from Gram-Schmidt on cols of A), R is upper triangular with positive diagonal">QR-factorization</span>
+              of A is A = QR where:
+              <ul class="items">
+                <li>Q is m×n with <strong>orthonormal columns</strong></li>
+                <li>R is n×n <strong>upper triangular</strong> with positive diagonal entries (invertible)</li>
+              </ul>
+              Every such A has a <strong>unique</strong> QR-factorization (Theorem 8.4.3).
+            </div>
+            <div class="formula">
+              <span class="formula-label">Construction via Gram-Schmidt on columns $\mathbf{c}_1,\ldots,\mathbf{c}_n$ of $A$</span>
+              Apply G-S $\Rightarrow$ orthonormal $\mathbf{q}_1,\ldots,\mathbf{q}_n$;
+              $$R_{ii} = \|\mathbf{f}_i\| > 0, \quad R_{ij} = \mathbf{c}_j \cdot \mathbf{q}_i \ (i < j), \quad R_{ij} = 0 \ (i > j)$$
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.4.2 — Square Case</div>
+              Every square invertible matrix has A = QR with Q orthogonal, R upper triangular (positive diagonal).
+            </div>
+            <div class="formula">
+              <span class="formula-label">Key Identity (used in Least Squares)</span>
+              $$A^T A = R^T Q^T Q R = R^T R$$
+            </div>
+            <div class="note">
+              <div class="note-label">Why QR is used numerically</div>
+              Computing (A<sup>T</sup>A)<sup>−1</sup> reduces to inverting the upper triangular R — numerically stable, avoids explicit formation of A<sup>T</sup>A.
+            </div>
+            <div class="note">
+              <div class="note-label">Corollary 8.4.1 (Independent Rows)</div>
+              If A has independent rows: A = LP where P has orthonormal rows and L is invertible lower triangular.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.2 Orthogonal Matrices ─── -->
+  <div class="section">
+    <div class="section-title">§8.2 Orthogonal Matrices</div>
+    <div class="grid grid-2">
+
+      <!-- Card 7 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Orthogonal Matrix — Definition &amp; Conditions</div>
+        <div class="def">
+          <div class="def-label">Definition 8.3</div>
+          An n×n matrix P is <span class="tt" data-t="Square matrix whose inverse equals its transpose; rows and columns each form orthonormal sets">orthogonal</span>
+          if any of the following equivalent conditions hold (Theorem 8.2.1):
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Condition</th><th>Statement</th></tr></thead>
+          <tbody>
+            <tr><td>Inverse</td><td>$P$ invertible and $P^{-1} = P^T$</td></tr>
+            <tr><td>Product</td><td>$P^T P = I$ (equivalently $PP^T = I$)</td></tr>
+            <tr><td>Rows</td><td>Rows of $P$ form an <strong>orthonormal</strong> set in $\mathbb{R}^n$</td></tr>
+            <tr><td>Columns</td><td>Columns of $P$ form an <strong>orthonormal</strong> set in $\mathbb{R}^n$</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">Caution</div>
+          Merely orthogonal rows (not unit length) does not make a matrix orthogonal —
+          the rows must be <em>orthonormal</em>.
+        </div>
+        <div class="note">
+          <div class="note-label">Closure (Example 8.2.3)</div>
+          If $P$, $Q$ orthogonal: $PQ$ is orthogonal; $P^{-1} = P^T$ is orthogonal.
+        </div>
+      </div>
+
+      <!-- Card 8 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Properties of Orthogonal Matrices</div>
+        <div class="theorem">
+          <div class="theorem-label">Isometry — Preserves Geometry (Exercise 8.2.24)</div>
+          If $P$ is orthogonal and $\mathbf{x}, \mathbf{y} \in \mathbb{R}^n$:<br><br>
+          1. $\|P\mathbf{x}\| = \|\mathbf{x}\|$ &nbsp;(preserves <span class="tt" data-t="A map that preserves distances; orthogonal matrices are isometries of ℝⁿ">length</span>)<br>
+          2. $(P\mathbf{x})\cdot(P\mathbf{y}) = \mathbf{x}\cdot\mathbf{y}$ &nbsp;(preserves dot product)<br>
+          3. $\|P\mathbf{x}-P\mathbf{y}\| = \|\mathbf{x}-\mathbf{y}\|$ &nbsp;(preserves distance)<br>
+          4. $\det P = \pm 1$ (Exercise 8.2.18)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.2.5 — Triangulation</div>
+          If $A$ is $n\times n$ with $n$ real eigenvalues, $\exists$ orthogonal $P$ such that $P^T A P$ is upper triangular.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Corollary 8.2.1</div>
+          If $\lambda_1,\ldots,\lambda_n$ are the real eigenvalues of $A$:<br>
+          $\det A = \lambda_1\lambda_2\cdots\lambda_n$ &nbsp; and &nbsp; $\text{tr}\, A = \lambda_1+\cdots+\lambda_n$
+        </div>
+        <div class="def">
+          <div class="def-label">Standard Examples</div>
+          Rotation R<sub>θ</sub> (det = +1, preserves orientation);<br>
+          Reflection (det = −1, reverses orientation); &nbsp; Permutation matrices.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.2 Symmetric Matrices & Diagonalization ─── -->
+  <div class="section">
+    <div class="section-title">§8.2 Symmetric Matrices &amp; Orthogonal Diagonalization</div>
+    <div class="grid grid-2">
+
+      <!-- Card 9 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Properties of Symmetric Matrices</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          A matrix A is <span class="tt" data-t="Equal to its own transpose A = Aᵀ; diagonal entries are arbitrary, off-diagonal entries mirror each other">symmetric</span>
+          if $A = A^T$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.5.7 — Real Eigenvalues</div>
+          Every eigenvalue of a real symmetric matrix is <strong>real</strong>.<br>
+          <em>Proof:</em> λ‖<strong>v</strong>‖² = (A<strong>v</strong>)·<strong>v</strong> = <strong>v</strong>·(A<strong>v</strong>) = <strong>v</strong>·(λ<strong>v</strong>) = λ̄‖<strong>v</strong>‖² ⟹ λ = λ̄ ∈ ℝ.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.2.3 — Self-Adjoint Property</div>
+          If A is symmetric: (A<strong>x</strong>)·<strong>y</strong> = <strong>x</strong>·(A<strong>y</strong>) for all <strong>x</strong>,<strong>y</strong> ∈ ℝ<sup>n</sup>.<br>
+          <em>Proof:</em> (A<strong>x</strong>)·<strong>y</strong> = (A<strong>x</strong>)<sup>T</sup><strong>y</strong> = <strong>x</strong><sup>T</sup>A<sup>T</sup><strong>y</strong> = <strong>x</strong><sup>T</sup>A<strong>y</strong>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.2.4 — Orthogonal Eigenvectors</div>
+          Eigenvectors of a symmetric matrix corresponding to <em>distinct</em> eigenvalues are <strong>orthogonal</strong>.<br>
+          <em>Proof:</em> $\lambda(\mathbf{x}\cdot\mathbf{y}) = (A\mathbf{x})\cdot\mathbf{y} = \mathbf{x}\cdot(A\mathbf{y}) = \mu(\mathbf{x}\cdot\mathbf{y})$, so $(\lambda-\mu)(\mathbf{x}\cdot\mathbf{y}) = 0$.
+        </div>
+        <div class="note">
+          <div class="note-label">Repeated eigenvalues</div>
+          Apply Gram-Schmidt <em>within</em> each eigenspace to produce orthonormal eigenvectors.
+        </div>
+      </div>
+
+      <!-- Card 10 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Orthogonal Diagonalization</div>
+        <div class="def">
+          <div class="def-label">Definition 8.4</div>
+          A is <span class="tt" data-t="P⁻¹AP = PᵀAP = D diagonal, with P orthogonal; the strongest form of diagonalization">orthogonally diagonalizable</span>
+          if $\exists$ orthogonal $P$ with $P^T A P = D$ diagonal.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.2.2 — Principal Axis Theorem</div>
+          The following are equivalent for an n×n matrix A:<br>
+          1. $A$ has an orthonormal set of $n$ eigenvectors.<br>
+          2. $A$ is orthogonally diagonalizable ($P^T A P = D$).<br>
+          3. <strong>$A$ is symmetric.</strong>
+        </div>
+        <div class="def">
+          <div class="def-label">Algorithm — Orthogonal Diagonalization</div>
+          <ol class="steps">
+            <li>Find all distinct (real) eigenvalues $\lambda_1,\ldots,\lambda_k$</li>
+            <li>Find a basis for each eigenspace $E_{\lambda_i}$</li>
+            <li>Apply Gram-Schmidt within each eigenspace</li>
+            <li>Normalize all eigenvectors; form P = [<strong>q</strong><sub>1</sub>|…|<strong>q</strong><sub>n</sub>]</li>
+            <li>Result: $P^T A P = D = \text{diag}(\lambda_1,\ldots,\lambda_n)$</li>
+          </ol>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 8.2.5</div>
+          A = [[8,−2,2],[−2,5,4],[2,4,5]]; eigenvalues 0 (mult 1) and 9 (mult 2);<br>
+          E<sub>9</sub> requires Gram-Schmidt → get orthonormal P.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.2 Spectral Theorem ─── -->
+  <div class="section">
+    <div class="section-title">§8.2 Spectral Theorem &amp; Spectral Decomposition</div>
+    <div class="grid grid-2">
+
+      <!-- Card 11 — wide -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Spectral Theorem</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.2.2 — Real Symmetric Matrices</div>
+              Every real symmetric matrix A is orthogonally diagonalizable:<br>
+              $A = PDP^T$, $P$ orthogonal, $D = \text{diag}(\lambda_1,\ldots,\lambda_n)$.
+            </div>
+            <div class="formula">
+              <span class="formula-label">Spectral Decomposition (Rank-1 Sum)</span>
+              $$A = \lambda_1 \mathbf{f}_1 \mathbf{f}_1^T + \lambda_2 \mathbf{f}_2 \mathbf{f}_2^T + \cdots + \lambda_n \mathbf{f}_n \mathbf{f}_n^T$$
+            </div>
+            <div class="def">
+              <div class="def-label">Terminology</div>
+              The set of distinct eigenvalues of A is the
+              <span class="tt" data-t="Set of eigenvalues {λ₁, λ₂,…}; name comes from spectral theory of operators">spectrum</span>
+              of A. The orthonormal eigenvectors <strong>f</strong><sub>i</sub> are the
+              <span class="tt" data-t="Axes along which the quadratic form xᵀAx has no cross terms; arise in conic section geometry">principal axes</span>
+              of A.
+            </div>
+            <div class="note">
+              <div class="note-label">Each f<sub>i</sub>f<sub>i</sub><sup>T</sup></div>
+              Each outer product $\mathbf{f}_i\mathbf{f}_i^T$ is a rank-1 matrix
+              representing the orthogonal projection onto the eigenspace for $\lambda_i$.
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.8 — Complex (Hermitian) Spectral Theorem</div>
+              If A is <span class="tt" data-t="A = Aᴴ where Aᴴ = (Ā)ᵀ; complex analog of symmetric; real entries on diagonal">hermitian</span>
+              (A<sup>H</sup> = A), there exists a <span class="tt" data-t="U⁻¹ = Uᴴ; columns form orthonormal set in ℂⁿ; complex analog of orthogonal matrix">unitary</span>
+              matrix U with U<sup>H</sup>AU diagonal.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.5 — Hermitian Properties</div>
+              If A is hermitian:<br>
+              1. All eigenvalues of A are <strong>real</strong>.<br>
+              2. Eigenvectors for distinct eigenvalues are orthogonal in ℂ<sup>n</sup>.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.9 — Normal Matrices</div>
+              $A$ is unitarily diagonalizable $\Leftrightarrow$ $A$ is <strong>normal</strong> ($AA^H = A^H A$).<br>
+              Normal includes: symmetric, hermitian, unitary, and orthogonal matrices.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.7 — Schur's Theorem</div>
+              Every complex n×n matrix is unitarily triangularizable:
+              ∃ unitary U with U<sup>H</sup>AU = T upper triangular (eigenvalues on diagonal).
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.3 Positive Definite Matrices ─── -->
+  <div class="section">
+    <div class="section-title">§8.3 Positive Definite Matrices</div>
+    <div class="grid grid-2">
+
+      <!-- Card 12 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Positive Definite Matrices</div>
+        <div class="def">
+          <div class="def-label">Definition 8.5</div>
+          A square matrix A is <span class="tt" data-t="Symmetric matrix all of whose eigenvalues are strictly positive; equivalently xᵀAx > 0 for all x ≠ 0">positive definite</span>
+          (SPD) if it is <strong>symmetric</strong> and all eigenvalues λ &gt; 0.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.3.1 — Invertibility</div>
+          Every positive definite matrix A is invertible with det A &gt; 0.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.3.2 — Quadratic Form Criterion</div>
+          A symmetric A is positive definite ⟺
+          <strong>x</strong><sup>T</sup>A<strong>x</strong> &gt; 0 for every nonzero <strong>x</strong>.<br>
+          <em>Proof:</em> using P<sup>T</sup>AP = D: x<sup>T</sup>Ax = Σλ<sub>i</sub>y<sub>i</sub>² (with y = P<sup>T</sup>x).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 8.3.3 — Equivalent Conditions</div>
+          For symmetric n×n A, the following are equivalent:<br>
+          1. A is positive definite.<br>
+          2. det(<sup>(r)</sup>A) &gt; 0 for r = 1,…,n &nbsp;(all <span class="tt" data-t="Determinant of the upper-left r×r submatrix; must all be positive for positive definiteness">leading principal minors</span> positive).<br>
+          3. A = U<sup>T</sup>U for upper triangular U with positive diagonal.
+        </div>
+        <div class="note">
+          <div class="note-label">A<sup>T</sup>A is Always PSD</div>
+          $A^T A$ is symmetric positive semidefinite for any $A$; positive definite $\Leftrightarrow$ $A$ has full column rank.
+        </div>
+      </div>
+
+      <!-- Card 13 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Cholesky Factorization</div>
+        <div class="def">
+          <div class="def-label">Theorem 8.3.3 — Unique Factorization</div>
+          Every positive definite matrix A has a unique factorization A = U<sup>T</sup>U
+          where U is upper triangular with positive diagonal entries.
+          This is the <span class="tt" data-t="Uniquely defined A = UᵀU for SPD matrices; numerically stable 'square root'; used in statistics, optimization">Cholesky factorization</span>.
+        </div>
+        <div class="def">
+          <div class="def-label">Algorithm</div>
+          <ol class="steps">
+            <li>Row-reduce A → upper triangular U<sub>1</sub> using only row ops that add multiples of a row to a <em>lower</em> row (preserves positive diagonal)</li>
+            <li>Divide each row i of U<sub>1</sub> by √(diagonal entry of row i) → U</li>
+          </ol>
+          Then A = U<sup>T</sup>U.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 8.3.3</div>
+          A = [[10,5,2],[5,3,2],[2,2,3]]; verify det(<sup>(1)</sup>A)=10, det(<sup>(2)</sup>A)=5, det A=3 &gt; 0 ✓<br>
+          U<sub>1</sub> = [[10,5,2],[0,½,1],[0,0,3/5]];
+          U = [[√10, 5/√10, 2/√10],[0, 1/√2, √2],[0, 0, √(3/5)]]
+        </div>
+        <div class="note">
+          <div class="note-label">Positive Semidefinite</div>
+          A is <strong>positive semidefinite</strong> if symmetric and all λ ≥ 0, i.e., <strong>x</strong><sup>T</sup>A<strong>x</strong> ≥ 0 for all <strong>x</strong>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §5.6 / §8.4 Least Squares ─── -->
+  <div class="section">
+    <div class="section-title">§8.4 / §5.6 Least-Squares Approximation</div>
+    <div class="grid grid-2">
+
+      <!-- Card 14 -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Least-Squares Problem &amp; Solution via QR</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="def">
+              <div class="def-label">Problem Setup</div>
+              Given a (possibly inconsistent) system A<strong>x</strong> = <strong>b</strong>
+              (m equations, n unknowns, m &gt; n), find <strong>z</strong> that
+              <strong>minimizes</strong> ‖A<strong>z</strong> − <strong>b</strong>‖² over all <strong>z</strong> ∈ ℝ<sup>n</sup>.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Best Approximation</div>
+              The minimizer satisfies A<strong>z</strong> = proj<sub>col(A)</sub>(<strong>b</strong>),
+              i.e., <strong>b</strong> − A<strong>z</strong> ⊥ col(A).
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Normal Equations (§5.6)</div>
+              <strong>z</strong> is a least-squares solution ⟺ it satisfies the
+              <span class="tt" data-t="(AᵀA)z = Aᵀb; always consistent; unique solution iff A has full column rank">normal equations</span>:<br><br>
+              $$( A^T A )\, \mathbf{z} = A^T \mathbf{b}$$
+              Unique least-squares solution when A has full column rank:<br>
+              $\mathbf{z} = (A^T A)^{-1} A^T \mathbf{b}$
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Via QR (Numerically Stable)</div>
+              If $A = QR$ (full column rank), then $A^T A = R^T R$, so:<br><br>
+              $$\mathbf{z} = R^{-1} Q^T \mathbf{b}$$
+              No need to form A<sup>T</sup>A explicitly — just back-substitute through R.
+            </div>
+            <div class="formula">
+              <span class="formula-label">Minimum Residual</span>
+              $$\|\mathbf{b} - A\mathbf{z}\| = \|\mathbf{b} - \text{proj}_{\text{col}(A)}(\mathbf{b})\|$$
+            </div>
+            <div class="note">
+              <div class="note-label">Gram matrix</div>
+              $G = A^T A$ is symmetric positive semidefinite; positive definite $\Leftrightarrow$ $A$ full column rank $\Leftrightarrow$ unique least-squares solution.
+            </div>
+            <div class="note">
+              <div class="note-label">Pseudoinverse</div>
+              When $A$ has full column rank, the map $A^+ = (A^T A)^{-1} A^T$ is the left inverse / Moore-Penrose pseudoinverse.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.5 Computing Eigenvalues ─── -->
+  <div class="section">
+    <div class="section-title">§8.5 Computing Eigenvalues</div>
+    <div class="grid grid-2">
+
+      <!-- Card 15 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Power Method</div>
+        <div class="def">
+          <div class="def-label">Setup</div>
+          Finds the <span class="tt" data-t="The eigenvalue of largest absolute value, provided it has multiplicity 1; the 'dominant' one">dominant eigenvalue</span>
+          λ of A iteratively.
+        </div>
+        <div class="def">
+          <div class="def-label">Algorithm</div>
+          Start with $\mathbf{x}_0$; iterate $\mathbf{x}_{k+1} = A\mathbf{x}_k$
+          (so $\mathbf{x}_k = A^k\mathbf{x}_0$).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Rayleigh Quotient (eigenvalue estimate)</span>
+          $$r_k = \frac{\mathbf{x}_k \cdot \mathbf{x}_{k+1}}{\|\mathbf{x}_k\|^2} \to \lambda_1 \text{ (dominant eigenvalue)}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Convergence</div>
+          If $\mathbf{x}_0$ has nonzero component along the dominant eigenvector and $|\lambda_i/\lambda_1| < 1$ for $i > 1$, then<br>
+          $(1/\lambda_1^k)\mathbf{x}_k \to$ dominant eigenvector.
+        </div>
+        <div class="note">
+          <div class="note-label">Limitations</div>
+          Slow if $|\lambda_2/\lambda_1| \approx 1$; fails if $\mathbf{x}_0 \perp$ dominant eigenvector; not recommended for large dense matrices.
+        </div>
+      </div>
+
+      <!-- Card 16 -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>QR-Algorithm</div>
+        <div class="def">
+          <div class="def-label">Iteration</div>
+          Set $A_1 = A$; repeatedly factor and reverse:<br>
+          $A_k = Q_k R_k \Rightarrow A_{k+1} = R_k Q_k$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Key Property</div>
+          A<sub>k+1</sub> = Q<sub>k</sub><sup>−1</sup>A<sub>k</sub>Q<sub>k</sub>, so <strong>each A<sub>k</sub> is similar to A</strong> (same eigenvalues).
+          If A has real eigenvalues with distinct absolute values, A<sub>k</sub> → upper triangular with eigenvalues on diagonal.
+        </div>
+        <ul class="items">
+          <li>If $A$ symmetric $\Rightarrow$ $A_k \to$ <em>diagonal</em> (Exercise 8.5.4)</li>
+          <li>Complex eigenvalue pairs → 2×2 diagonal blocks</li>
+          <li>$A_k = (Q_1 Q_2 \cdots Q_k)(R_k \cdots R_1)$ is a QR-factorization of $A^k$</li>
+        </ul>
+        <div class="note">
+          <div class="note-label">Practical Enhancements</div>
+          <strong>Shifting</strong>: factor A<sub>k</sub>−s<sub>k</sub>I → A<sub>k+1</sub> = R<sub>k</sub>Q<sub>k</sub>+s<sub>k</sub>I (accelerates convergence).<br>
+          <strong>Hessenberg pre-reduction</strong>: use Householder matrices to put A in upper Hessenberg form first.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §8.6 Complex Matrices ─── -->
+  <div class="section">
+    <div class="section-title">§8.6 Complex Matrices — Hermitian, Unitary &amp; Normal</div>
+    <div class="grid grid-2">
+
+      <!-- Card 17 — wide -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Hermitian, Unitary &amp; Normal Matrices</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="def">
+              <div class="def-label">Standard Inner Product on ℂⁿ (Definition 8.7)</div>
+              ⟨<strong>z</strong>,<strong>w</strong>⟩ = z<sub>1</sub>w̄<sub>1</sub> + ··· + z<sub>n</sub>w̄<sub>n</sub>
+              &nbsp; (conjugate the second argument)<br>
+              ‖<strong>z</strong>‖ = √⟨<strong>z</strong>,<strong>z</strong>⟩ = √(|z<sub>1</sub>|²+···+|z<sub>n</sub>|²)
+            </div>
+            <div class="def">
+              <div class="def-label">Conjugate Transpose (Definition 8.9)</div>
+              A<sup>H</sup> = (Ā)<sup>T</sup> = conjugate transpose of A.
+              A<sup>H</sup> = A<sup>T</sup> when A is real.
+            </div>
+            <div class="def">
+              <div class="def-label">Hermitian (Definition 8.10)</div>
+              A is <span class="tt" data-t="Complex analog of symmetric: Aᴴ = A; diagonal entries real; off-diagonal entries mirror as complex conjugates">hermitian</span>
+              if $A^H = A$ (equivalently $\bar{A} = A^T$). &nbsp; Real symmetric $\subseteq$ hermitian.
+            </div>
+            <div class="def">
+              <div class="def-label">Unitary (Definition 8.12)</div>
+              U is <span class="tt" data-t="U⁻¹ = Uᴴ; columns form orthonormal set in ℂⁿ; complex analog of orthogonal matrix; preserves ℂⁿ inner product">unitary</span>
+              if $U^{-1} = U^H$. &nbsp; Real orthogonal $\subseteq$ unitary.
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.5 — Hermitian Eigenvalues</div>
+              Let A be hermitian. Then:<br>
+              1. All eigenvalues of $A$ are <strong>real</strong>.<br>
+              2. Eigenvectors for distinct eigenvalues are <strong>orthogonal</strong> in $\mathbb{C}^n$.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.8 — Spectral Theorem (Complex)</div>
+              If $A$ is hermitian, $\exists$ unitary $U$ with $U^H A U$ diagonal (all diagonal entries real).
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.9 — Normality</div>
+              $A$ is unitarily diagonalizable $\Leftrightarrow$ $A$ is <strong>normal</strong> ($AA^H = A^H A$).
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 8.6.10 — Cayley-Hamilton</div>
+              Every $n\times n$ complex matrix satisfies its own characteristic polynomial: $c_A(A) = 0$.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<footer class="chapter-footer">
+  <a href="CH07-Linear-Transformations-CheatSheet.html">← CH7 Linear Transformations</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH8</span>
+  <a href="CH09-Change-of-Basis-CheatSheet.html">CH9 Change of Basis →</a>
+</footer>
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-8';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

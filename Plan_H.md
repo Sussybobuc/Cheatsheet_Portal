@@ -1,6 +1,6 @@
 # Plan H - CSI.pdf to Cheatsheet Portal (FCS Subject)
 
-## Status: COMPLETE
+## Status: COMPLETE (So dont do these anymore)
 
 ## Source Book
 Foundations of Computer Science, 4th Edition - Behrouz Forouzan

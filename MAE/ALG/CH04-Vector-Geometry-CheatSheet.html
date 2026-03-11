@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Vector Geometry — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 4</div>
+    <h1>Vector Geometry <span>— Chapter 4</span></h1>
+    <p class="page-subtitle">Geometric vectors, dot product, cross product, projections, and lines and planes in $\mathbb{R}^3$.</p>
+    <span class="page-badge">LAW · CH4 · §4.1–§4.5</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1 — §4.1 Geometric Vectors
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§4.1 Geometric Vectors</div>
+    <div class="section-subtitle">Definitions 4.1–4.3 · Theorems 4.1.1–4.1.5</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1 — Vectors in Rⁿ -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Vectors in Rⁿ</div>
+        <div class="def">
+          <div class="def-label">Definition 4.1 — Geometric Vector</div>
+          For distinct points A, B in $\mathbb{R}^3$ the <span class="tt" data-t="Directed line segment from tail A to tip B; position irrelevant — only direction and length matter (Theorem 4.1.2)">geometric vector</span> $\overrightarrow{AB}$ is the directed arrow from <em>tail</em> A to <em>tip</em> B. Two geometric vectors are equal iff they share the same length and direction regardless of location. Point P(x,y,z) is identified with column vector $\mathbf{v} = (x,y,z)^\top \in \mathbb{R}^3$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.1.1 — Length (Norm)</div>
+          For $\mathbf{v} = (x, y, z)^\top \in \mathbb{R}^3$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Euclidean Norm</span>
+          $$\|\mathbf{v}\| = \sqrt{x^2 + y^2 + z^2}$$
+          $$\|\mathbf{0}\| = 0 \quad \text{(zero vector uniquely has length 0)}$$
+          $$\|a\mathbf{v}\| = |a|\|\mathbf{v}\| \quad \text{for all scalars } a$$
+        </div>
+        <div class="def">
+          <div class="def-label">Unit Vector &amp; Normalisation</div>
+          A vector <strong>u</strong> with <span class="tt" data-t="‖u‖ = 1; encodes direction only, no magnitude">$\|\mathbf{u}\| = 1$</span> is a <em>unit vector</em>. For nonzero <strong>v</strong> the unique unit vector in the same direction is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Normalise</span>
+          $$\hat{\mathbf{u}} = \frac{\mathbf{v}}{\|\mathbf{v}\|} \quad \text{(scale factor } \tfrac{1}{\|\mathbf{v}\|}\text{)}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Standard Basis / Coordinate Vectors</div>
+          <strong>i</strong> = (1,0,0)ᵀ, <strong>j</strong> = (0,1,0)ᵀ, <strong>k</strong> = (0,0,1)ᵀ.
+          Any vector: <strong>v</strong> = x<strong>i</strong> + y<strong>j</strong> + z<strong>k</strong>. More generally in $\mathbb{R}^n$ the standard basis is <strong>e₁</strong>, …, <strong>eₙ</strong>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.1.4 — Vector Between Points &amp; Distance</div>
+          For $P_1(x_1,y_1,z_1)$ and $P_2(x_2,y_2,z_2)$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Displacement &amp; Distance</span>
+          $$\overrightarrow{P_1P_2} = (x_2-x_1,\; y_2-y_1,\; z_2-z_1)^\top$$
+          $$\text{dist}(P_1,P_2) = \|\overrightarrow{P_1P_2}\| = \sqrt{(x_2-x_1)^2+(y_2-y_1)^2+(z_2-z_1)^2}$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.1.1 / 4.1.3</div>
+          <strong>v</strong> = (2,−1,3)ᵀ → $\|\mathbf{v}\| = \sqrt{14}$.<br/>
+          $P_1(2,-1,3)$, $P_2(1,1,4)$: $\overrightarrow{P_1P_2} = (-1,2,1)^\top$, $\text{dist} = \sqrt{6}$.
+        </div>
+      </div>
+
+      <!-- Card 2 — Vector Arithmetic Properties -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Vector Arithmetic Properties</div>
+        <div class="theorem">
+          <div class="theorem-label">Parallelogram Law &amp; Tip-to-Tail Rule</div>
+          <strong>v + w</strong> is the diagonal (same tail) of the parallelogram determined by <strong>v</strong> and <strong>w</strong>. Equivalently:
+          <div class="formula" style="margin:6px 0 0">
+            $$\overrightarrow{AB} + \overrightarrow{BC} = \overrightarrow{AC} \quad \text{(tip-to-tail)}$$
+          </div>
+          Vectors can be chained tip-to-tail; the net vector runs from first tail to last tip.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.1.3 — Difference as Vector</div>
+          If <strong>v</strong>, <strong>w</strong> share a common tail A with tips B and C: <strong>v − w = CB⃗</strong> (vector from tip of <strong>w</strong> to tip of <strong>v</strong>).
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 4.2 — Parallel Vectors &amp; Theorem 4.1.5</div>
+          Nonzero <strong>v</strong> and <strong>w</strong> are <span class="tt" data-t="Same or opposite direction; equivalently one is a nonzero scalar multiple of the other">parallel</span> iff they have the same or opposite direction, i.e. $\mathbf{v} = t\mathbf{w}$ for some scalar $t \neq 0$. (Proved using the scalar-multiple law.)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Scalar Multiple Law</div>
+          For scalar a and nonzero <strong>v</strong>:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Length &amp; Direction of av</span>
+          $$\|a\mathbf{v}\| = |a|\|\mathbf{v}\|$$
+          $a > 0$ → same direction as $\mathbf{v}$;  $a < 0$ → opposite direction
+        </div>
+        <div class="note">
+          <div class="note-label">Triangle &amp; Parallelogram Inequalities</div>
+          $\|\mathbf{u} + \mathbf{v}\| \leq \|\mathbf{u}\| + \|\mathbf{v}\|$  (triangle inequality)<br/>
+          $\|\mathbf{u}+\mathbf{v}\|^2 + \|\mathbf{u}-\mathbf{v}\|^2 = 2(\|\mathbf{u}\|^2+\|\mathbf{v}\|^2)$  (parallelogram law, Ex 4.2.34)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.1.6 — Pythagoras</div>
+          Right triangle with hypotenuse c and legs a, b:  <strong>a² + b² = c²</strong>.<br/>
+          Proof uses similar-triangle ratios; gives the 3-D distance formula via two applications.
+        </div>
+        <div class="example">
+          <div class="example-label">Geometry Proofs via Vectors (Ex. 4.1.2 / 4.1.6)</div>
+          Diagonals of a parallelogram bisect each other — proved using tip-to-tail rule alone.<br/>
+          Midpoints of the four sides of any quadrilateral form a parallelogram.
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div><!-- /section 1 -->
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2 — §4.2 Dot Product
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§4.2 Dot Product</div>
+    <div class="section-subtitle">Definitions 4.4–4.7 · Theorems 4.2.1–4.2.5</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3 — Dot Product -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Dot Product (Scalar Product)</div>
+        <div class="def">
+          <div class="def-label">Definition 4.4 — Dot Product in R³</div>
+          For $\mathbf{v} = (x_1,y_1,z_1)^\top$, $\mathbf{w} = (x_2,y_2,z_2)^\top$ the <span class="tt" data-t="Multiplies corresponding components and sums; always a real number (scalar)">dot product</span> is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Component Form</span>
+          $$\mathbf{v}\cdot\mathbf{w} = x_1x_2 + y_1y_2 + z_1z_2 = \mathbf{v}^\top\mathbf{w} \in \mathbb{R}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.2.1 — Properties ($\mathbf{u}, \mathbf{v}, \mathbf{w} \in \mathbb{R}^3$, scalar $k$)</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Property</th><th>Formula</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Scalar value</td><td>$\mathbf{v}\cdot\mathbf{w} \in \mathbb{R}$</td></tr>
+            <tr><td>2</td><td>Symmetry</td><td>$\mathbf{v}\cdot\mathbf{w} = \mathbf{w}\cdot\mathbf{v}$</td></tr>
+            <tr><td>3</td><td>Zero</td><td>$\mathbf{v}\cdot\mathbf{0} = 0$</td></tr>
+            <tr><td>4</td><td>Self-dot = ‖·‖²</td><td>$\mathbf{v}\cdot\mathbf{v} = \|\mathbf{v}\|^2$</td></tr>
+            <tr><td>5</td><td>Scalar assoc.</td><td>$(k\mathbf{v})\cdot\mathbf{w} = k(\mathbf{v}\cdot\mathbf{w})$</td></tr>
+            <tr><td>6</td><td>Distributivity</td><td>$\mathbf{u}\cdot(\mathbf{v} \pm \mathbf{w}) = \mathbf{u}\cdot\mathbf{v} \pm \mathbf{u}\cdot\mathbf{w}$</td></tr>
+          </tbody>
+        </table>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.2.2 — Dot Product &amp; Angle</div>
+          For nonzero <strong>v</strong>, <strong>w</strong> with angle $\theta \in [0, \pi]$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Intrinsic / Geometric Form</span>
+          $$\mathbf{v}\cdot\mathbf{w} = \|\mathbf{v}\|\|\mathbf{w}\|\cos\theta$$
+          $$\cos\theta = \frac{\mathbf{v}\cdot\mathbf{w}}{\|\mathbf{v}\|\|\mathbf{w}\|}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Cauchy-Schwarz Inequality (Ex. 4.2.44)</div>
+          Since $|\cos\theta| \leq 1$:  $|\mathbf{v}\cdot\mathbf{w}| \leq \|\mathbf{v}\|\|\mathbf{w}\|$.<br/>
+          Equality iff <strong>v</strong> and <strong>w</strong> are parallel ($\theta = 0$ or $\pi$).
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.2.1 / 4.2.2</div>
+          $\mathbf{v}=(2,-1,3)^\top$, $\mathbf{w}=(1,4,-1)^\top$: $\mathbf{v}\cdot\mathbf{w} = 2-4-3 =$ <strong>−5</strong>.<br/>
+          $\|\mathbf{v} - 3\mathbf{w}\|^2 = \|\mathbf{v}\|^2-6(\mathbf{v}\cdot\mathbf{w})+9\|\mathbf{w}\|^2$ (expand with Thm 4.2.1).
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/3/3e/Dot_Product.svg" alt="Dot product geometry" loading="lazy"/>
+          <figcaption>$\mathbf{v} \cdot \mathbf{w} = \|\mathbf{v}\|\|\mathbf{w}\|\cos\theta$</figcaption>
+        </figure>
+      </div>
+
+      <!-- Card 4 — Angles and Orthogonality -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Angles &amp; Orthogonality</div>
+        <div class="note">
+          <div class="note-label">Sign of Dot Product vs. Angle</div>
+          $\mathbf{v}\cdot\mathbf{w} > 0 \iff \theta$ is <em>acute</em> $(0 \leq \theta < \pi/2)$<br/>
+          $\mathbf{v}\cdot\mathbf{w} < 0 \iff \theta$ is <em>obtuse</em> $(\pi/2 < \theta \leq \pi)$<br/>
+          $\mathbf{v}\cdot\mathbf{w} = 0 \iff \theta = \pi/2$ (perpendicular)
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 4.5 — Orthogonality</div>
+          <strong>v</strong> and <strong>w</strong> are <span class="tt" data-t="Angle between them is π/2 (or at least one is the zero vector); equivalent condition: v·w = 0">orthogonal</span> (written $\mathbf{v} \perp \mathbf{w}$) if <strong>v</strong> = <strong>0</strong>, or <strong>w</strong> = <strong>0</strong>, or the angle between them is $\pi/2$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.2.3</div>
+          <strong>v</strong> and <strong>w</strong> are orthogonal &nbsp;<strong>⟺</strong>&nbsp; $\mathbf{v}\cdot\mathbf{w} = 0$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Pythagorean Theorem — Dot Product Form (Ex. 4.2.37)</div>
+        </div>
+        <div class="formula">
+          <span class="formula-label">u ⊥ v implies</span>
+          $$\|\mathbf{u} + \mathbf{v}\|^2 = \|\mathbf{u}\|^2 + \|\mathbf{v}\|^2$$
+        </div>
+        <div class="note">
+          <div class="note-label">Orthogonal Sets &amp; Orthonormal Sets</div>
+          A set of vectors is <em>orthogonal</em> if every pair is orthogonal. It is <em>orthonormal</em> if additionally every vector is a unit vector. Pairwise orthogonal nonzero vectors are automatically linearly independent.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.2.3 — Computing θ</div>
+          $\mathbf{u} = (-1,1,2)^\top$, $\mathbf{v} = (2,1,-1)^\top$:<br/>
+          $\cos\theta = (-2+1-2)/(\sqrt{6}\cdot\sqrt{6}) = -1/2 \implies$ <strong>$\theta = 2\pi/3$</strong>.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.2.5 — Rhombus Diagonals ⊥</div>
+          Adjacent sides <strong>u</strong>, <strong>v</strong> with $\|\mathbf{u}\| = \|\mathbf{v}\|$ (rhombus):<br/>
+          $(\mathbf{u}+\mathbf{v})\cdot(\mathbf{u}-\mathbf{v}) = \|\mathbf{u}\|^2-\|\mathbf{v}\|^2 = 0 \implies$ diagonals perpendicular.
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <!-- Card 5 — Projections -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Projections onto a Vector</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="def">
+              <div class="def-label">Definition 4.6 — Projection of u onto d</div>
+              Given <strong>u</strong> and nonzero <strong>d</strong>, the <span class="tt" data-t="Component of u along d; foot of perpendicular from tip of u to the line spanned by d">projection</span> $\mathbf{u}_1 = \text{proj}_{\mathbf{d}}(\mathbf{u})$ is the unique vector parallel to <strong>d</strong> such that $\mathbf{u} - \mathbf{u}_1 \perp \mathbf{d}$.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 4.2.4 — Projection Formula</div>
+            </div>
+            <div class="formula">
+              <span class="formula-label">Projection onto d</span>
+              $$\mathbf{u}_1 = \text{proj}_{\mathbf{d}}(\mathbf{u}) = \frac{\mathbf{u}\cdot\mathbf{d}}{\|\mathbf{d}\|^2}\,\mathbf{d} = (\mathbf{u}\cdot\hat{\mathbf{d}})\,\hat{\mathbf{d}} \quad \text{where } \hat{\mathbf{d}} = \mathbf{d}/\|\mathbf{d}\|$$
+              $$\mathbf{u}_2 = \mathbf{u} - \mathbf{u}_1 \quad \text{is orthogonal to } \mathbf{d}$$
+              $$\mathbf{u} = \mathbf{u}_1 + \mathbf{u}_2 \quad \text{(parallel } \oplus \text{ orthogonal decomposition)}$$
+            </div>
+            <div class="note">
+              <div class="note-label">Proof Idea</div>
+              Set $\mathbf{u}_1 = t\mathbf{d}$. Require $(\mathbf{u} - t\mathbf{d})\cdot\mathbf{d} = 0 \to \mathbf{u}\cdot\mathbf{d} = t\|\mathbf{d}\|^2 \to$ <strong>$t = \mathbf{u}\cdot\mathbf{d}/\|\mathbf{d}\|^2$</strong>.
+            </div>
+            <div class="note">
+              <div class="note-label">Pythagoras in Decomposition</div>
+              $\|\mathbf{u}\|^2 = \|\mathbf{u}_1\|^2 + \|\mathbf{u}_2\|^2$ since $\mathbf{u}_1 \perp \mathbf{u}_2$.
+              $\text{proj}_{\mathbf{d}}(\mathbf{u})$ is the closest point on $\text{span}\{\mathbf{d}\}$ to the tip of $\mathbf{u}$.
+            </div>
+          </div>
+          <div>
+            <div class="example">
+              <div class="example-label">Example 4.2.7 — Decompose u along d</div>
+              $\mathbf{u} = (2,-3,1)^\top$, $\mathbf{d} = (1,-1,3)^\top$:<br/>
+              $\mathbf{u}\cdot\mathbf{d} = 2+3+3=8$, $\|\mathbf{d}\|^2=11$<br/>
+              $\mathbf{u}_1 = (8/11)(1,-1,3)^\top$<br/>
+              $\mathbf{u}_2 = \mathbf{u} - \mathbf{u}_1 = (1/11)(14,-25,-13)^\top$ (verify $\mathbf{u}_2\cdot\mathbf{d} = 0$ ✓)
+            </div>
+            <div class="example">
+              <div class="example-label">Example 4.2.6 — Physics: Block on Incline</div>
+              10 kg block on 30° incline (no friction). Weight <strong>w</strong> split into:<br/>
+              <strong>w₁</strong> ∥ surface (component causing slide), <strong>w₂</strong> ⊥ surface.<br/>
+              $\|\mathbf{w}_1\| = \|\mathbf{w}\|\sin 30° = 5$ kg·wt → required restraining force = 5 kg·wt up the slope.
+            </div>
+            <div class="example">
+              <div class="example-label">Example 4.2.8 — Point to Line Distance</div>
+              $P(1,3,-2)$; line through $P_0(2,0,-1)$, $\mathbf{d} = (1,-1,0)^\top$:<br/>
+              $\mathbf{u} = \overrightarrow{P_0P} = (-1,3,-1)^\top$, $\mathbf{u}_1 = \text{proj}_{\mathbf{d}}(\mathbf{u}) = -2\mathbf{d} = (-2,2,0)^\top$<br/>
+              $\text{dist} = \|\mathbf{u} - \mathbf{u}_1\| = \|(1,1,-1)^\top\| =$ <strong>$\sqrt{3}$</strong>.<br/>
+              Closest point $Q = P_0 + \mathbf{u}_1 = (0,2,-1)$.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div><!-- /section 2 -->
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3 — §4.3 Cross Product
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§4.3 Cross Product</div>
+    <div class="section-subtitle">Definition 4.8 · Theorems 4.2.5, 4.3.1–4.3.5 · Lagrange Identity</div>
+    <div class="grid grid-2">
+
+      <!-- Card 6 — Cross Product in R³ -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Cross Product in R³</div>
+        <div class="def">
+          <div class="def-label">Definition 4.8 — Cross Product (Vector Product)</div>
+          For <strong>v₁</strong> = (x₁,y₁,z₁)ᵀ, <strong>v₂</strong> = (x₂,y₂,z₂)ᵀ the <span class="tt" data-t="Produces a vector orthogonal to both operands; magnitude = area of parallelogram they span">cross product</span> <strong>v₁ × v₂</strong> is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Determinant Form (expanded along column 1)</span>
+          $$\mathbf{v}_1 \times \mathbf{v}_2 = \det\begin{vmatrix}\mathbf{i} & \mathbf{j} & \mathbf{k} \\ x_1 & y_1 & z_1 \\ x_2 & y_2 & z_2\end{vmatrix}$$
+          $$= (y_1z_2 - z_1y_2)\,\mathbf{i} - (x_1z_2 - z_1x_2)\,\mathbf{j} + (x_1y_2 - y_1x_2)\,\mathbf{k}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Coordinate Vector Products</div>
+          <strong>i × j = k</strong>,&ensp;<strong>j × k = i</strong>,&ensp;<strong>k × i = j</strong>  (cyclic; reverse order gives negatives)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.3.4 — Magnitude &amp; Area</div>
+          If $\theta$ is the angle between nonzero <strong>u</strong>, <strong>v</strong>:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Magnitude of Cross Product</span>
+          $$\|\mathbf{u}\times\mathbf{v}\| = \|\mathbf{u}\|\|\mathbf{v}\|\sin\theta$$
+          $=$ area of parallelogram spanned by $\mathbf{u}$ and $\mathbf{v}$
+          $$\text{Triangle area} = \tfrac{1}{2}\|\mathbf{u}\times\mathbf{v}\|$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Right-Hand Rule (Direction of u×v)</div>
+          Curl right-hand fingers from <strong>u</strong> toward <strong>v</strong> through angle $\theta$; thumb points in the direction of $\mathbf{u} \times \mathbf{v}$. Requires a right-hand coordinate system.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.2.12</div>
+          $\mathbf{v} = (2,-1,4)^\top$, $\mathbf{w} = (1,3,7)^\top$:<br/>
+          $\mathbf{v}\times\mathbf{w} = (-7-12)$<strong>i</strong> $-(14-4)$<strong>j</strong> $+(6+1)$<strong>k</strong> $=$ <strong>$(-19,-10,7)^\top$</strong>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.3.1 — Triangle Area</div>
+          $P(2,1,0)$, $Q(3,-1,1)$, $R(1,0,1)$: $\overrightarrow{RP}=(1,1,-1)^\top$, $\overrightarrow{RQ}=(2,-1,0)^\top$.<br/>
+          $\overrightarrow{RP}\times\overrightarrow{RQ} = (-1,-2,-3)^\top$. Area $= \tfrac{1}{2}\sqrt{1+4+9} = \tfrac{1}{2}\sqrt{14}$.
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/d/d2/Right_hand_rule_cross_product.svg" alt="Right-hand rule for cross product" loading="lazy"/>
+          <figcaption>Right-hand rule: $\mathbf{v} \times \mathbf{w}$ is perpendicular to both $\mathbf{v}$ and $\mathbf{w}$</figcaption>
+        </figure>
+      </div>
+
+      <!-- Card 7 — Cross Product Properties -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Cross Product Properties</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.3.2 — Algebraic Properties ($\mathbf{u}, \mathbf{v}, \mathbf{w} \in \mathbb{R}^3$, $k$ scalar)</div>
+        </div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Property</th><th>Formula</th></tr></thead>
+          <tbody>
+            <tr><td>2</td><td>Orthogonality</td><td>$\mathbf{u}\times\mathbf{v} \perp \mathbf{u}$ and $\mathbf{u}\times\mathbf{v} \perp \mathbf{v}$</td></tr>
+            <tr><td>3</td><td>Zero factor</td><td>$\mathbf{u}\times\mathbf{0} = \mathbf{0} = \mathbf{0}\times\mathbf{u}$</td></tr>
+            <tr><td>4</td><td>Self-product</td><td>$\mathbf{u}\times\mathbf{u} = \mathbf{0}$</td></tr>
+            <tr><td>5</td><td>Anti-commutativity</td><td>$\mathbf{u}\times\mathbf{v} = -(\mathbf{v}\times\mathbf{u})$</td></tr>
+            <tr><td>6</td><td>Scalar</td><td>$(k\mathbf{u})\times\mathbf{v} = k(\mathbf{u}\times\mathbf{v}) = \mathbf{u}\times(k\mathbf{v})$</td></tr>
+            <tr><td>7</td><td>Left distributive</td><td>$\mathbf{u}\times(\mathbf{v}+\mathbf{w}) = (\mathbf{u}\times\mathbf{v})+(\mathbf{u}\times\mathbf{w})$</td></tr>
+            <tr><td>8</td><td>Right distributive</td><td>$(\mathbf{v}+\mathbf{w})\times\mathbf{u} = (\mathbf{v}\times\mathbf{u})+(\mathbf{w}\times\mathbf{u})$</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">NOT Associative</div>
+          In general $(\mathbf{u}\times\mathbf{v})\times\mathbf{w} \neq \mathbf{u}\times(\mathbf{v}\times\mathbf{w})$. (Verified by counterexample in Exercise 4.3.2.)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.2.5 / 4.3.4 — Parallelism Test</div>
+          Nonzero <strong>u</strong> and <strong>v</strong> are <span class="tt" data-t="Same or opposite direction; u = tv for some scalar t">parallel</span> if and only if $\mathbf{u}\times\mathbf{v} = \mathbf{0}$.<br/>
+          (Contrast: $\mathbf{u}\cdot\mathbf{v} = 0 \iff$ <em>orthogonal</em>.)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 4.3.3 — Lagrange Identity</div>
+          For any <strong>u</strong>, <strong>v</strong> $\in \mathbb{R}^3$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Lagrange Identity</span>
+          $$\|\mathbf{u}\times\mathbf{v}\|^2 = \|\mathbf{u}\|^2\|\mathbf{v}\|^2 - (\mathbf{u}\cdot\mathbf{v})^2$$
+        </div>
+        <div class="note">
+          <div class="note-label">Derivation of Magnitude Formula</div>
+          Substitute $\mathbf{u}\cdot\mathbf{v} = \|\mathbf{u}\|\|\mathbf{v}\|\cos\theta$ into the Lagrange identity:<br/>
+          $\|\mathbf{u}\times\mathbf{v}\|^2 = \|\mathbf{u}\|^2\|\mathbf{v}\|^2(1-\cos^2\theta) = \|\mathbf{u}\|^2\|\mathbf{v}\|^2\sin^2\theta$,<br/>
+          then take the positive square root ($\sin\theta \geq 0$ for $\theta \in [0,\pi]$).
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <!-- Card 8 — Scalar Triple Product -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Scalar Triple Product &amp; Parallelepiped Volume</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 4.3.1 — Scalar Triple Product</div>
+              For <strong>u</strong>, <strong>v</strong>, <strong>w</strong> $\in \mathbb{R}^3$:
+            </div>
+            <div class="formula">
+              <span class="formula-label">Determinant Form</span>
+              $$\mathbf{u}\cdot(\mathbf{v}\times\mathbf{w}) = \det[\,\mathbf{u}\;\mathbf{v}\;\mathbf{w}\,]$$
+              (matrix with $\mathbf{u}$, $\mathbf{v}$, $\mathbf{w}$ as columns)
+            </div>
+            <div class="note">
+              <div class="note-label">Orthogonality Consequence</div>
+              Setting u = v (or u = w) gives two identical columns → det = 0 →
+              $\mathbf{v}\times\mathbf{w} \perp \mathbf{v}$ and $\mathbf{v}\times\mathbf{w} \perp \mathbf{w}$ (reproves Thm 4.2.5(1)).
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 4.3.5 — Parallelepiped Volume</div>
+            </div>
+            <div class="formula">
+              <span class="formula-label">Volume Formula</span>
+              $$\text{Vol}(\mathbf{w},\mathbf{u},\mathbf{v}) = |\mathbf{w}\cdot(\mathbf{u}\times\mathbf{v})| = |\det[\,\mathbf{u}\;\mathbf{v}\;\mathbf{w}\,]|$$
+              $$\text{Triangle area} = \tfrac{1}{2}\|\mathbf{v}\times\mathbf{w}\|$$
+              $$\text{Pyramid volume} = \tfrac{1}{6}\left|\overrightarrow{PQ}\cdot\!\left(\overrightarrow{PR}\times\overrightarrow{PS}\right)\right| \quad \text{(Ex 4.3.20)}$$
+            </div>
+          </div>
+          <div>
+            <div class="def">
+              <div class="def-label">Coplanarity Test</div>
+              Three vectors (or four points) are <span class="tt" data-t="All lying in the same plane through the origin">coplanar</span> iff:
+              <div class="formula" style="margin:6px 0 0">
+                $$\mathbf{u}\cdot(\mathbf{v}\times\mathbf{w}) = 0 \quad \text{(equivalently, } \det[\,\mathbf{u}\;\mathbf{v}\;\mathbf{w}\,] = 0\text{)}$$
+              </div>
+            </div>
+            <div class="example">
+              <div class="example-label">Example 4.3.2 — Parallelepiped Volume</div>
+              $\mathbf{w} = (1,2,-1)^\top$, $\mathbf{u} = (1,1,0)^\top$, $\mathbf{v} = (-2,0,1)^\top$:<br/>
+              $\det[\mathbf{u}\;\mathbf{v}\;\mathbf{w}] = -3 \to$ Volume $= |-3| =$ <strong>3</strong>.
+            </div>
+            <div class="example">
+              <div class="example-label">Example 4.2.13 — Plane through 3 Points</div>
+              $P(1,3,-2)$, $Q(1,1,5)$, $R(2,-2,3)$:<br/>
+              $\overrightarrow{PQ}=(0,-2,7)^\top$, $\overrightarrow{PR}=(1,-5,5)^\top$<br/>
+              <strong>n</strong> $= \overrightarrow{PQ}\times\overrightarrow{PR} = (25,7,2)^\top \to$ plane <strong>25x+7y+2z = 42</strong>.
+            </div>
+            <div class="example">
+              <div class="example-label">Example 4.2.14 — Skew-Line Distance</div>
+              Lines with $\mathbf{d}_1=(2,0,1)^\top$, $\mathbf{d}_2=(1,1,-1)^\top$ through $P_1(1,0,-1)$ and $P_2(3,1,0)$:<br/>
+              $\mathbf{n} = \mathbf{d}_1\times\mathbf{d}_2 = (-1,3,2)^\top$, $\mathbf{u} = \overrightarrow{P_1P_2} = (2,1,1)^\top$<br/>
+              $\text{dist} = |\mathbf{u}\cdot\mathbf{n}|/\|\mathbf{n}\| = 3/\sqrt{14} = 3\sqrt{14}/14$.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div><!-- /section 3 -->
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4 — §4.1 / §4.2 Lines and Planes in R³
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§4.1–§4.2 Lines and Planes in R³</div>
+    <div class="section-subtitle">Definition 4.3, 4.7 · Scalar / Vector equations · Distance formulas</div>
+    <div class="grid grid-2">
+
+      <!-- Card 9 — Lines in R³ -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Lines in R³</div>
+        <div class="def">
+          <div class="def-label">Definition 4.3 — Direction Vector</div>
+          A nonzero vector $\mathbf{d}$ is a <span class="tt" data-t="Any nonzero vector parallel to the line; any nonzero scalar multiple also works">direction vector</span> of a line if it is parallel to $\overrightarrow{AB}$ for some two distinct points A, B on the line.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Vector &amp; Parametric Equations of a Line</div>
+          Line through $P_0(x_0,y_0,z_0)$ with direction $\mathbf{d} = (a,b,c)^\top \neq \mathbf{0}$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Vector Form</span>
+          $$\mathbf{p} = \mathbf{p}_0 + t\,\mathbf{d}, \quad t \in \mathbb{R}$$
+        </div>
+        <div class="formula">
+          <span class="formula-label">Parametric Equations</span>
+          $$x = x_0 + ta$$
+          $$y = y_0 + tb \qquad t \in \mathbb{R}$$
+          $$z = z_0 + tc$$
+        </div>
+        <div class="note">
+          <div class="note-label">Symmetric Form (a, b, c all nonzero, Exercise 4.1.27)</div>
+          $$\frac{x-x_0}{a} = \frac{y-y_0}{b} = \frac{z-z_0}{c}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Line Through Two Points</div>
+          Use $\mathbf{d} = P_1 - P_0$ as direction vector. Changing the base point $P_0$ only shifts the parameter.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.1.8</div>
+          Through $P_0(2,0,1)$ and $P_1(4,-1,1)$: <strong>d</strong> $= \overrightarrow{P_0P_1} = (2,-1,0)^\top$.<br/>
+          Parametric: $x = 2+2t$, $y = -t$, $z = 1$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.1.10 — Intersection of Two Lines</div>
+          Set $\mathbf{p}_0+t\mathbf{d}_1 = \mathbf{p}_1+s\mathbf{d}_2$ component-wise; solve the $3\times 2$ system for $t$, $s$.<br/>
+          Lines intersect iff the system is consistent.
+        </div>
+      </div>
+
+      <!-- Card 10 — Planes in R³ -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Planes in R³</div>
+        <div class="def">
+          <div class="def-label">Definition 4.7 — Normal Vector</div>
+          A nonzero $\mathbf{n}$ is a <span class="tt" data-t="Perpendicular to every vector lying in the plane; determines the plane's orientation in R³">normal</span> for a plane if it is orthogonal to every vector in the plane. $\mathbf{k} = (0,0,1)^\top$ is normal to the x-y plane.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Scalar &amp; Vector Equations</div>
+          Plane through $P_0(x_0,y_0,z_0)$ with normal $\mathbf{n} = (a,b,c)^\top \neq \mathbf{0}$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Scalar Form</span>
+          $$a(x-x_0) + b(y-y_0) + c(z-z_0) = 0$$
+          General form: $ax + by + cz = d$
+          where $d = ax_0 + by_0 + cz_0$
+        </div>
+        <div class="formula">
+          <span class="formula-label">Vector Form</span>
+          $$\mathbf{n}\cdot(\mathbf{p} - \mathbf{p}_0) = 0 \iff \mathbf{n}\cdot\mathbf{p} = d$$
+        </div>
+        <div class="note">
+          <div class="note-label">Plane through 3 Non-collinear Points</div>
+          Given $P_0$, $P_1$, $P_2$ (not all on one line):
+          <div class="formula" style="margin:6px 0 0">
+            $$\mathbf{n} = (\mathbf{P}_1-\mathbf{P}_0) \times (\mathbf{P}_2-\mathbf{P}_0) \quad \text{(normal via cross product)}$$
+          </div>
+          Then use $P_0$ and <strong>n</strong> in the scalar equation.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.2.9</div>
+          $P_0(1,-1,3)$, <strong>n</strong> $= (3,-1,2)^\top$:<br/>
+          $3(x-1) - (y+1) + 2(z-3) = 0 \to$ <strong>3x − y + 2z = 10</strong>.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.2.10 — Parallel Planes</div>
+          Plane parallel to $2x-3y = 6$ through $P_0(3,-1,2)$:<br/>
+          Same normal $\mathbf{n}=(2,-3,0)^\top \to 2x-3y = d$; $d = 2(3)-3(-1) = 9$.<br/>
+          Equation: <strong>2x − 3y = 9</strong>.
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <!-- Card 11 — Distances -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Distances in R³</div>
+        <div class="theorem">
+          <div class="theorem-label">Point to Plane (Example 4.2.11 / Exercise 4.3.6)</div>
+          Plane $ax+by+cz = d$, point $P_0$ with vector $\mathbf{p}_0$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Point–Plane Distance</span>
+          $$\text{dist} = \frac{|\mathbf{n}\cdot\mathbf{p}_0 - d|}{\|\mathbf{n}\|} = \frac{|ax_0+by_0+cz_0-d|}{\sqrt{a^2+b^2+c^2}}$$
+          Closest point $Q$: $\mathbf{q} = \mathbf{p}_0 + t\,\mathbf{n}$,  $t = \dfrac{d - \mathbf{n}\cdot\mathbf{p}_0}{\|\mathbf{n}\|^2}$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Point to Line (Example 4.2.8 / Exercise 4.3.8)</div>
+          Line through $P_0$ with direction <strong>d</strong>, point $P$ with $\overrightarrow{P_0P} = \mathbf{u}$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Point–Line Distance</span>
+          $$\text{dist} = \|\mathbf{u} - \text{proj}_{\mathbf{d}}(\mathbf{u})\| = \frac{\|\overrightarrow{P_0P} \times \mathbf{d}\|}{\|\mathbf{d}\|}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Parallel Planes (Exercise 4.3.22)</div>
+          Planes $\mathbf{n}\cdot\mathbf{p} = d_1$ and $\mathbf{n}\cdot\mathbf{p} = d_2$ (same normal <strong>n</strong>):
+        </div>
+        <div class="formula">
+          <span class="formula-label">Between Parallel Planes</span>
+          $$\text{dist} = \frac{|d_1 - d_2|}{\|\mathbf{n}\|}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Skew (Non-parallel, Non-intersecting) Lines (Example 4.2.14)</div>
+          Lines through $P_1$, $P_2$ with directions $\mathbf{d}_1$, $\mathbf{d}_2$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Skew-Line Distance</span>
+          $$\mathbf{n} = \mathbf{d}_1 \times \mathbf{d}_2 \quad \text{(common perpendicular direction)}$$
+          $$\text{dist} = \frac{|\overrightarrow{P_1P_2} \cdot \mathbf{n}|}{\|\mathbf{n}\|}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Direction Cosines (Exercise 4.2.41)</div>
+          Angles $\alpha$, $\beta$, $\gamma$ that $\mathbf{v} = (a,b,c)^\top$ makes with x, y, z axes:<br/>
+          $\cos\alpha = a/\|\mathbf{v}\|$, $\cos\beta = b/\|\mathbf{v}\|$, $\cos\gamma = c/\|\mathbf{v}\|$.<br/>
+          $\cos^2\alpha + \cos^2\beta + \cos^2\gamma = 1$.
+        </div>
+      </div>
+
+      <!-- Card 12 — Linear Combinations and Geometry -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Combinations &amp; Geometry</div>
+        <div class="theorem">
+          <div class="theorem-label">Midpoint Formula (Example 4.1.5)</div>
+          Point $M$ midway between $P_1$ and $P_2$ (vectors $\mathbf{p}_1$, $\mathbf{p}_2$):
+        </div>
+        <div class="formula">
+          <span class="formula-label">Midpoint</span>
+          $$\mathbf{m} = \tfrac{1}{2}(\mathbf{p}_1 + \mathbf{p}_2) \quad \text{(average of position vectors)}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Weighted Division (Exercise 4.1.16)</div>
+          Point $P$ lying $r/(r+s)$ of the way from $P_1$ to $P_2$:
+          <div class="formula" style="margin:6px 0 0">
+            $$\mathbf{p} = \frac{s}{r+s}\,\mathbf{p}_1 + \frac{r}{r+s}\,\mathbf{p}_2$$
+          </div>
+          Special case $r=s=1$: midpoint; $r=1$, $s=2$: one-third from $P_1$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Centroid of a Triangle (Exercise 4.1.34)</div>
+        </div>
+        <div class="formula">
+          <span class="formula-label">Centroid / Centre of Mass</span>
+          $$G = \tfrac{1}{3}(\mathbf{p} + \mathbf{q} + \mathbf{r}) \quad \text{(lies on all three medians)}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Collinearity Test</div>
+          Points $P$, $Q$, $R$ are <span class="tt" data-t="All three points lie on a single straight line; direction vectors PQ⃗ and PR⃗ are parallel">collinear</span> iff:
+          <div class="formula" style="margin:6px 0 0">
+            $$\overrightarrow{PQ} \times \overrightarrow{PR} = \mathbf{0} \quad \text{(cross product form, Exercise 4.3.10)}$$
+            $\iff R = P + t(Q - P)$ for some scalar $t$
+          </div>
+        </div>
+        <div class="note">
+          <div class="note-label">Coplanarity Test (Four Points)</div>
+          Points $A$, $B$, $C$, $D$ are <span class="tt" data-t="All four points lie in a common plane; equivalently the scalar triple product of three edge vectors vanishes">coplanar</span> iff:
+          <div class="formula" style="margin:6px 0 0">
+            $$\overrightarrow{AB}\cdot(\overrightarrow{AB}\times\overrightarrow{AC}) = 0 \quad \text{(scalar triple product = 0, Exercise 4.3.11)}$$
+          </div>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.1.5 / 4.1.6 — Midpoints</div>
+          $M$ one-third of the way from $P_1$ to $P_2$:<br/>
+          $\mathbf{m} = (2/3)\mathbf{p}_1 + (1/3)\mathbf{p}_2 = \mathbf{p}_1 + (1/3)(\mathbf{p}_2 - \mathbf{p}_1)$.<br/>
+          Midpoints of the four sides of any quadrilateral form a parallelogram.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 4.1.2 — Parallelogram Diagonals Bisect</div>
+          Using tip-to-tail: $\overrightarrow{AM} = \overrightarrow{MC}$ (midpoint $M$ of $AC$) $\implies \overrightarrow{BM} = -\overrightarrow{MD}$<br/>
+          $\implies M$ is also the midpoint of $BD$. Pure vector proof, no coordinates.
+        </div>
+      </div>
+
+    </div><!-- /grid -->
+  </div><!-- /section 4 -->
+
+</div><!-- /page-body -->
+
+<footer class="chapter-footer">
+  <a href="CH03-Determinants-Diagonalization-CheatSheet.html">← CH3 Determinants</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH4</span>
+  <a href="CH05-Vector-Space-Rn-CheatSheet.html">CH5 Vector Space Rⁿ →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-4';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

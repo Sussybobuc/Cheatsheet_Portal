@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Applications of Derivatives — Calculus I Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="cal1.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · CAL1 · Chapter 4</div>
+    <h1>Applications of Derivatives <span>— Chapter 4</span></h1>
+    <p class="page-subtitle">Linear approximation · MVT · extrema · first/second derivative tests · curve sketching · optimization · L'Hôpital · Newton's method · antiderivatives</p>
+    <span class="page-badge">CAL1 · CH4 · §4.1–§4.10</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <div class="section">
+    <div class="section-title">§4.2 Linear Approximation &amp; Differentials</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Approximation (Linearization)</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          The <span class="tt" data-t="Also called the tangent line approximation — best linear approximation to f near x = a">linearization of f at a</span> is:
+          L(x) = f(a) + f'(a)(x − a)
+          For x near a: f(x) ≈ L(x).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Useful Standard Linearizations (near $x = 0$)</span>
+          $$(1+x)^n \approx 1 + nx$$
+          $$\sin x \approx x, \quad \cos x \approx 1$$
+          $$e^x \approx 1 + x, \quad \ln(1+x) \approx x$$
+          $$\tfrac{1}{1+x} \approx 1 - x$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          Approximate √4.1: f(x)=√x, a=4, f'(x)=1/(2√x)<br/>
+          L(x) = 2 + (1/4)(x−4); L(4.1) = 2 + 0.025 = 2.025<br/>
+          (Exact: √4.1 ≈ 2.0248)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Differentials</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          If y = f(x), the <span class="tt" data-t="Differential dy is the approximate change in y for an exact change dx in x">differential dy</span> is defined as:
+          dy = f'(x) dx
+          where dx is an independent variable (the change in x). Δy ≈ dy for small Δx = dx.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Error Estimation</span>
+          $$\Delta y = f(x+\Delta x) - f(x) \quad \text{(exact)}$$
+          $$dy = f'(x)\,dx \quad \text{(approximate)}$$
+          $$\text{Relative error: }\frac{dy}{y} = \frac{f'(x)\,dx}{f(x)}$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          V = (4/3)πr³, r=5, dr=0.1:<br/>
+          dV = 4πr²dr = 4π(25)(0.1) = 10π ≈ 31.4 cm³
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§4.3–4.4 Extrema &amp; Mean Value Theorem</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Extrema &amp; Critical Points</div>
+        <div class="def">
+          <div class="def-label">Definitions</div>
+          <strong>Absolute (global) max/min</strong>: largest/smallest value on entire domain.<br/>
+          <strong>Local (relative) max/min</strong>: largest/smallest in some open interval.<br/>
+          <span class="tt" data-t="Critical point: f'(c) = 0 or f'(c) does not exist; all extrema occur at critical points or endpoints">Critical point</span> c: f'(c) = 0 OR f'(c) does not exist.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Extreme Value Theorem</div>
+          <span class="tt" data-t="Absolute max/min: the global highest/lowest value on the entire domain or closed interval">If f is continuous on [a, b], then f attains both an absolute maximum and minimum on [a, b].</span>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Fermat's Theorem</div>
+          If f has a local extremum at c and f'(c) exists, then f'(c) = 0.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Closed Interval Method</span>
+          1. Find all critical points in $(a, b)$
+          2. Evaluate $f$ at critical points and endpoints $a$, $b$
+          3. Largest value = abs max; smallest = abs min
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Rolle's &amp; Mean Value Theorems</div>
+        <div class="theorem">
+          <div class="theorem-label">Rolle's Theorem</div>
+          If f is continuous on [a,b], differentiable on (a,b), and f(a) = f(b), then there exists c ∈ (a,b) such that f'(c) = 0.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Mean Value Theorem (MVT)</div>
+          If f is continuous on [a,b] and differentiable on (a,b), then there exists c ∈ (a,b) such that:
+          $$f'(c) = \frac{f(b)-f(a)}{b-a}$$
+          (instantaneous rate of change = average rate of change)
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          f(x)=x²−x on [0,2]: f'(c) = (f(2)−f(0))/(2−0) = 2/2 = 1<br/>
+          f'(x) = 2x−1 = 1 → x = 1. c = 1 ∈ (0,2) ✓
+        </div>
+        <div class="note">
+          <div class="note-label">Corollaries of MVT</div>
+          f'(x) = 0 on (a,b) → f constant on [a,b]<br/>
+          f'(x) &gt; 0 on (a,b) → f increasing on [a,b]<br/>
+          f'(x) &lt; 0 on (a,b) → f decreasing on [a,b]
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§4.5 Shape of the Graph</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>First &amp; Second Derivative Tests</div>
+        <div class="theorem">
+          <div class="theorem-label">First Derivative Test</div>
+          At a critical point c where f' changes sign:<br/>
+          • − to +: local minimum<br/>
+          • + to −: local maximum<br/>
+          • no sign change: neither
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Second Derivative Test</div>
+          At critical point c where f'(c) = 0:<br/>
+          f''(c) &gt; 0 → <span class="tt" data-t="Second derivative test: f'' > 0 means concave up at c, so it's a local minimum (like a bowl)">local minimum (concave up)</span><br/>
+          f''(c) &lt; 0 → local maximum (concave down)<br/>
+          f''(c) = 0 → inconclusive (use 1st derivative test)
+        </div>
+        <div class="def">
+          <div class="def-label">Concavity &amp; Inflection Points</div>
+          <span class="tt" data-t="f'' > 0: graph curves upward (cup shape); f'' < 0: curves downward (cap shape)">Concave up</span>: f''(x) &gt; 0; <strong>concave down</strong>: f''(x) &lt; 0.<br/>
+          <span class="tt" data-t="Inflection point: where concavity changes; f'' = 0 is necessary but not sufficient">Inflection point</span>: f'' changes sign at c.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Curve Sketching Summary</div>
+        <div class="formula">
+          <span class="formula-label">Systematic Curve Sketching Steps</span>
+          1. Domain of $f$
+          2. Intercepts ($x$: $f=0$; $y$: $x=0$)
+          3. Symmetry (even/odd)
+          4. Asymptotes (vertical, horizontal, oblique)
+          5. Intervals of increase/decrease (sign of $f'$)
+          6. Local extrema (first or second derivative test)
+          7. Concavity (sign of $f''$)
+          8. Inflection points ($f''$ changes sign)
+          9. Sketch using all gathered info
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          f(x) = x³ − 3x: f'(x) = 3x²−3 = 3(x−1)(x+1)<br/>
+          Critical pts: x=±1; f''(x)=6x<br/>
+          f''(1)=6&gt;0→local min; f''(−1)=−6&lt;0→local max<br/>
+          Inflection at x=0 (f''=0 changes sign)
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§4.7–4.10 Optimization, L'Hôpital, Newton, Antiderivatives</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Applied Optimization</div>
+        <div class="formula">
+          <span class="formula-label">Optimization Strategy</span>
+          1. Identify quantity $Q$ to maximize/minimize
+          2. Write $Q$ as function of one variable (use constraints)
+          3. Find domain
+          4. Find critical points ($Q'=0$ or $Q'$ DNE)
+          5. Use EVT or first/second derivative test to classify
+          6. Answer in context with units
+        </div>
+        <div class="example">
+          <div class="example-label">Classic Example — Rectangle in Circle</div>
+          Rectangle inscribed in circle r=5.<br/>
+          x²+y²=25; A = 4xy (total area)<br/>
+          y = √(25−x²); A(x) = 4x√(25−x²)<br/>
+          A'=0 → x=5/√2; Max area = 50 sq units
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>L'Hôpital's Rule</div>
+        <div class="theorem">
+          <div class="theorem-label">L'Hôpital's Rule</div>
+          If lim(x→a) f(x)/g(x) gives 0/0 or ∞/∞, and f, g are differentiable near a (<span class="tt" data-t="g'(x) ≠ 0 near a ensures we can apply L'Hôpital repeatedly if needed">g'≠0 near a</span>), then:
+          lim(x→a) f(x)/g(x) = lim(x→a) f'(x)/g'(x)
+          (Applies also for x→∞, one-sided limits)
+        </div>
+        <div class="formula">
+          <span class="formula-label">Indeterminate Forms &amp; Transformations</span>
+          $$\tfrac{0}{0},\;\tfrac{\infty}{\infty}: \text{ apply L'H directly}$$
+          $$0\cdot\infty: \text{ write as }\tfrac{0}{1/\infty}\text{ or }\tfrac{\infty}{1/0}$$
+          $$\infty-\infty: \text{ common denominator or factor}$$
+          $$0^0,\;1^\infty,\;\infty^0: \text{ take }\ln,\text{ use }0\cdot\infty\text{ form}$$
+        </div>
+        <div class="example">
+          <div class="example-label">Examples</div>
+          lim(x→0) sin x/x = lim cos x/1 = 1<br/>
+          lim(x→∞) x/eˣ = lim 1/eˣ = 0<br/>
+          lim(x→0⁺) x·ln x: ln x/(1/x) → (1/x)/(−1/x²) = −x → 0
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Newton's Method</div>
+        <div class="def">
+          <div class="def-label">Algorithm</div>
+          <span class="tt" data-t="Newton's method: iteratively applies tangent line approximation to converge to a root">Newton's method</span> approximates roots of f(x)=0:
+          $$x_{n+1} = x_n - \frac{f(x_n)}{f'(x_n)}$$
+          Starting from initial guess $x_0$, iterate until $|x_{n+1}-x_n| < \text{tol}$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Approximate √2</div>
+          f(x) = x²−2, f'(x) = 2x, x₀ = 1<br/>
+          x₁ = 1 − (1−2)/2 = 1.5<br/>
+          x₂ = 1.5 − (2.25−2)/3 = 1.4167<br/>
+          x₃ ≈ 1.41422 (≈ √2 = 1.41421...)
+        </div>
+        <div class="warn">
+          <strong>⚠</strong> Newton's method may fail if x₀ is far from root, f'(xₙ)≈0, or the sequence diverges/cycles.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Antiderivatives</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          F is an <span class="tt" data-t="Antiderivative F of f: F'(x) = f(x) for all x in the domain">antiderivative of f</span> on I if F'(x) = f(x) for all x ∈ I. If F is one antiderivative, the general antiderivative is F(x) + C (constant of integration).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Basic Antiderivative Formulas</span>
+          $$\int x^n\,dx = \frac{x^{n+1}}{n+1} + C \quad (n\ne -1)$$
+          $$\int \frac{1}{x}\,dx = \ln|x| + C$$
+          $$\int e^x\,dx = e^x + C$$
+          $$\int \sin x\,dx = -\cos x + C$$
+          $$\int \cos x\,dx = \sin x + C$$
+          $$\int \sec^2 x\,dx = \tan x + C$$
+          $$\int k\,dx = kx + C$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Initial Value Problem</div>
+          f'(x) = 3x²−2x+1, f(0) = 4<br/>
+          f(x) = x³ − x² + x + C; f(0)=C=4<br/>
+          f(x) = x³ − x² + x + 4
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer class="chapter-footer">
+  <a href="CH03-Derivatives-CheatSheet.html">← Derivatives</a>
+  <span class="footer-center">Calculus Volume 1 · OpenStax · CH4</span>
+  <a href="CH05-Integration-CheatSheet.html">Integration →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-cal1-4';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

@@ -1,0 +1,522 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Abstract Vector Spaces — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE &middot; ALG &middot; Chapter 6</div>
+    <h1>Abstract Vector Spaces <span>&mdash; Chapter 6</span></h1>
+    <p class="page-subtitle">The 10 axioms of abstract vector spaces, examples (polynomials, functions, matrices), subspaces, basis, dimension, and isomorphism.</p>
+    <span class="page-badge">LAW &middot; CH6 &middot; &sect;6.1&ndash;&sect;6.4</span>
+  </div>
+</header>
+<div class="page-body">
+
+  <!-- ─── §6.1 Axioms ─── -->
+  <div class="section">
+    <div class="section-title">&sect;6.1 Vector Space Axioms</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1: The 10 Axioms -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>The 10 Axioms &mdash; Definition 6.1</div>
+        <div class="def">
+          <div class="def-label">Definition 6.1 &mdash; Vector Space</div>
+          A <span class="tt" data-t="A nonempty set V of objects called vectors equipped with vector addition and scalar multiplication satisfying all 10 axioms">vector space</span> consists of a nonempty set V with <strong>vector addition</strong> ($\mathbf{u}+\mathbf{v}$) and <strong>scalar multiplication</strong> ($a\mathbf{v}$, $a\in\mathbb{R}$) obeying ten axioms. Axioms A1 and S1 express <em>closure</em>.
+        </div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Label</th><th>Axiom</th><th>Name</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>A1</strong></td><td>u + v &isin; V</td><td>Closure under addition</td></tr>
+            <tr><td><strong>A2</strong></td><td>u + v = v + u</td><td>Commutativity</td></tr>
+            <tr><td><strong>A3</strong></td><td>u + (v + w) = (u + v) + w</td><td>Associativity of addition</td></tr>
+            <tr><td><strong>A4</strong></td><td>&exist; <strong>0</strong> &isin; V : v + <strong>0</strong> = v for all v</td><td>Additive identity (zero vector)</td></tr>
+            <tr><td><strong>A5</strong></td><td>&forall; v &isin; V, &exist; &minus;v &isin; V : v + (&minus;v) = <strong>0</strong></td><td>Additive inverse (negative)</td></tr>
+            <tr><td><strong>S1</strong></td><td>av &isin; V for all a &isin; &#8477;, v &isin; V</td><td>Closure under scalar mult.</td></tr>
+            <tr><td><strong>S2</strong></td><td>a(v + w) = av + aw</td><td>Distributivity over vector sum</td></tr>
+            <tr><td><strong>S3</strong></td><td>(a + b)v = av + bv</td><td>Distributivity over scalar sum</td></tr>
+            <tr><td><strong>S4</strong></td><td>a(bv) = (ab)v</td><td>Associativity of scalar mult.</td></tr>
+            <tr><td><strong>S5</strong></td><td>1v = v</td><td>Multiplicative identity</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">Terminology</div>
+          The element $\mathbf{0}$ in A4 is the <em>zero vector</em>; the element $-\mathbf{v}$ in A5 is the <em>negative</em> of v. Subtraction is defined by $\mathbf{u} - \mathbf{v} = \mathbf{u} + (-\mathbf{v})$. All 10 axioms must hold &mdash; changing even one operation can violate the structure (see Example 6.1.4).
+        </div>
+      </div>
+
+      <!-- Card 2: Consequences of Axioms -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Consequences of Axioms &mdash; Theorems 6.1.1&ndash;6.1.3</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.1.1 &mdash; Cancellation Law</div>
+          In any vector space V: if $\mathbf{v} + \mathbf{u} = \mathbf{v} + \mathbf{w}$, then $\mathbf{u} = \mathbf{w}$. <em>(Add $-\mathbf{v}$ to both sides using A5 and A3.)</em>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.1.2 &mdash; Unique Solution</div>
+          The equation $x + \mathbf{v} = \mathbf{u}$ has exactly one solution: $x = \mathbf{u} - \mathbf{v}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.1.3 &mdash; Scalar Multiplication Properties</div>
+          For any $\mathbf{v} \in V$ and $a \in \mathbb{R}$:
+        </div>
+        <ul class="items">
+          <li><strong>0&middot;v = 0</strong> &mdash; zero scalar kills any vector (proof: 0v+0v=(0+0)v=0v, cancel)</li>
+          <li><strong>a&middot;0 = 0</strong> &mdash; any scalar times the zero vector = zero vector</li>
+          <li>If <strong>av = 0</strong> then a = 0 or v = 0 &mdash; no zero divisors</li>
+          <li><strong>(&minus;1)v = &minus;v</strong> &mdash; scalar &minus;1 produces the additive inverse</li>
+          <li><strong>(&minus;a)v = &minus;(av) = a(&minus;v)</strong></li>
+        </ul>
+        <div class="note">
+          <div class="note-label">Uniqueness Results</div>
+          The <span class="tt" data-t="The unique element 0 satisfying v+0=v for all v; proved using Cancellation: two zero vectors must be equal">zero vector</span> is unique; the <span class="tt" data-t="For each v the unique element &minus;v satisfying v+(&minus;v)=0; proved by Cancellation: two negatives of v must be equal">negative $-\mathbf{v}$</span> of each vector is unique. Both uniqueness results follow directly from the Cancellation Law.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §6.1 Examples ─── -->
+  <div class="section">
+    <div class="section-title">&sect;6.1 Standard Examples</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3: Standard Examples Table -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Standard Vector Spaces &mdash; Examples 6.1.1&ndash;6.1.9</div>
+        <table class="tbl">
+          <thead>
+            <tr><th>Space</th><th>Elements</th><th>Addition</th><th>Scalar Mult.</th><th>dim</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>&#8477;<sup>n</sup></strong></td>
+              <td>n-tuples (x&#x2081;,&hellip;,x&#x2099;)</td>
+              <td>component-wise</td>
+              <td>component-wise</td>
+              <td>n</td>
+            </tr>
+            <tr>
+              <td><strong>M<sub>mn</sub></strong></td>
+              <td>m&times;n real matrices</td>
+              <td>matrix addition</td>
+              <td>entry-wise scaling</td>
+              <td>mn</td>
+            </tr>
+            <tr>
+              <td><strong>P<sub>n</sub></strong></td>
+              <td>polynomials of degree &le; n, plus zero</td>
+              <td>polynomial addition</td>
+              <td>polynomial scaling</td>
+              <td>n+1</td>
+            </tr>
+            <tr>
+              <td><strong>P</strong></td>
+              <td>all polynomials</td>
+              <td>polynomial addition</td>
+              <td>polynomial scaling</td>
+              <td>&infin;</td>
+            </tr>
+            <tr>
+              <td><strong>F[a,b]</strong></td>
+              <td>all functions f:[a,b]&rarr;&#8477;</td>
+              <td>(f+g)(x) = f(x)+g(x)</td>
+              <td>(cf)(x) = c&middot;f(x)</td>
+              <td>&infin;</td>
+            </tr>
+            <tr>
+              <td><strong>D[a,b]</strong></td>
+              <td>differentiable functions on [a,b]</td>
+              <td>pointwise</td>
+              <td>pointwise</td>
+              <td>&infin;</td>
+            </tr>
+            <tr>
+              <td><strong>{0}</strong></td>
+              <td>zero vector only</td>
+              <td>0+0=0</td>
+              <td>a&middot;0=0</td>
+              <td>0</td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">Subspaces are automatically vector spaces</div>
+          Every subspace of $\mathbb{R}^n$ is a vector space: A1 &amp; S1 are the subspace conditions; the other 8 axioms are inherited from the parent space (Example 6.1.3). The same inheritance principle applies to subspaces of any abstract vector space.
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Matrix_multiplication_diagram_2.svg" alt="Vector space structure" loading="lazy"/>
+          <figcaption>Abstract vector spaces generalize $\mathbb{R}^n$: any set with compatible $+$ and scalar $\cdot$ satisfying the 8 axioms</figcaption>
+        </figure>
+      </div>
+
+      <!-- Card 4: Polynomial Space Pn -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Polynomial Space P<sub>n</sub> &mdash; Example 6.1.6</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          <span class="tt" data-t="All polynomials of degree at most n together with the zero polynomial; a subspace of P with dim = n+1">$\mathcal{P}_n$</span> = {$a_0 + a_1 x + a_2 x^2 + \cdots + a_n x^n$ | $a_i \in \mathbb{R}$}<br><br>
+          Two polynomials are <strong>equal</strong> iff all corresponding coefficients are equal (x is an <em>indeterminate</em>).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Operations (pointwise)</span>
+          $$(p+q)(x) = (a_0+b_0) + (a_1+b_1)x + \cdots$$
+          $$(cp)(x) = ca_0 + (ca_1)x + \cdots$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Standard Basis and Dimension</div>
+          The set $\{1, x, x^2, \ldots, x^n\}$ is a <span class="tt" data-t="An independent spanning set for P&#8345;; every polynomial is a unique linear combination of these monomials">basis</span> for $\mathcal{P}_n$, so $\dim \mathcal{P}_n = n+1$.<br>
+          Independence: $a_0+a_1 x+\cdots+a_n x^n=0$ as a polynomial implies all $a_i=0$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          $\mathcal{P}_2$ has basis $\{1, x, x^2\}$, $\dim = 3$.<br>
+          Another basis: $\{1+x, x+x^2, 1+x^2\}$ (also independent, same count = 3). &#10003;
+        </div>
+        <div class="note">
+          <div class="note-label">Inclusion chain</div>
+          $\mathcal{P}_0 \subseteq \mathcal{P}_1 \subseteq \mathcal{P}_2 \subseteq \cdots \subseteq \mathcal{P} \subseteq F[a,b]$. Each $\mathcal{P}_n$ is a subspace of $\mathcal{P}$ (Example 6.2.5).
+        </div>
+      </div>
+
+      <!-- Card 5: Function Spaces -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Function Spaces &mdash; Example 6.1.7</div>
+        <div class="def">
+          <div class="def-label">F[a,b] &mdash; all functions on [a,b]</div>
+          <span class="tt" data-t="The vector space of all real-valued functions on [a,b]; operations are pointwise; zero element is the zero function 0(x)=0">F[a,b]</span>: zero element is $0(x)=0$; negative of f is $(-f)(x) = -f(x)$.
+        </div>
+        <div class="def">
+          <div class="def-label">D[a,b] &mdash; differentiable functions (subspace)</div>
+          $D[a,b] \subseteq F[a,b]$: zero function is differentiable; $(f+g)'=f'+g'$; $(af)'=af'$ &mdash; closure verified via calculus.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Infinite Dimensionality</div>
+          $F[a,b]$ and $\mathcal{P}$ are <strong>infinite dimensional</strong>: for every $n$, $\mathcal{P}_n$ is a subspace of dimension $n+1$. If $\dim \mathcal{P} = m$ were finite, then $\mathcal{P}_m$ ($\dim = m+1$) $\leq m$ &mdash; contradiction (Example 6.4.3).
+        </div>
+        <div class="example">
+          <div class="example-label">ODE Solution Space</div>
+          Solutions to $y'' + py' + qy = 0$ ($p$, $q$ constants) form a <strong>2-dimensional subspace</strong> of $D[a,b]$: any two independent solutions $\{y_1, y_2\}$ form a basis.
+        </div>
+        <div class="warn">
+          <div class="warn-label">Functions vs. Polynomials</div>
+          $f = g$ in $F[a,b]$ requires $f(x)=g(x)$ for every $x \in [a,b]$. Two polynomials equal as functions on $[a,b]$ are equal in $P$.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §6.2 Subspaces ─── -->
+  <div class="section">
+    <div class="section-title">&sect;6.2 Subspaces and Spanning Sets</div>
+    <div class="grid grid-2">
+
+      <!-- Card 6: Subspace Test -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Subspace Test &mdash; Theorem 6.2.1</div>
+        <div class="def">
+          <div class="def-label">Definition 6.2 &mdash; Subspace</div>
+          A nonempty subset $U \subseteq V$ is a <span class="tt" data-t="A subset of V that is itself a vector space under V's addition and scalar multiplication">subspace</span> of $V$ if $U$ is itself a vector space using $V$'s operations.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.2.1 &mdash; Subspace Test (3 conditions)</div>
+          $U$ is a subspace of $V$ if and only if:
+        </div>
+        <ol class="steps">
+          <li><strong>0 &isin; U</strong> &mdash; the zero vector of V belongs to U</li>
+          <li>u&#x2081;, u&#x2082; &isin; U &rArr; u&#x2081; + u&#x2082; &isin; U &mdash; closed under addition</li>
+          <li>u &isin; U, c &isin; &#8477; &rArr; cu &isin; U &mdash; closed under scalar mult.</li>
+        </ol>
+        <div class="note">
+          <div class="note-label">Proof sketch</div>
+          (2) &amp; (3) give A1 &amp; S1. The other 8 axioms are inherited from V. (1) gives A4 (zero of V lives in U). Negative: $-\mathbf{u} = (-1)\mathbf{u} \in U$ by (3) and Thm 6.1.3, giving A5.
+        </div>
+        <div class="note">
+          <div class="note-label">Shortcut</div>
+          $U$ is a subspace iff $U$ is nonempty and closed under both operations. (Nonempty + closed under scalar mult. implies $\mathbf{0} \in U$ since $\mathbf{0} = 0\cdot\mathbf{u}$.)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.2.2 &mdash; Span is the Smallest Subspace</div>
+          $\text{span}\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}$ is a subspace of V containing all $\mathbf{v}_i$, and is contained in every subspace that contains all $\mathbf{v}_i$.
+        </div>
+      </div>
+
+      <!-- Card 7: Subspace Examples -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Subspace Examples in Abstract Spaces</div>
+        <div class="def">
+          <div class="def-label">Matrix subspaces of M<sub>nn</sub></div>
+          <ul class="items">
+            <li><span class="tt" data-t="Symmetric n&times;n matrices: A&#7488;=A; closed under addition and scalar mult.; dim=n(n+1)/2">$\text{Sym}_n$</span> $= \{A \in \mathcal{M}_{nn} \mid A^T=A\}$ &nbsp;&#10003; subspace, $\dim = n(n+1)/2$</li>
+            <li>Upper triangular matrices in $\mathcal{M}_{nn}$: &#10003; subspace</li>
+            <li>$\{X \in \mathcal{M}_{nn} \mid AX = XA\}$ for fixed $A$: &#10003; subspace (Example 6.2.3)</li>
+          </ul>
+        </div>
+        <div class="def">
+          <div class="def-label">Polynomial subspaces of P</div>
+          <ul class="items">
+            <li>$U = \{p(x) \in \mathcal{P} \mid p(0) = 0\}$: &#10003; subspace (zero poly satisfies it; closure preserved)</li>
+            <li>$U = \{p(x) \in \mathcal{P} \mid p(0) = 1\}$: &#10006; <strong>NOT</strong> a subspace (zero polynomial has $p(0)=0 \neq 1$, fails condition 1)</li>
+            <li>$\mathcal{P}_n$ inside $\mathcal{P}$: &#10003; subspace for each $n \geq 0$</li>
+          </ul>
+        </div>
+        <div class="def">
+          <div class="def-label">Function subspaces of F[a,b]</div>
+          <ul class="items">
+            <li>$D[a,b]$: &#10003; subspace (differentiable functions)</li>
+            <li>$\{f \mid f(0) = 0\}$: &#10003; subspace</li>
+            <li>$\{f \mid f(x) \geq 0 \text{ for all } x\}$: &#10006; NOT a subspace (not closed under negative scalar)</li>
+          </ul>
+        </div>
+        <div class="formula">
+          <span class="formula-label">Standard spanning sets</span>
+          $$\mathcal{P}_n = \text{span}\{1, x, x^2, \ldots, x^n\} \quad \text{(Example 6.2.9)}$$
+          $$\mathcal{M}_{mn} = \text{span}\{E_{ij}\} \quad \text{(one 1, all other entries 0; Example 6.2.8)}$$
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §6.3 Independence, Basis, Dimension ─── -->
+  <div class="section">
+    <div class="section-title">&sect;6.3 Independence, Basis &amp; Dimension</div>
+    <div class="grid grid-2">
+
+      <!-- Card 8: Independence in Abstract Spaces -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Independence &mdash; Definition 6.4</div>
+        <div class="def">
+          <div class="def-label">Definition 6.4 &mdash; Linear Independence</div>
+          $\{\mathbf{v}_1,\ldots,\mathbf{v}_k\} \subseteq V$ is <span class="tt" data-t="The only vanishing linear combination is the trivial one where all coefficients equal zero">linearly independent</span> iff:<br><br>
+          $c_1\mathbf{v}_1 + \cdots + c_k\mathbf{v}_k = \mathbf{0} \Rightarrow c_1 = \cdots = c_k = 0$
+        </div>
+        <div class="example">
+          <div class="example-label">Test procedure in P<sub>n</sub></div>
+          Write $c_1 p_1 + \cdots + c_k p_k = 0$ as a polynomial; equate coefficients of each power of $x$ (treating x as indeterminate) $\to$ homogeneous system $\to$ solve. Only trivial solution? $\Rightarrow$ independent.
+        </div>
+        <div class="example">
+          <div class="example-label">Examples</div>
+          $\{1, x, x^2\}$ in $\mathcal{P}_2$: independent (standard basis). &#10003;<br>
+          $\{1+x, x+x^2, 1+x^2\}$ in $\mathcal{P}_2$: independent (set up $3\times 3$ system, $\det \neq 0$). &#10003;<br>
+          $\{\sin x, \cos x\}$ in $F[0,2\pi]$: independent (set $x=0 \Rightarrow c_2=0$; $x=\pi/2 \Rightarrow c_1=0$). &#10003;
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Key Fact &mdash; Distinct Degrees</div>
+          Any set of polynomials of <strong>distinct degrees</strong> is automatically linearly independent (Example 6.3.4). Leading-term argument: each degree forces its coefficient to zero inductively.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.3.1 &mdash; Unique Representation</div>
+          An independent set $\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}$ gives every vector in its span a <strong>unique</strong> representation as a linear combination.
+        </div>
+      </div>
+
+      <!-- Card 9: Basis and Dimension -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Basis and Dimension &mdash; Definitions 6.5&ndash;6.6</div>
+        <div class="def">
+          <div class="def-label">Definition 6.5 &mdash; Basis</div>
+          $\{\mathbf{e}_1,\ldots,\mathbf{e}_n\}$ is a <span class="tt" data-t="An independent spanning set for V; every vector in V has a unique representation as a linear combination of the basis vectors">basis</span> of V iff it is linearly independent <em>and</em> $V = \text{span}\{\mathbf{e}_1,\ldots,\mathbf{e}_n\}$.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 6.6 &mdash; Dimension</div>
+          $\dim V = n$ where n is the number of vectors in any basis. Convention: $\dim\{\mathbf{0}\} = 0$. If no finite basis exists, V is <em>infinite dimensional</em>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.3.3 &mdash; Invariance</div>
+          All bases of V contain the same number of vectors &mdash; so $\dim V$ is well-defined.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Key Dimensions</span>
+          $$\dim(\mathbb{R}^n) = n$$
+          $$\dim(\mathcal{M}_{mn}) = mn \quad \text{— basis: all } E_{ij} \text{ (matrix with single 1)}$$
+          $$\dim(\mathcal{P}_n) = n+1 \quad \text{— basis: } \{1, x, x^2, \ldots, x^n\}$$
+          $$\dim(\mathcal{P}) = \infty, \quad \dim(F[a,b]) = \infty$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example &mdash; Symmetric 2&times;2 Matrices</div>
+          $\text{Sym}_2 = \{A \in \mathcal{M}_{22} \mid A^T=A\}$: basis =
+          $\left\{\begin{bmatrix}1&0\\0&0\end{bmatrix},\begin{bmatrix}0&0\\0&1\end{bmatrix},\begin{bmatrix}0&1\\1&0\end{bmatrix}\right\}$, $\dim \text{Sym}_2 = 3$.
+        </div>
+      </div>
+
+      <!-- Card 10: Exchange Theorem -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Fundamental Theorem (Exchange) &mdash; Theorem 6.3.2</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.3.2 &mdash; Fundamental Theorem</div>
+          If V is spanned by $m$ vectors and $\{\mathbf{u}_1,\ldots,\mathbf{u}_k\}$ is linearly independent in $V$, then $k \leq m$.
+        </div>
+        <div class="note">
+          <div class="note-label">Steinitz Exchange idea</div>
+          The $k$ independent vectors can <em>replace</em> $k$ of the $m$ spanning vectors one at a time (the exchange step), maintaining the spanning property. At most $m$ exchanges are possible, so $k \leq m$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Corollary 1 &mdash; All Bases Same Size</div>
+          If $\{\mathbf{e}_1,\ldots,\mathbf{e}_n\}$ and $\{\mathbf{f}_1,\ldots,\mathbf{f}_m\}$ are both bases of V, then $n = m$ (apply the theorem in both directions).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Corollary 2 &mdash; Overcrowding</div>
+          Any $k+1$ vectors in a $k$-dimensional space are <strong>linearly dependent</strong>.
+        </div>
+        <div class="example">
+          <div class="example-label">Application</div>
+          $\dim \mathcal{P}_2 = 3 \Rightarrow$ any 4 polynomials of degree $\leq 2$ are dependent.<br>
+          E.g., $\{1, x, x^2, 1+x\}$ is dependent: $1+x = 1\cdot 1 + 1\cdot x + 0\cdot x^2$ is a nontrivial vanishing combination $(-1)(1+x) + 1 + x = 0$.
+        </div>
+      </div>
+
+      <!-- Card 11: Basis Extension -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Basis Extension &amp; Contraction &mdash; Theorem 6.4.1</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.4.1 &mdash; Main Structure Theorem (finite-dim V)</div>
+          Let V be finite dimensional (spanned by $m$ vectors). Then:
+        </div>
+        <ol class="steps">
+          <li>V has a finite basis and dim V &le; m.</li>
+          <li><strong>Extension:</strong> any independent set can be enlarged to a basis by adding vectors from any fixed basis of V.</li>
+          <li><strong>Subspace:</strong> if U &sube; V then U is finite-dim, dim U &le; dim V, and any basis of U extends to a basis of V.</li>
+        </ol>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.4.3 &mdash; Spanning &rarr; Basis</div>
+          Any spanning set of a finite-dim V can be <strong>cut down</strong> (by deleting vectors) to a basis.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 6.4.4 &mdash; Labour-Saving Criterion</div>
+          If $\dim V = n$ and $|S| = n$ vectors in $V$:<br>
+          $S$ independent $\Leftrightarrow$ $S$ spans $V$ $\Leftrightarrow$ $S$ is a basis.<br>
+          Only verify one condition for the right-sized set!
+        </div>
+        <div class="example">
+          <div class="example-label">Example &mdash; Extending in P&#x2083;</div>
+          $\{1+x, 1+x^2\}$ is independent in $\mathcal{P}_3$ ($\dim=4$). The standard basis is $\{1,x,x^2,x^3\}$: adding $x^3$ and $1$ gives $\{1, 1+x, 1+x^2, x^3\}$ &mdash; four polynomials of distinct effective degrees $\Rightarrow$ basis. &#10003;
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §6.4 Isomorphism ─── -->
+  <div class="section">
+    <div class="section-title">&sect;6.4 Isomorphism</div>
+    <div class="grid grid-2">
+
+      <!-- Card 12: Isomorphism -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Isomorphism &mdash; Definition &amp; Theorem</div>
+        <div class="def">
+          <div class="def-label">Definition &mdash; Isomorphism</div>
+          A map $T: V \to W$ is an <span class="tt" data-t="A bijective linear map; it perfectly preserves all vector space structure and identifies V and W as algebraically identical">isomorphism</span> if T is:<br>
+          (1) <strong>linear</strong>: $T(a\mathbf{u} + b\mathbf{v}) = aT(\mathbf{u}) + bT(\mathbf{v})$ for all $a,b \in \mathbb{R}$, $\mathbf{u},\mathbf{v} \in V$<br>
+          (2) <strong>bijective</strong>: one-to-one (injective) and onto (surjective)
+        </div>
+        <div class="def">
+          <div class="def-label">Isomorphic Spaces V &cong; W</div>
+          V and W are <strong>isomorphic</strong> ($V \cong W$) if an isomorphism $T: V \to W$ exists. Isomorphic spaces are algebraically <em>identical</em>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem &mdash; Dimension Characterises Isomorphism</div>
+          Two <span class="tt" data-t="Vector spaces with a finite basis; equivalently, spanned by a finite set of vectors">finite-dimensional</span> vector spaces V and W (over &#8477;) are isomorphic iff:<br><br>
+          $\dim V = \dim W$<br><br>
+          In particular, every n-dimensional real vector space is isomorphic to $\mathbb{R}^n$.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Key isomorphisms</span>
+          $$\mathcal{P}_n \cong \mathbb{R}^{n+1} \quad \text{via } a_0+a_1 x+\cdots+a_n x^n \mapsto (a_0,a_1,\ldots,a_n)$$
+          $$\mathcal{M}_{mn} \cong \mathbb{R}^{mn} \quad \text{via entry enumeration}$$
+        </div>
+        <div class="note">
+          <div class="note-label">Significance</div>
+          Any theorem proved in $\mathbb{R}^n$ (independence, span, dimension) automatically holds in <em>every</em> $n$-dimensional vector space via isomorphism.
+        </div>
+      </div>
+
+      <!-- Card 13: Coordinate Isomorphism -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Coordinate Isomorphism &mdash; C<sub>B</sub></div>
+        <div class="def">
+          <div class="def-label">Coordinate Vector</div>
+          Fix an ordered <span class="tt" data-t="An ordered basis B=(b&#x2081;,&hellip;,b&#x2099;) for V; order matters because it determines which position in the coordinate vector each scalar occupies">basis</span> $\mathcal{B} = \{\mathbf{b}_1, \mathbf{b}_2, \ldots, \mathbf{b}_n\}$ of $V$. Every $\mathbf{v} \in V$ has a unique representation:<br><br>
+          $\mathbf{v} = c_1\mathbf{b}_1 + c_2\mathbf{b}_2 + \cdots + c_n\mathbf{b}_n$<br><br>
+          The <strong>coordinate vector</strong> of $\mathbf{v}$ relative to $\mathcal{B}$:<br>
+          $[\mathbf{v}]_{\mathcal{B}} = (c_1, c_2, \ldots, c_n) \in \mathbb{R}^n$
+        </div>
+        <div class="def">
+          <div class="def-label">Coordinate Map C<sub>B</sub> : V &rarr; &#8477;<sup>n</sup></div>
+          <span class="tt" data-t="The map C&#x2082;(v)=[v]&#x2082; sending each vector to its coordinate n-tuple; it is the canonical isomorphism from V to &#8477;&#x207F;">$C_{\mathcal{B}}(\mathbf{v}) = [\mathbf{v}]_{\mathcal{B}}$</span> &mdash; assigns each vector in $V$ its coordinate $n$-tuple.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem &mdash; C<sub>B</sub> is an Isomorphism</div>
+          The coordinate map $C_{\mathcal{B}}: V \to \mathbb{R}^n$ is an isomorphism: linear and bijective.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Linearity of Coordinates</span>
+          $$[c_1\mathbf{v}_1 + c_2\mathbf{v}_2 + \cdots + c_k\mathbf{v}_k]_{\mathcal{B}} = c_1[\mathbf{v}_1]_{\mathcal{B}} + c_2[\mathbf{v}_2]_{\mathcal{B}} + \cdots + c_k[\mathbf{v}_k]_{\mathcal{B}}$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example in P&#x2082;</div>
+          $\mathcal{B} = \{1, x, x^2\}$. Then $[3 - 2x + 5x^2]_{\mathcal{B}} = (3, -2, 5) \in \mathbb{R}^3$.<br>
+          $\{1+x, x+x^2, 1+x^2\}$ indep. in $\mathcal{P}_2$ $\Leftrightarrow$ $\{(1,1,0),(0,1,1),(1,0,1)\}$ indep. in $\mathbb{R}^3$.<br>
+          $\det\begin{bmatrix}1&0&1\\1&1&0\\0&1&1\end{bmatrix} = 2 \neq 0$. &#10003;
+        </div>
+        <div class="note">
+          <div class="note-label">Practical Power</div>
+          Any question about a finite-dimensional abstract space translates to $\mathbb{R}^n$ via $C_{\mathcal{B}}$, can be solved by row reduction there, and translated back.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+<footer class="chapter-footer">
+  <a href="CH05-Vector-Space-Rn-CheatSheet.html">&larr; CH5 Vector Space &#8477;&sup1;</a>
+  <span class="footer-center">Linear Algebra with Applications &middot; Nicholson &middot; CH6</span>
+  <a href="CH07-Linear-Transformations-CheatSheet.html">CH7 Linear Transformations &rarr;</a>
+</footer>
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-6';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

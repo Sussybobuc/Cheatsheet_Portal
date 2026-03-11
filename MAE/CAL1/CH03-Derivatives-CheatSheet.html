@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Derivatives — Calculus I Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="cal1.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · CAL1 · Chapter 3</div>
+    <h1>Derivatives <span>— Chapter 3</span></h1>
+    <p class="page-subtitle">Derivative definition · differentiation rules · chain rule · implicit differentiation · trig/exp/log derivatives · related rates</p>
+    <span class="page-badge">CAL1 · CH3 · §3.1–§3.9</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <div class="section">
+    <div class="section-title">§3.1–3.2 Definition of the Derivative</div>
+    <div class="grid grid-2">
+
+      <figure class="math-fig" style="text-align:center;margin:0 0 12px">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0f/Tangent_to_a_curve.svg" alt="Tangent line to a curve as limit of secant lines" loading="lazy" style="max-width:300px"/>
+        <figcaption style="font-size:.8em;color:#666">Derivative as slope of the tangent line</figcaption>
+      </figure>
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Derivative at a Point</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          The <span class="tt" data-t="Instantaneous rate of change; slope of the tangent line at x = a">derivative of f at a</span> is:
+          f'(a) = lim(h→0) [f(a+h) − f(a)] / h
+          provided the limit exists. Equivalently:
+          f'(a) = lim(x→a) [f(x) − f(a)] / (x − a)
+        </div>
+        <div class="note">
+          <div class="note-label">Geometric Interpretation</div>
+          f'(a) = slope of the tangent line to y = f(x) at (a, f(a)).<br/>
+          Tangent line equation: y − f(a) = f'(a)(x − a)
+        </div>
+        <div class="example">
+          <div class="example-label">Example — From Definition</div>
+          f(x) = x²: f'(a) = lim(h→0) [(a+h)²−a²]/h<br/>
+          = lim(h→0) [2ah + h²]/h = lim(h→0)(2a+h) = 2a<br/>
+          So f'(x) = 2x.
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Derivative as a Function</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          f'(x) = lim(h→0) [f(x+h) − f(x)] / h.
+          f is <span class="tt" data-t="Differentiable at a means f'(a) exists; differentiable on interval means differentiable at every point">differentiable at a</span> if f'(a) exists; differentiable on (a,b) if at every point.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Differentiability Implies Continuity</div>
+          If f is differentiable at a, then f is continuous at a. (Converse is FALSE.)
+        </div>
+        <div class="note">
+          <div class="note-label">Notations for the Derivative</div>
+          f'(x),  y',  dy/dx,  d/dx[f(x)],  Df(x)
+        </div>
+        <div class="warn">
+          <strong>⚠</strong> f(x) = |x| is continuous at 0 but NOT differentiable there — the left and right slopes are −1 and +1.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§3.3 Basic Differentiation Rules</div>
+    <div class="grid grid-2">
+
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Fundamental Differentiation Rules</div>
+        <div class="grid grid-2" style="margin-top:8px">
+          <div>
+            <div class="formula">
+              <span class="formula-label">Basic Rules</span>
+              $$\frac{d}{dx}[c] = 0 \quad \text{(constant)}$$
+              <span class="tt" data-t="Power Rule: most used rule — bring down exponent, reduce exponent by 1">$$\frac{d}{dx}[x^n] = nx^{n-1} \quad \text{(power rule)}$$</span>
+              $$\frac{d}{dx}[c\cdot f] = c\cdot f'$$
+              $$\frac{d}{dx}[f \pm g] = f' \pm g'$$
+              $$\frac{d}{dx}[e^x] = e^x, \qquad \frac{d}{dx}[\ln x] = \frac{1}{x}$$
+            </div>
+          </div>
+          <div>
+            <div class="formula">
+              <span class="formula-label">Product &amp; Quotient Rules</span>
+              <span class="tt" data-t="Product Rule mnemonic: first·d(second) + second·d(first)">$$\frac{d}{dx}[fg] = f'g + fg'$$</span>
+              <span class="tt" data-t="Quotient Rule mnemonic: lo·d(hi) − hi·d(lo), all over lo-squared">$$\frac{d}{dx}\!\left[\frac{f}{g}\right] = \frac{f'g - fg'}{g^2}$$</span>
+            </div>
+            <div class="example">
+              <div class="example-label">Example — Product Rule</div>
+              d/dx[x²·eˣ] = 2x·eˣ + x²·eˣ = xeˣ(x+2)
+            </div>
+            <div class="example">
+              <div class="example-label">Example — Quotient Rule</div>
+              d/dx[(x²+1)/(x−1)]<br/>
+              = [(2x)(x−1) − (x²+1)(1)] / (x−1)²<br/>
+              = (x²−2x−1) / (x−1)²
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§3.5 Derivatives of Trigonometric Functions</div>
+    <div class="grid grid-2">
+
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>All Six Trig Derivatives</div>
+        <div class="grid grid-2" style="margin-top:8px">
+          <div>
+            <div class="formula">
+              <span class="formula-label">Basic Trig Derivatives</span>
+              $$\frac{d}{dx}[\sin x] = \cos x$$
+              $$\frac{d}{dx}[\cos x] = -\sin x$$
+              $$\frac{d}{dx}[\tan x] = \sec^2 x$$
+            </div>
+          </div>
+          <div>
+            <div class="formula">
+              <span class="formula-label">Reciprocal Trig Derivatives</span>
+              $$\frac{d}{dx}[\csc x] = -\csc x\cot x$$
+              $$\frac{d}{dx}[\sec x] = \sec x\tan x$$
+              $$\frac{d}{dx}[\cot x] = -\csc^2 x$$
+            </div>
+          </div>
+        </div>
+        <div class="note">
+          <div class="note-label">Memory Aid</div>
+          The "co-" functions (cos, csc, cot) all have a <strong>negative</strong> sign in their derivative. This follows from the chain rule applied to identities like cos x = sin(π/2 − x).
+        </div>
+        <div class="example">
+          <div class="example-label">Example</div>
+          d/dx[tan x] = d/dx[sin x / cos x] = (cos x · cos x − sin x · (−sin x)) / cos²x = (cos²x + sin²x)/cos²x = 1/cos²x = sec²x
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§3.6 The Chain Rule</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Chain Rule</div>
+        <div class="theorem">
+          <div class="theorem-label">Chain Rule</div>
+          If g is differentiable at x and f is differentiable at g(x), then:
+          d/dx[f(g(x))] = f'(g(x)) · g'(x)
+          In Leibniz notation: <span class="tt" data-t="Chain Rule in Leibniz form: dy/dx = (dy/du)·(du/dx) — multiply rates of change">dy/dx = (dy/du)·(du/dx)</span>
+        </div>
+        <div class="formula">
+          <span class="formula-label">Chain Rule Examples</span>
+          $$\frac{d}{dx}[\sin(x^2)] = \cos(x^2)\cdot 2x$$
+          $$\frac{d}{dx}[e^{3x}] = 3e^{3x}$$
+          $$\frac{d}{dx}[(x^2+1)^5] = 5(x^2+1)^4\cdot 2x$$
+          $$\frac{d}{dx}[\ln(\sin x)] = \frac{\cos x}{\sin x} = \cot x$$
+          $$\frac{d}{dx}[\sqrt{x^2+1}] = \frac{x}{\sqrt{x^2+1}}$$
+        </div>
+        <div class="note">
+          <div class="note-label">General Power Rule (via Chain)</div>
+          d/dx[u^n] = n·u^(n−1) · u'
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Implicit Differentiation</div>
+        <div class="def">
+          <div class="def-label">Method</div>
+          When y is defined implicitly by F(x, y) = 0, differentiate both sides with respect to x, treating y as a function of x. Whenever differentiating a term in y, <span class="tt" data-t="By chain rule: d/dx[y²] = 2y·(dy/dx) — multiply by dy/dx">multiply by dy/dx</span>. Then solve for dy/dx.
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Circle x²+y²=25</div>
+          Differentiate: 2x + 2y·(dy/dx) = 0<br/>
+          Solve: dy/dx = −x/y<br/>
+          At (3,4): dy/dx = −3/4 (slope of tangent)
+        </div>
+        <div class="example">
+          <div class="example-label">Example — x³+y³=6xy</div>
+          3x² + 3y²(dy/dx) = 6y + 6x(dy/dx)<br/>
+          dy/dx(3y²−6x) = 6y − 3x²<br/>
+          dy/dx = (2y − x²)/(y² − 2x)
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-title">§3.7–3.9 Inverse, Exponential &amp; Logarithmic Derivatives</div>
+    <div class="grid grid-2">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Derivatives of Inverse &amp; Inverse Trig</div>
+        <div class="theorem">
+          <div class="theorem-label">Inverse Function Theorem</div>
+          If f is differentiable at a with f'(a) ≠ 0, then f⁻¹ is differentiable at b = f(a) and:
+          (f⁻¹)'(b) = 1 / f'(f⁻¹(b))
+        </div>
+        <div class="formula">
+          <span class="formula-label">Inverse Trig Derivatives</span>
+          $$\frac{d}{dx}[\sin^{-1}x] = \frac{1}{\sqrt{1-x^2}}$$
+          $$\frac{d}{dx}[\cos^{-1}x] = \frac{-1}{\sqrt{1-x^2}}$$
+          $$\frac{d}{dx}[\tan^{-1}x] = \frac{1}{1+x^2}$$
+          $$\frac{d}{dx}[\cot^{-1}x] = \frac{-1}{1+x^2}$$
+          $$\frac{d}{dx}[\sec^{-1}x] = \frac{1}{|x|\sqrt{x^2-1}}$$
+          $$\frac{d}{dx}[\csc^{-1}x] = \frac{-1}{|x|\sqrt{x^2-1}}$$
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Exponential &amp; Log Derivatives</div>
+        <div class="formula">
+          <span class="formula-label">Exp &amp; Log Derivatives</span>
+          $$\frac{d}{dx}[e^x] = e^x$$
+          $$\frac{d}{dx}[b^x] = b^x\ln b \quad (b>0)$$
+          $$\frac{d}{dx}[\ln x] = \frac{1}{x} \quad (x>0)$$
+          $$\frac{d}{dx}[\ln|x|] = \frac{1}{x} \quad (x\ne 0)$$
+          $$\frac{d}{dx}[\log_b x] = \frac{1}{x\ln b}$$
+          $$\frac{d}{dx}[e^u] = e^u u', \quad \frac{d}{dx}[\ln u] = \frac{u'}{u}$$
+        </div>
+        <div class="def">
+          <div class="def-label"><span class="tt" data-t="Log differentiation: take ln of both sides, differentiate implicitly, multiply by y">Logarithmic Differentiation</span></div>
+          Take ln of both sides, differentiate implicitly. Useful for products/quotients of many terms or variable exponents.
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Logarithmic Diff.</div>
+          y = xˣ → ln y = x·ln x<br/>
+          (1/y)·y' = ln x + 1<br/>
+          y' = xˣ(ln x + 1)
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Higher-Order Derivatives</div>
+        <div class="def">
+          <div class="def-label">Definition</div>
+          The <span class="tt" data-t="Second derivative measures concavity and acceleration">second derivative</span> f''(x) = d²y/dx² = d/dx[f'(x)].<br/>
+          The nth derivative: f^(n)(x) = d^n y / dx^n.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Examples</span>
+          $$f(x)=x^5:\; f'=5x^4,\; f''=20x^3,\; f'''=60x^2$$
+          $$f^{(4)}=120x,\; f^{(5)}=120,\; f^{(6)}=0$$
+          $$f(x)=\sin x:\; f'=\cos x,\; f''=-\sin x$$
+          $$f'''=-\cos x,\; f^{(4)}=\sin x \quad \text{(period 4)}$$
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Related Rates</div>
+        <div class="def">
+          <div class="def-label">Method</div>
+          <span class="tt" data-t="Related rates: use chain rule to relate how multiple quantities change with time">Related rates problems</span>: quantities x, y both change with time t. Use implicit differentiation w.r.t. t.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Strategy</span>
+          1. Draw diagram; label variables
+          2. Write equation relating variables
+          3. Differentiate both sides w.r.t. $t$
+          4. Substitute known values; solve for desired rate
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Ladder Problem</div>
+          x² + y² = 25 (5m ladder).<br/>
+          Differentiate: 2x(dx/dt) + 2y(dy/dt) = 0<br/>
+          At x=3, y=4, dx/dt=2: 6(2)+8(dy/dt)=0 → dy/dt = −3/2 m/s
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+
+<footer class="chapter-footer">
+  <a href="CH02-Limits-CheatSheet.html">← Limits</a>
+  <span class="footer-center">Calculus Volume 1 · OpenStax · CH3</span>
+  <a href="CH04-Applications-Derivatives-CheatSheet.html">Applications of Derivatives →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-cal1-3';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

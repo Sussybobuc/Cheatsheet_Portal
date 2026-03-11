@@ -1,0 +1,10 @@
+/* ALG — Linear Algebra  |  accent: violet */
+:root{
+  --accent:#a78bfa;
+  --accent-soft:rgba(167,139,250,0.1);
+  --accent-border:rgba(167,139,250,0.3);
+}
+.card::before{background:linear-gradient(90deg,#a78bfa,#c4b5fd);}
+.def{background:rgba(167,139,250,0.07);border-left-color:#a78bfa;}
+.def-label{color:#a78bfa;}
+.page-header::before{background:radial-gradient(ellipse 600px 350px at 65% 50%, rgba(167,139,250,0.08) 0%, transparent 70%);}

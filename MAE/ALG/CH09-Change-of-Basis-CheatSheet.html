@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Change of Basis — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 9</div>
+    <h1>Change of Basis <span>— Chapter 9</span></h1>
+    <p class="page-subtitle">Coordinate vectors, transition matrices, how linear transformation matrices change when bases change, and similarity.</p>
+    <span class="page-badge">LAW · CH9 · §9.1–§9.3</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <!-- §9.1 Coordinate Vectors -->
+  <div class="section">
+    <div class="section-title">§9.1 Coordinate Vectors</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1 — Coordinate Vector -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Coordinate Vector</div>
+        <div class="def">
+          <div class="def-label">Definition 9.1</div>
+          Given an <span class="tt" data-t="A basis where the listing order is fixed; {b₁,b₂} and {b₂,b₁} are different ordered bases">ordered basis</span>
+          $\mathcal{B} = \{\mathbf{b}_1,\ldots,\mathbf{b}_n\}$ for $V$, every $v \in V$ has a
+          <strong>unique</strong> representation $v = c_1\mathbf{b}_1 + \cdots + c_n\mathbf{b}_n$. The
+          <span class="tt" data-t="The unique column [c₁,…,cₙ]ᵀ expressing v in basis B; also written C_B(v)">coordinate vector</span>
+          of $v$ with respect to $\mathcal{B}$ is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Coordinate Vector (Definition 9.1)</span>
+          $$[\mathbf{v}]_{\mathcal{B}} = C_{\mathcal{B}}(\mathbf{v}) = [c_1, c_2, \ldots, c_n]^T \in \mathbb{R}^n$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 9.1.1 — C<sub>B</sub> is an Isomorphism</div>
+          If $\dim V = n$ and $\mathcal{B}$ is any ordered basis, then $C_{\mathcal{B}} : V \to \mathbb{R}^n$ is an
+          <span class="tt" data-t="A bijective linear map; one-to-one and onto; preserves the full vector space structure">isomorphism</span>.
+          Its inverse: $C_{\mathcal{B}}^{-1}([c_1,\ldots,c_n]^T) = c_1\mathbf{b}_1 + \cdots + c_n\mathbf{b}_n$.
+        </div>
+        <div class="note">
+          <div class="note-label">Key Facts</div>
+          <ul class="items">
+            <li>$C_{\mathcal{B}}(\mathbf{b}_j) = \mathbf{e}_j$ (column $j$ of $I_n$)</li>
+            <li>Coordinates are <em>unique</em>; a basis is a minimal spanning set</li>
+            <li>In $\mathbb{R}^n$: solve $[\mathbf{b}_1 | \cdots | \mathbf{b}_n]\mathbf{x} = \mathbf{v}$ by row reduction to get $[\mathbf{v}]_{\mathcal{B}}$</li>
+          </ul>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 9.1.1</div>
+          $\mathcal{B} = \{(1,1,0),(1,0,1),(0,1,1)\}$, $\mathbf{v} = (2,1,3)$:<br>
+          $(2,1,3) = 0\cdot(1,1,0) + 2\cdot(1,0,1) + 1\cdot(0,1,1)$<br>
+          $\therefore C_{\mathcal{B}}(\mathbf{v}) = [0, 2, 1]^T$
+        </div>
+      </div>
+
+      <!-- Card 2 — Properties of Coordinates -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Properties of Coordinates</div>
+        <div class="def">
+          <div class="def-label">Linearity of the Coordinate Map</div>
+          Since $C_{\mathcal{B}} : V \to \mathbb{R}^n$ is a linear
+          <span class="tt" data-t="A bijective linear map between two vector spaces; the spaces are structurally identical">isomorphism</span>,
+          for all $u, v \in V$ and scalar $c$:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Additivity &amp; Homogeneity</span>
+          $$[\mathbf{u} + \mathbf{v}]_{\mathcal{B}} = [\mathbf{u}]_{\mathcal{B}} + [\mathbf{v}]_{\mathcal{B}}$$
+          $$[c\mathbf{u}]_{\mathcal{B}} = c[\mathbf{u}]_{\mathcal{B}}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Coordinate Map $C_{\mathcal{B}}$ Preserves All Vector-Space Structure</div>
+          Span, independence, dimension, and every linear combination are preserved. $V$ and $\mathbb{R}^n$ are
+          indistinguishable as abstract vector spaces.
+        </div>
+        <div class="note">
+          <div class="note-label">Why Order Matters</div>
+          <ul class="items">
+            <li>$\{\mathbf{b}_1,\mathbf{b}_2\}$ and $\{\mathbf{b}_2,\mathbf{b}_1\}$ give <em>different</em> coordinate vectors for the same $v$</li>
+            <li>$C_{\mathcal{B}}(\mathbf{b}_i) = \mathbf{e}_i$: swapping basis order permutes coordinate rows</li>
+            <li>All linear operations (addition, scalar mult, rank) correspond exactly in $\mathbb{R}^n$</li>
+          </ul>
+        </div>
+        <div class="example">
+          <div class="example-label">Example — Non-Standard Basis in ℝ²</div>
+          $\mathcal{B} = \{[1,1]^T, [1,-1]^T\}$, $\mathbf{v} = [3,1]^T$:<br>
+          $c_1[1,1] + c_2[1,-1] = [3,1]$ $\Rightarrow$ $c_1 = 2$, $c_2 = 1$<br>
+          $\therefore [\mathbf{v}]_{\mathcal{B}} = [2, 1]^T$
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- §9.2 Change of Basis Matrix -->
+  <div class="section">
+    <div class="section-title">§9.2 Change of Basis Matrix</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3 — Transition Matrix -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Transition Matrix P<sub>B′→B</sub></div>
+        <div class="def">
+          <div class="def-label">Definition 9.4 — Change Matrix</div>
+          For ordered bases $\mathcal{B}$ and $\mathcal{B}'$ of vector space $V$, the
+          <span class="tt" data-t="The invertible n×n matrix whose j-th column holds the B-coordinates of the j-th vector of B′; converts B′-coordinates to B-coordinates">transition matrix</span>
+          from $\mathcal{B}'$ to $\mathcal{B}$ is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Transition Matrix (Theorem 9.2.2 eq. 9.1)</span>
+          $$P_{\mathcal{B}'\to\mathcal{B}} = \bigl[[\mathbf{b}'_1]_{\mathcal{B}} \mid [\mathbf{b}'_2]_{\mathcal{B}} \mid \cdots \mid [\mathbf{b}'_n]_{\mathcal{B}}\bigr]$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Key Formula — Coordinate Conversion</div>
+          $P_{\mathcal{B}'\to\mathcal{B}}$ converts $\mathcal{B}'$-coordinates to $\mathcal{B}$-coordinates:<br><br>
+          <strong>$[\mathbf{v}]_{\mathcal{B}} = P_{\mathcal{B}'\to\mathcal{B}} \cdot [\mathbf{v}]_{\mathcal{B}'}$ for all $v \in V$</strong>
+        </div>
+        <div class="note">
+          <div class="note-label">When B = Standard Basis E (in ℝⁿ)</div>
+          <ul class="items">
+            <li>$P_{\mathcal{B}'\to E} = [\mathbf{b}'_1 | \cdots | \mathbf{b}'_n]$ (stack $\mathcal{B}'$ vectors as columns)</li>
+            <li>$[\mathbf{v}]_E = \mathbf{v}$ (standard coordinates are the vector itself)</li>
+          </ul>
+        </div>
+        <div class="example">
+          <div class="example-label">Example 9.2.1 — P₂ Basis Change</div>
+          $\mathcal{B} = \{1, x, x^2\}$, $\mathcal{B}' = \{1, (1-x), (1-x)^2\}$:<br>
+          $x = 1-(1-x)$, $x^2 = 1-2(1-x)+(1-x)^2$<br>
+          $P_{\mathcal{B}'\to\mathcal{B}} = [[1,1,1],[0,-1,-2],[0,0,1]]$<br>
+          $C_{\mathcal{B}}(p) = [a,b,c]^T$ $\Rightarrow$ $C_{\mathcal{B}'}(p) = P_{\mathcal{B}'\to\mathcal{B}}[a,b,c]^T$
+        </div>
+      </div>
+
+      <!-- Card 4 — Computing Transition Matrices -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Computing Transition Matrices</div>
+        <div class="def">
+          <div class="def-label">General Method</div>
+          Express each $\mathcal{B}'$ vector $\mathbf{b}'_j$ as a linear combination of $\mathcal{B}$ vectors. The coefficient columns form $P_{\mathcal{B}'\to\mathcal{B}}$.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Row-Reduction Method ($\mathbb{R}^n$)</span>
+          $$[\,P_{\mathcal{B}} \mid P_{\mathcal{B}'}\,] \xrightarrow{\text{row ops}} [\,I \mid P_{\mathcal{B}\to\mathcal{B}'}\,]$$
+          where $P_{\mathcal{B}} = [\mathbf{b}_1|\cdots|\mathbf{b}_n]$, $P_{\mathcal{B}'} = [\mathbf{b}'_1|\cdots|\mathbf{b}'_n]$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 9.2.2 — Properties of Change Matrices</div>
+          <ol class="steps">
+            <li>$P_{\mathcal{B}\to\mathcal{B}} = I_n$</li>
+            <li>$P_{\mathcal{B}'\to\mathcal{B}}$ is
+              <span class="tt" data-t="A square matrix with nonzero determinant admitting a two-sided inverse">invertible</span>:
+              $(P_{\mathcal{B}'\to\mathcal{B}})^{-1} = P_{\mathcal{B}\to\mathcal{B}'}$</li>
+            <li>Chain rule: $P_{E\leftarrow D} \cdot P_{D\leftarrow\mathcal{B}} = P_{E\leftarrow\mathcal{B}}$</li>
+          </ol>
+        </div>
+        <div class="note">
+          <div class="note-label">Quick Reference</div>
+          <ul class="items">
+            <li>$P_{\mathcal{B}\to\mathcal{B}'} = (P_{\mathcal{B}'\to\mathcal{B}})^{-1}$</li>
+            <li>If $\mathcal{B}' = E$ (standard): $P_{\mathcal{B}\to E} = [\mathbf{b}_1|\cdots|\mathbf{b}_n]$; $P_{E\to\mathcal{B}} = ([\mathbf{b}_1|\cdots|\mathbf{b}_n])^{-1}$</li>
+            <li>If $\mathcal{B}$ is orthonormal in $\mathbb{R}^n$: $P_{\mathcal{B}\to E}$ is orthogonal $\Rightarrow$ $P_{E\to\mathcal{B}} = P_{\mathcal{B}\to E}^T$</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2">
+
+      <!-- Card 5 — Between Two Non-Standard Bases -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Chaining Basis Changes &amp; Transition Matrix Algebra</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Chaining Multiple Basis Transitions</div>
+              For bases B, B′, B″ of V:<br><br>
+              <strong>P<sub>B→B″</sub> = P<sub>B′→B″</sub> · P<sub>B→B′</sub></strong><br><br>
+              Each arrow in a chain of basis changes corresponds to left-multiplying by a transition matrix.
+              The notation P<sub>D←B</sub> reads right-to-left: "from B, to D."
+            </div>
+            <div class="formula">
+              <span class="formula-label">Three-Basis Chain</span>
+              $$[\mathbf{v}]_{\mathcal{B}''} = P_{\mathcal{B}'\to\mathcal{B}''} \cdot P_{\mathcal{B}\to\mathcal{B}'} \cdot [\mathbf{v}]_{\mathcal{B}}$$
+            </div>
+            <div class="note">
+              <div class="note-label">Standard Basis as Pivot</div>
+              In $\mathbb{R}^n$, route all changes through $E$:<br>
+              $P_{\mathcal{B}\to\mathcal{B}'} = (P_{\mathcal{B}'\to E})^{-1} \cdot P_{\mathcal{B}\to E}$
+            </div>
+          </div>
+          <div>
+            <table class="tbl">
+              <thead><tr><th>Goal</th><th>Matrix</th></tr></thead>
+              <tbody>
+                <tr><td>$[\mathbf{v}]_{\mathcal{B}'} \to [\mathbf{v}]_{\mathcal{B}}$</td><td>$P_{\mathcal{B}'\to\mathcal{B}}$</td></tr>
+                <tr><td>$[\mathbf{v}]_{\mathcal{B}} \to [\mathbf{v}]_{\mathcal{B}'}$</td><td>$(P_{\mathcal{B}'\to\mathcal{B}})^{-1} = P_{\mathcal{B}\to\mathcal{B}'}$</td></tr>
+                <tr><td>$\mathcal{B} \to \mathcal{B}''$ (via $\mathcal{B}'$)</td><td>$P_{\mathcal{B}'\to\mathcal{B}''} \cdot P_{\mathcal{B}\to\mathcal{B}'}$</td></tr>
+                <tr><td>$\mathcal{B}$ = standard $E$</td><td>$P_{\mathcal{B}'\to E} = [\mathbf{b}'_1|\cdots|\mathbf{b}'_n]$</td></tr>
+              </tbody>
+            </table>
+            <div class="example">
+              <div class="example-label">Example — ℝ³ Two-Step Transition</div>
+              $\mathcal{B} \to E \to \mathcal{B}'$:<br>
+              $P_{\mathcal{B}\to E} = [\mathbf{b}_1|\mathbf{b}_2|\mathbf{b}_3]$, $P_{\mathcal{B}'\to E} = [\mathbf{b}'_1|\mathbf{b}'_2|\mathbf{b}'_3]$<br>
+              $P_{\mathcal{B}\to\mathcal{B}'} = (P_{\mathcal{B}'\to E})^{-1} \cdot P_{\mathcal{B}\to E}$
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- §9.2–§9.3 Matrix of a Transformation & Similarity -->
+  <div class="section">
+    <div class="section-title">§9.2–§9.3 Matrix of a Linear Transformation &amp; Similarity</div>
+    <div class="grid grid-2">
+
+      <!-- Card 6 — Matrix of T Relative to a Basis -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Matrix of T Relative to a Basis M<sub>B</sub>(T)</div>
+        <div class="def">
+          <div class="def-label">Definition 9.3 — B-Matrix of an Operator</div>
+          For a <span class="tt" data-t="A linear transformation T : V → V mapping a space to itself">linear operator</span>
+          $T : V \to V$ and ordered basis $\mathcal{B} = \{\mathbf{b}_1,\ldots,\mathbf{b}_n\}$, the <strong>$\mathcal{B}$-matrix</strong> of $T$ is:
+        </div>
+        <div class="formula">
+          <span class="formula-label">B-Matrix (Definition 9.3 / Theorem 9.2.1)</span>
+          $$M_{\mathcal{B}}(T) = \bigl[[T(\mathbf{b}_1)]_{\mathcal{B}} \mid [T(\mathbf{b}_2)]_{\mathcal{B}} \mid \cdots \mid [T(\mathbf{b}_n)]_{\mathcal{B}}\bigr]$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 9.2.1 — Defining Property</div>
+          $M_{\mathcal{B}}(T)$ is the <em>unique</em> matrix satisfying:<br><br>
+          <strong>$[T(\mathbf{v})]_{\mathcal{B}} = M_{\mathcal{B}}(T) \cdot [\mathbf{v}]_{\mathcal{B}}$ for all $v \in V$</strong>
+        </div>
+        <div class="note">
+          <div class="note-label">Further Properties</div>
+          <ul class="items">
+            <li>Composition: $M_{\mathcal{B}}(ST) = M_{\mathcal{B}}(S) \cdot M_{\mathcal{B}}(T)$</li>
+            <li>$T$ invertible $\Leftrightarrow$ $M_{\mathcal{B}}(T)$ invertible; then $M_{\mathcal{B}}(T^{-1}) = [M_{\mathcal{B}}(T)]^{-1}$</li>
+            <li>Standard matrix of $T_A : \mathbb{R}^n\to\mathbb{R}^n$ w.r.t. standard basis $E$ is $A$ (Example 9.1.4)</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Card 7 — Change of Basis for Transformation Matrix -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>How M<sub>B</sub>(T) Changes Under a New Basis</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 9.2.3 — Similarity of Operator Matrices</div>
+          Let $\mathcal{B}$ and $\mathcal{B}'$ be ordered bases of $V$, $P = P_{\mathcal{B}\to\mathcal{B}'}$
+          (transition matrix from $\mathcal{B}$ to $\mathcal{B}'$). Then:<br><br>
+          <strong>$M_{\mathcal{B}'}(T) = P^{-1} M_{\mathcal{B}}(T) P$</strong><br><br>
+          $M_{\mathcal{B}}(T)$ and $M_{\mathcal{B}'}(T)$ are
+          <span class="tt" data-t="Matrices A and B with B = P⁻¹AP for some invertible P; they represent the same operator in different bases">similar matrices</span>
+          — same operator, different coordinate systems.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Commutative Diagram (Coordinate Level)</span>
+          $$M_{\mathcal{B}'}(T) = P^{-1} M_{\mathcal{B}}(T) P$$
+          $[\mathbf{v}]_{\mathcal{B}}$ ——[$\times M_{\mathcal{B}}(T)$]——→ $[T(\mathbf{v})]_{\mathcal{B}}$<br>
+          &nbsp;&nbsp;↓ $\times P$ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ↓ $\times P$<br>
+          $[\mathbf{v}]_{\mathcal{B}'}$ ——[$\times M_{\mathcal{B}'}(T)$]——→ $[T(\mathbf{v})]_{\mathcal{B}'}$
+        </div>
+        <div class="note">
+          <div class="note-label">Derivation Sketch</div>
+          $[\mathbf{v}]_{\mathcal{B}'} = P\cdot[\mathbf{v}]_{\mathcal{B}}$. Using $M_{\mathcal{B}}(T)$ on $\mathcal{B}$-side and $M_{\mathcal{B}'}(T)$ on $\mathcal{B}'$-side, the
+          commuting diagram gives $P\cdot M_{\mathcal{B}}(T) = M_{\mathcal{B}'}(T)\cdot P$, hence the result.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2">
+
+      <!-- Card 8 — Diagonalization as Change of Basis -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Diagonalization as Change of Basis</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 9.2.4 — Realizing Similarity via Bases</div>
+          Let $A$ be an $n\times n$ matrix, $E$ the standard basis, $P$ invertible with columns $\mathbf{b}_1,\ldots,\mathbf{b}_n$,
+          and $\mathcal{B} = \{\mathbf{b}_1,\ldots,\mathbf{b}_n\}$. Then:<br><br>
+          <strong>$M_{\mathcal{B}}(T_A) = P^{-1}AP$</strong>
+        </div>
+        <div class="note">
+          <div class="note-label">Diagonalization — Geometric View</div>
+          Choose $\mathcal{B}$ = eigenvectors $\{\mathbf{v}_1,\ldots,\mathbf{v}_n\}$ of $A$:<br><br>
+          $T_A(\mathbf{v}_j) = \lambda_j\mathbf{v}_j$ $\Rightarrow$ $M_{\mathcal{B}}(T_A) = \operatorname{diag}(\lambda_1,\ldots,\lambda_n) = D$<br><br>
+          With $P = [\mathbf{v}_1 | \cdots | \mathbf{v}_n]$: &nbsp; <strong>$P^{-1}AP = D$</strong><br><br>
+          $A$ is
+          <span class="tt" data-t="A matrix is diagonalizable if it is similar to a diagonal matrix; equivalently, ℝⁿ has a basis of eigenvectors">diagonalizable</span>
+          $\Leftrightarrow$ $\mathbb{R}^n$ has a basis of eigenvectors of $A$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 9.2.3</div>
+          $A = \begin{bmatrix}10 & -18\\6 & -11\end{bmatrix}$, $P = \begin{bmatrix}2 & -1\\-3 & 2\end{bmatrix}$, $D = \operatorname{diag}(1,-2)$:<br>
+          $P^{-1}AP = D$ ✓. &nbsp; $\mathcal{B} = \{[2,-3]^T,[-1,2]^T\}$ (eigenvectors),<br>
+          $\therefore M_{\mathcal{B}}(T_A) = D$.
+        </div>
+      </div>
+
+      <!-- Card 9 — Similarity Revisited -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Similarity Revisited</div>
+        <div class="def">
+          <div class="def-label">Geometric Meaning</div>
+          $A$ and $B$ are
+          <span class="tt" data-t="A ~ B means B = P⁻¹AP for invertible P; they represent the SAME linear transformation in DIFFERENT bases">similar</span>
+          $\Leftrightarrow$ they represent the <strong>same linear transformation</strong> in <strong>different bases</strong>
+          (Theorems 9.2.3–9.2.4).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Similarity Invariants (Thm. 5.5.1 / §9.2)</div>
+          <table class="tbl">
+            <thead><tr><th>Invariant</th><th>Intrinsic Property of T</th></tr></thead>
+            <tbody>
+              <tr><td>$\operatorname{rank} A$</td><td>$\dim(\operatorname{im} T)$</td></tr>
+              <tr><td>$\det A$</td><td>$\det T$ (any basis)</td></tr>
+              <tr><td>$\operatorname{tr} A$</td><td>$\operatorname{tr} T$ (any basis)</td></tr>
+              <tr><td>$c_A(x)$</td><td>$c_T(x) = \det(xI - M_{\mathcal{B}}(T))$</td></tr>
+              <tr><td>eigenvalues</td><td>roots of $c_T(x)$</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="note">
+          <div class="note-label">Similarity is an Equivalence Relation</div>
+          <ul class="items">
+            <li><strong>Reflexive:</strong> $A = I^{-1}AI$</li>
+            <li><strong>Symmetric:</strong> $B = P^{-1}AP$ $\Rightarrow$ $A = PBP^{-1}$</li>
+            <li><strong>Transitive:</strong> $A\sim B$ and $B\sim C$ $\Rightarrow$ $A\sim C$</li>
+          </ul>
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Eigenvalue_equation.svg" alt="Change of basis diagram" loading="lazy"/>
+          <figcaption>Similar matrices: $[T]_{\mathcal{C}} = P[T]_{\mathcal{B}}P^{-1}$ represent the same transformation in different bases</figcaption>
+        </figure>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2">
+
+      <!-- Card 10 — Orthonormal Change of Basis -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Orthonormal Change of Basis &amp; Rotation Matrices</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Orthonormal COB → Orthogonal Transition Matrix</div>
+              If $\mathcal{B}$ and $\mathcal{B}'$ are both
+              <span class="tt" data-t="A basis of unit vectors that are pairwise perpendicular; f_i · f_j = δ_{ij}">orthonormal bases</span>
+              of $\mathbb{R}^n$, then $P_{\mathcal{B}\to\mathcal{B}'}$ is an
+              <span class="tt" data-t="A square matrix Q with QᵀQ = I; its inverse equals its transpose">orthogonal matrix</span>
+              ($P^{-1} = P^T$), simplifying all computations.
+            </div>
+            <div class="formula">
+              <span class="formula-label">Orthonormal Similarity Formula</span>
+              $$M_{\mathcal{B}'}(T) = P^T M_{\mathcal{B}}(T) P$$
+              (since $P^{-1} = P^T$ when columns are orthonormal)
+            </div>
+            <div class="note">
+              <div class="note-label">Applications</div>
+              <ul class="items">
+                <li>Rotation/reflection matrices arise as orthonormal COB matrices</li>
+                <li>Gram-Schmidt produces orthonormal $\mathcal{B}$ $\Rightarrow$ orthogonal $P$</li>
+                <li>Spectral Theorem: sym. $A = PDP^T$ with orthogonal $P$</li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <div class="example">
+              <div class="example-label">Example 9.2.7 — Rotation About a Line in ℝ³</div>
+              Rotate about axis $\mathbf{d} = \tfrac{1}{3}[2,1,2]^T$ through angle $\theta$:<br>
+              1. Find orthonormal $\mathcal{B}_0 = \{\mathbf{d}, \mathbf{f}, \mathbf{g}\}$ ($\mathbf{f}, \mathbf{g} \perp \mathbf{d}$, $\perp$ each other).<br>
+              2. In $\mathcal{B}_0$: $M_{\mathcal{B}_0}(R) = \operatorname{diag}(1, R_\theta)$ where $R_\theta = \begin{bmatrix}\cos\theta & -\sin\theta\\\sin\theta & \cos\theta\end{bmatrix}$.<br>
+              3. $P = [\mathbf{d}|\mathbf{f}|\mathbf{g}]$ is orthogonal $\Rightarrow$ $P^{-1} = P^T$.<br>
+              4. $M_E(R) = P^T M_{\mathcal{B}_0}(R) P$ (standard matrix of $R$).<br><br>
+              <strong>Geometric insight:</strong> working in a natural basis first, then
+              converting to standard coordinates via orthogonal P.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- /.page-body -->
+
+<footer class="chapter-footer">
+  <a href="CH08-Orthogonality-CheatSheet.html">← CH8 Orthogonality</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH9</span>
+  <a href="CH10-Inner-Product-Spaces-CheatSheet.html">CH10 Inner Product Spaces →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-9';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

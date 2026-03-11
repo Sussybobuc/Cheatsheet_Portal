@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Linear Transformations — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 7</div>
+    <h1>Linear Transformations <span>— Chapter 7</span></h1>
+    <p class="page-subtitle">Linear maps between abstract vector spaces, kernel, image, rank-nullity, matrix of a transformation, and isomorphisms.</p>
+    <span class="page-badge">LAW · CH7 · §7.1–§7.4</span>
+  </div>
+</header>
+<div class="page-body">
+
+  <!-- ─── §7.1 Definition and Examples ─── -->
+  <div class="section">
+    <div class="section-title">§7.1 Definition and Examples</div>
+    <div class="section-subtitle">Axioms T1–T2, basic consequences, and key families of linear maps</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1 — Linear Transformation Definition -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Transformation — Definition 7.1</div>
+        <div class="def">
+          <div class="def-label">Definition 7.1 — Linear Transformation</div>
+          A function <span class="tt" data-t="Must satisfy both additivity (T1) and homogeneity (T2) for all vectors in V">$T: V \to W$</span> is a <strong>linear transformation</strong> if it satisfies two axioms for all $\mathbf{v}, \mathbf{v}_1 \in V$ and all $r \in \mathbb{R}$:
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Axiom</th><th>Condition</th><th>Name</th></tr></thead>
+          <tbody>
+            <tr><td><strong>T1</strong></td><td>$T(\mathbf{v} + \mathbf{v}_1) = T(\mathbf{v}) + T(\mathbf{v}_1)$</td><td>Additivity</td></tr>
+            <tr><td><strong>T2</strong></td><td>$T(r\mathbf{v}) = rT(\mathbf{v})$</td><td>Homogeneity</td></tr>
+          </tbody>
+        </table>
+        <div class="theorem">
+          <div class="theorem-label">Equivalent Single Condition</div>
+          $T(a\mathbf{u} + b\mathbf{v}) = aT(\mathbf{u}) + bT(\mathbf{v})$ for all $\mathbf{u}, \mathbf{v} \in V$ and $a, b \in \mathbb{R}$ (combines T1 and T2).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.1.1 — Basic Consequences</div>
+          For any linear transformation $T: V \to W$:
+        </div>
+        <ul class="items">
+          <li><strong>T(0) = 0</strong> &nbsp;— T maps the zero vector to the zero vector (proof: T(0) = T(0·v) = 0·T(v) = 0)</li>
+          <li><strong>T(−v) = −T(v)</strong> &nbsp;— T preserves negatives</li>
+          <li><strong>T(r<sub>1</sub>v<sub>1</sub> + ··· + r<sub>k</sub>v<sub>k</sub>) = r<sub>1</sub>T(v<sub>1</sub>) + ··· + r<sub>k</sub>T(v<sub>k</sub>)</strong> &nbsp;— T preserves all linear combinations</li>
+        </ul>
+        <div class="note">
+          <div class="note-label">Operator</div>
+          When $V = W$, $T$ is called a <span class="tt" data-t="A linear transformation T : V → V mapping a space to itself">linear operator</span> on $V$.
+        </div>
+      </div>
+
+      <!-- Card 2 — Examples -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Examples of Linear Transformations</div>
+        <div class="def">
+          <div class="def-label">Example 7.1.1 — Three Special Operators</div>
+          For any vector spaces V, W:
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Map</th><th>Action</th><th>Name</th></tr></thead>
+          <tbody>
+            <tr><td><code>1<sub>V</sub></code></td><td>1<sub>V</sub>(v) = v</td><td>Identity on V</td></tr>
+            <tr><td><code>0</code></td><td>0(v) = 0 for all v</td><td>Zero transformation</td></tr>
+            <tr><td><code>aI</code></td><td>(aI)(v) = av</td><td>Scalar operator (a ∈ ℝ)</td></tr>
+          </tbody>
+        </table>
+        <div class="def">
+          <div class="def-label">Matrix Transformation — T<sub>A</sub></div>
+          For an $m \times n$ matrix $A$, define $T_A: \mathbb{R}^n \to \mathbb{R}^m$ by $T_A(\mathbf{x}) = A\mathbf{x}$. Every linear map $\mathbb{R}^n \to \mathbb{R}^m$ has this form (Thm 2.6.2).
+        </div>
+        <div class="example">
+          <div class="example-label">Example 7.1.4 — Calculus Maps on P<sub>n</sub></div>
+          <strong>Differentiation:</strong> D : P<sub>n</sub> → P<sub>n−1</sub>; D[p(x)] = p′(x) &nbsp;(linear by calculus)<br>
+          <strong>Integration:</strong> I : P<sub>n</sub> → P<sub>n+1</sub>; I[p(x)] = ∫<sub>0</sub><sup>x</sup> p(t) dt &nbsp;(linear by calculus)
+        </div>
+        <div class="example">
+          <div class="example-label">Example 7.1.2 — Matrix Operations</div>
+          <strong>Transposition:</strong> R : M<sub>mn</sub> → M<sub>nm</sub>; R(A) = A<sup>T</sup> &nbsp;(linear: (A+B)<sup>T</sup>=A<sup>T</sup>+B<sup>T</sup>)<br>
+          <strong>Trace:</strong> S : M<sub>nn</sub> → ℝ; S(A) = tr A &nbsp;(linear by trace properties)<br>
+          <strong>Evaluation:</strong> E<sub>a</sub> : P<sub>n</sub> → ℝ; E<sub>a</sub>(p) = p(a) &nbsp;(linear; Example 7.1.3)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.1.3 — Defined by Basis Images</div>
+          Given basis {b<sub>1</sub>,…,b<sub>n</sub>} of V and <em>any</em> vectors w<sub>1</sub>,…,w<sub>n</sub> in W, there exists a <strong>unique</strong> linear T : V → W with T(b<sub>i</sub>) = w<sub>i</sub>. The action: T(v<sub>1</sub>b<sub>1</sub>+···+v<sub>n</sub>b<sub>n</sub>) = v<sub>1</sub>w<sub>1</sub>+···+v<sub>n</sub>w<sub>n</sub>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §7.2 Kernel and Image ─── -->
+  <div class="section">
+    <div class="section-title">§7.2 Kernel and Image</div>
+    <div class="section-subtitle">The two fundamental subspaces of a linear transformation and the Dimension Theorem</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3 — Kernel -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Kernel (Null Space) — Definition 7.2</div>
+        <div class="def">
+          <div class="def-label">Definition 7.2 — Kernel</div>
+          The <span class="tt" data-t="Also called the null space of T; consists of all vectors that T maps to the zero vector in W">kernel</span> of $T: V \to W$ is:<br>
+          $\ker T = \{ \mathbf{v} \in V \mid T(\mathbf{v}) = \mathbf{0} \}$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.2.1(1) — Subspace</div>
+          ker T is always a <strong>subspace of V</strong>.<br>
+          <em>Proof:</em> T(0)=0 ✓; if T(v)=T(v₁)=0 then T(v+v₁)=0 and T(rv)=0 ✓.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Matrix case</span>
+          $$\ker(T_A) = \text{null}(A) = \{\mathbf{x} \in \mathbb{R}^n \mid A\mathbf{x} = \mathbf{0}\}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.2.2 — Injectivity Criterion</div>
+          $T$ is <span class="tt" data-t="One-to-one: T(v) = T(v₁) implies v = v₁; equivalently ker T = {0}">one-to-one</span> (injective) <strong>if and only if $\ker T = \{\mathbf{0}\}$</strong>.<br>
+          <em>Proof ($\Rightarrow$):</em> If $\mathbf{v} \in \ker T$, then $T(\mathbf{v})=\mathbf{0}=T(\mathbf{0})$, so $\mathbf{v}=\mathbf{0}$.<br>
+          <em>Proof ($\Leftarrow$):</em> $T(\mathbf{v})=T(\mathbf{v}_1) \Rightarrow T(\mathbf{v}-\mathbf{v}_1)=\mathbf{0} \Rightarrow \mathbf{v}-\mathbf{v}_1=\mathbf{0} \Rightarrow \mathbf{v}=\mathbf{v}_1$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example — D : P<sub>n</sub> → P<sub>n−1</sub></div>
+          ker D = span{1} = {constant polynomials}; dim(ker D) = 1.
+        </div>
+        <div class="note">
+          <div class="note-label">Nullity</div>
+          $\text{nullity}(T) = \dim(\ker T)$. For $T_A$: $\text{nullity} = \dim(\text{null}\, A) = n - \text{rank}\, A$.
+        </div>
+      </div>
+
+      <!-- Card 4 — Image -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Image (Range) — Definition 7.2</div>
+        <div class="def">
+          <div class="def-label">Definition 7.2 — Image</div>
+          The <span class="tt" data-t="Also called the range of T; the set of all output vectors T(v) as v ranges over V">image</span> of $T: V \to W$ is:<br>
+          $\text{im}\, T = \{ T(\mathbf{v}) \mid \mathbf{v} \in V \} = T(V)$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.2.1(2) — Subspace</div>
+          im T is always a <strong>subspace of W</strong>.<br>
+          <em>Proof:</em> T(0)=0 ∈ im T ✓; w=T(v), w₁=T(v₁) ⟹ w+w₁=T(v+v₁) ∈ im T ✓.
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/5/58/Eigenvalue_equation.svg" alt="Linear transformation diagram" loading="lazy"/>
+          <figcaption>A linear transformation $T: V \to W$ maps vectors: $T(\mathbf{v}) = A\mathbf{v}$ for matrix $A$</figcaption>
+        </figure>
+        <div class="formula">
+          <span class="formula-label">Matrix case</span>
+          $$\text{im}(T_A) = \text{col}(A) = \text{column space of }A$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Surjectivity Criterion</div>
+          $T$ is <span class="tt" data-t="Onto: every w ∈ W is hit by T; i.e., im T = W">onto</span> (surjective) <strong>if and only if $\text{im}\, T = W$</strong>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.2.3 — Matrix Transformations</div>
+          For $T_A: \mathbb{R}^n \to \mathbb{R}^m$ with $A$ an $m \times n$ matrix:
+        </div>
+        <ul class="items">
+          <li>T<sub>A</sub> is <strong>onto</strong> iff rank A = m &nbsp;(column space fills ℝ<sup>m</sup>)</li>
+          <li>T<sub>A</sub> is <strong>one-to-one</strong> iff rank A = n &nbsp;(null space trivial)</li>
+        </ul>
+        <div class="note">
+          <div class="note-label">Rank</div>
+          $\text{rank}(T) = \dim(\text{im}\, T)$. For $T_A$: $\text{rank}(T_A) = \text{rank}(A)$.
+        </div>
+      </div>
+
+      <!-- Card 5 — Rank-Nullity -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>Rank-Nullity (Dimension) Theorem — Theorem 7.2.4</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.2.4 — Dimension Theorem</div>
+          Let $T: V \to W$ be a linear transformation where $\ker T$ and $\text{im}\, T$ are both finite dimensional. Then $V$ is also finite dimensional and:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Rank-Nullity Theorem</span>
+          $$\dim V = \dim(\ker T) + \dim(\text{im}\, T)$$
+          i.e., $\dim V = \text{nullity}(T) + \text{rank}(T)$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Proof Sketch</div>
+          Let {T(e<sub>1</sub>),…,T(e<sub>r</sub>)} be a basis of im T (e<sub>i</sub> ∈ V) and {f<sub>1</sub>,…,f<sub>k</sub>} a basis of ker T. Then B = {e<sub>1</sub>,…,e<sub>r</sub>, f<sub>1</sub>,…,f<sub>k</sub>} is a basis of V (spans V via the image decomposition; independent via the two separate independence conditions).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.2.5 — Extending a Kernel Basis</div>
+          If {e<sub>1</sub>,…,e<sub>r</sub>, e<sub>r+1</sub>,…,e<sub>n</sub>} is a basis of V with {e<sub>r+1</sub>,…,e<sub>n</sub>} a basis of ker T, then {T(e<sub>1</sub>),…,T(e<sub>r</sub>)} is a basis of im T, so rank(T) = r.
+        </div>
+        <div class="grid grid-3">
+          <div class="example">
+            <div class="example-label">Application: D : P<sub>n</sub> → P<sub>n−1</sub></div>
+            dim(ker D)=1; dim P<sub>n</sub>=n+1; so dim(im D)=n=dim P<sub>n−1</sub>. Hence D is <strong>onto</strong>.
+          </div>
+          <div class="example">
+            <div class="example-label">Application: null A</div>
+            For m×n matrix A of rank r: dim(null A) = n − r (from Dimension Thm applied to T<sub>A</sub>).
+          </div>
+          <div class="note">
+            <div class="note-label">Key Corollary</div>
+            If dim V = dim W and T : V → W is linear, then T injective ⟺ T surjective ⟺ T is an isomorphism (Theorem 7.3.3).
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §7.2–§7.3 Isomorphisms ─── -->
+  <div class="section">
+    <div class="section-title">§7.2–§7.3 Isomorphisms</div>
+    <div class="section-subtitle">Bijective linear maps; when two vector spaces are "the same"</div>
+    <div class="grid grid-2">
+
+      <!-- Card 6 — Isomorphism -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Isomorphism — Definition 7.4</div>
+        <div class="def">
+          <div class="def-label">Definition 7.4 — Isomorphism</div>
+          $T: V \to W$ is an <span class="tt" data-t="A linear transformation that is simultaneously one-to-one (injective) and onto (surjective)">isomorphism</span> if $T$ is linear AND bijective (one-to-one + onto).<br>
+          $V$ and $W$ are <strong>isomorphic</strong>, written $V \cong W$, if such a $T$ exists.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Equivalent Conditions (Thm 7.3.5)</span>
+          $T$ is an isomorphism iff $\exists$ linear $S: W \to V$ with $ST = 1_V$ and $TS = 1_W$.<br>
+          Such $S$ is unique, also an isomorphism, called $T^{-1}$:
+          $$T^{-1}[T(\mathbf{v})] = \mathbf{v}$$
+          for all $\mathbf{v} \in V$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.3.2 — Dimension Criterion</div>
+          For finite-dimensional $V$ and $W$ over $\mathbb{R}$:<br>
+          <strong>$V \cong W \;\Longleftrightarrow\; \dim V = \dim W$</strong>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Corollary 7.3.2</div>
+          Every n-dimensional real vector space V is isomorphic to ℝⁿ via the <span class="tt" data-t="CB(v₁b₁+···+vₙbₙ) = (v₁,…,vₙ)ᵀ for a fixed basis B; carries basis vectors to standard basis vectors">coordinate isomorphism</span> C<sub>B</sub> : V → ℝⁿ defined by fixing a basis B = {b<sub>1</sub>,…,b<sub>n</sub>}.
+        </div>
+        <div class="example">
+          <div class="example-label">Examples</div>
+          M<sub>22</sub> ≅ P<sub>3</sub> ≅ ℝ⁴ (all dim 4);<br>
+          R : M<sub>mn</sub> → M<sub>nm</sub> by R(A) = A<sup>T</sup> is an isomorphism;<br>
+          M<sub>22</sub> symmetric matrices ≅ P<sub>2</sub> (both dim 3).
+        </div>
+      </div>
+
+      <!-- Card 7 — Properties of Isomorphisms -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Properties of Isomorphisms — Theorem 7.3.1</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.3.1 — Isomorphism ↔ Basis Preservation</div>
+          For finite-dimensional V and W, the following are equivalent for T : V → W:
+        </div>
+        <ol class="steps">
+          <li>T is an <strong>isomorphism</strong></li>
+          <li>For <em>every</em> basis {e<sub>1</sub>,…,e<sub>n</sub>} of V, the set {T(e<sub>1</sub>),…,T(e<sub>n</sub>)} is a basis of W</li>
+          <li><em>There exists</em> a basis {e<sub>1</sub>,…,e<sub>n</sub>} of V such that {T(e<sub>1</sub>),…,T(e<sub>n</sub>)} is a basis of W</li>
+        </ol>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.3.3 — dim V = dim W Shortcut</div>
+          If $\dim V = \dim W = n$, then $T: V \to W$ is an isomorphism whenever it is <em>either</em> one-to-one <em>or</em> onto (not necessary to check both).
+        </div>
+        <div class="note">
+          <div class="note-label">What Isomorphisms Preserve</div>
+          $T$ isomorphism $\Rightarrow$ $T$ preserves: linear independence, spanning sets, bases, dimension, zero vector, negatives, all linear combinations.
+        </div>
+        <div class="note">
+          <div class="note-label">Equivalence Relation (Corollary 7.3.1)</div>
+          ≅ is an equivalence relation: V ≅ V; V ≅ W ⟹ W ≅ V; V ≅ U and U ≅ W ⟹ V ≅ W.
+        </div>
+        <div class="example">
+          <div class="example-label">Finding T<sup>−1</sup> via Basis</div>
+          If T(e<sub>i</sub>) = f<sub>i</sub> defines an isomorphism, then T<sup>−1</sup>(f<sub>i</sub>) = e<sub>i</sub>. For T : P<sub>1</sub> → P<sub>1</sub> with T(1) = 1+x, T(x) = −1, the inverse carries 1+x ↦ 1, −1 ↦ x (Example 7.3.6).
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §7.3 Composition ─── -->
+  <div class="section">
+    <div class="section-title">§7.3 Composition of Linear Maps</div>
+    <div class="section-subtitle">Building new linear transformations by chaining existing ones</div>
+    <div class="grid grid-2">
+
+      <!-- Card 8 — Composition Definition -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Composition — Definition 7.5 &amp; Theorem 7.3.4</div>
+        <div class="def">
+          <div class="def-label">Definition 7.5 — Composite ST</div>
+          Given $T: V \to W$ and $S: W \to U$, the <span class="tt" data-t="ST means: first apply T, then apply S; (ST)(v) = S(T(v))">composite</span> <strong>$ST: V \to U$</strong> is defined by:<br>
+          $(ST)(\mathbf{v}) = S[T(\mathbf{v})]$ for all $\mathbf{v} \in V$.
+        </div>
+        <div class="warn">
+          <strong>Order matters:</strong> ST ≠ TS in general. Even when both composites are defined (square operators V → V), they may differ. E.g., transposition and row-swap give ST ≠ TS.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 7.3.4 — Properties</div>
+          For V <sup>T</sup>→ W <sup>S</sup>→ U <sup>R</sup>→ Z:
+        </div>
+        <ul class="items">
+          <li>ST is <strong>linear</strong> whenever S and T are linear</li>
+          <li><strong>T·1<sub>V</sub> = T</strong> and <strong>1<sub>W</sub>·T = T</strong> &nbsp;(identity is neutral)</li>
+          <li><strong>(RS)T = R(ST)</strong> &nbsp;(associativity)</li>
+        </ul>
+        <div class="note">
+          <div class="note-label">Non-commutativity</div>
+          TS requires U ⊆ V to even be defined. Even for V = W = U, ST ≠ TS typically. Matrix analogy: AB ≠ BA in general.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 7.3.5</div>
+          S : M<sub>22</sub> → M<sub>22</sub> swaps rows; T : M<sub>22</sub> → M<sub>22</sub> transposes.<br>
+          ST ≠ TS (swap-then-transpose ≠ transpose-then-swap).
+        </div>
+      </div>
+
+      <!-- Card 9 — Composition and Inverses -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Composition, Inverses &amp; Powers</div>
+        <div class="theorem">
+          <div class="theorem-label">Composition of Isomorphisms</div>
+          If T : V → W and S : W → U are both isomorphisms, then <strong>ST : V → U is also an isomorphism</strong> with (ST)<sup>−1</sup> = T<sup>−1</sup>S<sup>−1</sup>.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Inverse of Composite</span>
+          $$(ST)^{-1} = T^{-1}S^{-1}$$
+          (reverse order, like matrix inverses)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Powers of a Linear Operator</div>
+          For T : V → V, define T<sup>k</sup> = T∘T∘···∘T (k times). Then:<br>
+          T<sup>0</sup> = 1<sub>V</sub>; T<sup>k+1</sup> = T·T<sup>k</sup>; (T<sup>k</sup>)<sup>−1</sup> = (T<sup>−1</sup>)<sup>k</sup> when T is invertible.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 7.3.8 — T³ = 1</div>
+          T : ℝ³ → ℝ³ with T(x,y,z) = (z,x,y). Then T²(x,y,z) = (y,z,x) and T³(x,y,z) = (x,y,z) = 1. So T(T²) = 1 = (T²)T, giving <strong>T<sup>−1</sup> = T²</strong>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Thm 7.3.5 — One-Sided Implies Two-Sided</div>
+          For finite-dimensional V ≅ W, if ST = 1<sub>V</sub>, then automatically TS = 1<sub>W</sub> (since dim V = dim W forces injectivity ⟺ surjectivity).
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ─── §7.4 Matrix of a Transformation ─── -->
+  <div class="section">
+    <div class="section-title">§7.4 Matrix of a Linear Transformation</div>
+    <div class="section-subtitle">Encoding T : V → W as a matrix relative to chosen bases; change-of-basis similarity</div>
+    <div class="grid grid-2">
+
+      <!-- Card 10 — Matrix of T Relative to Bases -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Matrix of T Relative to Bases</div>
+        <div class="def">
+          <div class="def-label">Setup</div>
+          Let $T: V \to W$ be linear; choose basis $\mathcal{B} = \{\mathbf{b}_1,\ldots,\mathbf{b}_n\}$ for $V$ and basis $\mathcal{D} = \{\mathbf{d}_1,\ldots,\mathbf{d}_m\}$ for $W$.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition — Matrix M<sup>B</sup><sub>D</sub>(T)</div>
+          The <span class="tt" data-t="An m×n matrix whose j-th column contains the D-coordinates of T(bⱼ)">matrix of $T$ relative to $\mathcal{B}$ and $\mathcal{D}$</span> is the $m \times n$ matrix $M^{\mathcal{B}}_{\mathcal{D}}(T)$ whose <strong>$j$-th column $= [T(\mathbf{b}_j)]_{\mathcal{D}}$</strong> (the $\mathcal{D}$-coordinate vector of $T(\mathbf{b}_j)$).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Key Formula</span>
+          $$[T(\mathbf{v})]_{\mathcal{D}} = M^{\mathcal{B}}_{\mathcal{D}}(T) \cdot [\mathbf{v}]_{\mathcal{B}}$$
+          for all $\mathbf{v} \in V$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Special case: V = W, B = D</div>
+          When $T: V \to V$ and $\mathcal{B} = \mathcal{D}$, write $M_{\mathcal{B}}(T)$. The formula becomes $[T(\mathbf{v})]_{\mathcal{B}} = M_{\mathcal{B}}(T)[\mathbf{v}]_{\mathcal{B}}$.
+        </div>
+        <div class="note">
+          <div class="note-label">Standard Basis</div>
+          If $\mathcal{B}$ and $\mathcal{D}$ are the standard bases of $\mathbb{R}^n$ and $\mathbb{R}^m$, then $M^{\mathcal{B}}_{\mathcal{D}}(T_A) = A$ (the original matrix $A$).
+        </div>
+      </div>
+
+      <!-- Card 11 — Computing the Matrix -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Algorithm — Computing M<sup>B</sup><sub>D</sub>(T)</div>
+        <div class="def">
+          <div class="def-label">Algorithm</div>
+          To find M<sup>B</sup><sub>D</sub>(T) for T : V → W:
+        </div>
+        <ol class="steps">
+          <li>Fix basis B = {b<sub>1</sub>,…,b<sub>n</sub>} for V and basis D = {d<sub>1</sub>,…,d<sub>m</sub>} for W</li>
+          <li>For each j = 1,…,n: apply T to b<sub>j</sub> to get T(b<sub>j</sub>) ∈ W</li>
+          <li>Express T(b<sub>j</sub>) = c<sub>1j</sub>d<sub>1</sub> + c<sub>2j</sub>d<sub>2</sub> + ··· + c<sub>mj</sub>d<sub>m</sub> as a D-linear combination</li>
+          <li>Place (c<sub>1j</sub>, c<sub>2j</sub>,…,c<sub>mj</sub>)<sup>T</sup> as column j of M<sup>B</sup><sub>D</sub>(T)</li>
+        </ol>
+        <div class="formula">
+          <span class="formula-label">Result</span>
+          $$M^{\mathcal{B}}_{\mathcal{D}}(T) = \bigl[[T(\mathbf{b}_1)]_{\mathcal{D}} \;\big|\; [T(\mathbf{b}_2)]_{\mathcal{D}} \;\big|\; \cdots \;\big|\; [T(\mathbf{b}_n)]_{\mathcal{D}}\bigr]$$
+        </div>
+        <div class="example">
+          <div class="example-label">Example — D : P<sub>2</sub> → P<sub>1</sub></div>
+          B = {1, x, x²}, D = {1, x}.<br>
+          D(1)=0=[0,0]<sub>D</sub>; D(x)=1=[1,0]<sub>D</sub>; D(x²)=2x=[0,2]<sub>D</sub>.<br>
+          M<sup>B</sup><sub>D</sub>(D) = <code>[[0,1,0],[0,0,2]]</code>
+        </div>
+        <div class="note">
+          <div class="note-label">Composition Rule</div>
+          If $T: V \to W$ and $S: W \to U$, then $M(ST) = M(S) \cdot M(T)$ — matrix multiplication corresponds to composition.
+        </div>
+      </div>
+
+      <!-- Card 12 — Change of Basis and Similarity -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Change of Basis &amp; Similarity</div>
+        <div class="def">
+          <div class="def-label">Setup — Two Bases for V</div>
+          Let $T: V \to V$ be a linear operator. Fix two bases $\mathcal{B}$ and $\mathcal{B}'$ for $V$. Let $P = P_{\mathcal{B} \to \mathcal{B}'}$ be the <span class=\"tt\" data-t=\"The matrix whose j-th column is [bⱼ]_B′, the B′-coordinates of the j-th basis vector of B\">transition matrix</span> from $\mathcal{B}$ to $\mathcal{B}'$.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Change-of-Basis Formula</span>
+          $$M_{\mathcal{B}'}(T) = P^{-1} \cdot M_{\mathcal{B}}(T) \cdot P$$
+        </div>
+        <div class="def">
+          <div class="def-label">Definition — Similar Matrices</div>
+          Two matrices $A$ and $A'$ are <span class=\"tt\" data-t=\"A′ = P⁻¹AP for some invertible P; similar matrices represent the same linear operator in different bases\">similar</span> if $A' = P^{-1}AP$ for some invertible $P$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Key Theorem</div>
+          Matrices $M_{\mathcal{B}}(T)$ and $M_{\mathcal{B}'}(T)$ of the same linear operator $T$ (in different bases) are always <strong>similar</strong>. Conversely, any two similar matrices represent the same linear operator in suitably chosen bases.
+        </div>
+        <div class="note">
+          <div class="note-label">Diagonalization Connection</div>
+          If $\mathcal{B} = \{\mathbf{v}_1,\ldots,\mathbf{v}_n\}$ is a basis of <strong>eigenvectors</strong> of $T$, then $M_{\mathcal{B}}(T) = \text{diag}(\lambda_1,\ldots,\lambda_n)$ is diagonal. This is the motivation for diagonalization studied in Ch. 3.
+        </div>
+        <div class="example">
+          <div class="example-label">Invariants Under Similarity</div>
+          det, trace, rank, characteristic polynomial, eigenvalues — all preserved under similarity (same for all matrix representations of T).
+        </div>
+      </div>
+
+      <!-- Card 13 — One-Sided Inverses -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>One-Sided Inverses &amp; Inverse Matrix</div>
+        <div class="theorem">
+          <div class="theorem-label">Left Inverse (Injective T)</div>
+          If T : V → W is <strong>one-to-one</strong>, there exists a linear <span class="tt" data-t="L : W → V with L∘T = 1_V; exists iff T is injective; not unique unless T is also surjective">left inverse</span> L : W → V with <strong>L∘T = 1<sub>V</sub></strong>.<br>
+          <em>Construction:</em> Extend {T(e<sub>1</sub>),…,T(e<sub>n</sub>)} to a basis of W; send extra basis vectors anywhere; send T(e<sub>i</sub>) ↦ e<sub>i</sub>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Right Inverse (Surjective T)</div>
+          If T : V → W is <strong>onto</strong>, there exists a linear <span class="tt" data-t="R : W → V with T∘R = 1_W; exists iff T is surjective; not unique unless T is also injective">right inverse</span> R : W → V with <strong>T∘R = 1<sub>W</sub></strong>.<br>
+          <em>Construction:</em> Choose any v with T(v)=w; set R(w)=v (linearly over a basis of W).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Two-Sided Inverse (Isomorphism)</div>
+          $T$ is an <strong>isomorphism</strong> iff it has a two-sided inverse $T^{-1}$. In this case:
+        </div>
+        <div class="formula">
+          <span class="formula-label">Inverse Matrix Formula</span>
+          $$M_{\mathcal{B}}(T^{-1}) = \bigl[M_{\mathcal{B}}(T)\bigr]^{-1}$$
+          (matrix of the inverse = inverse of the matrix)
+        </div>
+        <div class="note">
+          <div class="note-label">Theorem 7.3.27 — Existence Summary</div>
+          $T$ injective $\Leftrightarrow$ $\exists$ left inverse $L$ with $LT = 1_V$.<br>
+          $T$ surjective $\Leftrightarrow$ $\exists$ right inverse $R$ with $TR = 1_W$.<br>
+          $T$ bijective $\Leftrightarrow$ $\exists$ unique two-sided inverse $T^{-1}$.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+<footer class="chapter-footer">
+  <a href="CH06-Abstract-Vector-Spaces-CheatSheet.html">← CH6 Abstract Vector Spaces</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH7</span>
+  <a href="CH08-Orthogonality-CheatSheet.html">CH8 Orthogonality →</a>
+</footer>
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-7';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Vector Space Rⁿ — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 5</div>
+    <h1>Vector Space $\mathbb{R}^n$ <span>— Chapter 5</span></h1>
+    <p class="page-subtitle">Subspaces of $\mathbb{R}^n$, spanning sets, linear independence, basis, dimension, row/column/null spaces, and the rank-nullity theorem.</p>
+    <span class="page-badge">LAW · CH5 · §5.1–§5.6</span>
+  </div>
+</header>
+<div class="page-body">
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 1 — §5.1 Subspaces and Spanning
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§5.1 Subspaces and Spanning</div>
+    <div class="grid grid-2">
+
+      <!-- Card 1 — Subspace Definition -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Subspace of $\mathbb{R}^n$ — Definition</div>
+        <div class="def">
+          <div class="def-label">Definition 5.1 — Subspace</div>
+          A set <span class="tt" data-t="A subset U of Rⁿ closed under vector addition and scalar multiplication, also containing the zero vector">U</span> of vectors in $\mathbb{R}^n$ is a <strong>subspace</strong> of $\mathbb{R}^n$ if it satisfies all three conditions:
+        </div>
+        <ul class="items">
+          <li><strong>S1.</strong> The zero vector <strong>0</strong> is in U.</li>
+          <li><strong>S2.</strong> If <strong>x</strong> and <strong>y</strong> are in U, then <strong>x + y</strong> is in U. <em>(closed under addition)</em></li>
+          <li><strong>S3.</strong> If <strong>x</strong> is in U, then <em>a</em><strong>x</strong> is in U for every scalar <em>a</em>. <em>(closed under scalar multiplication)</em></li>
+        </ul>
+        <div class="theorem">
+          <div class="theorem-label">Trivial Subspaces</div>
+          $\mathbb{R}^n$ itself and $\{\mathbf{0}\}$ (the <em>zero subspace</em>) are always subspaces. Any subspace other than $\{\mathbf{0}\}$ or $\mathbb{R}^n$ is a <span class="tt" data-t="A subspace U with {0} ⊊ U ⊊ Rⁿ — strictly between the two trivial subspaces">proper subspace</span>.
+        </div>
+        <div class="note">
+          <div class="note-label">Key Examples in R³ (§5.1)</div>
+          • Every <strong>plane through the origin</strong>: M = {<strong>v</strong> | <strong>n</strong>·<strong>v</strong> = 0}; satisfies S1–S3 via dot product linearity.<br/>
+          • Every <strong>line through the origin</strong>: L = {t<strong>d</strong> | t ∈ ℝ}; satisfies S1–S3 trivially.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 5.1.2 — Matrix Subspaces</div>
+          For an m×n matrix A:<br/>
+          • <span class="tt" data-t="null A = {x ∈ Rⁿ | Ax = 0} — solution set of the homogeneous system; subspace of Rⁿ">null A</span> $= \{\mathbf{x} \in \mathbb{R}^n \mid A\mathbf{x} = \mathbf{0}\}$ is a subspace of $\mathbb{R}^n$.<br/>
+          • <span class="tt" data-t="im A = {Ax | x ∈ Rⁿ} — all outputs Ax; also the column space of A; subspace of Rᵐ">im A</span> $= \{A\mathbf{x} \mid \mathbf{x} \in \mathbb{R}^n\}$ is a subspace of $\mathbb{R}^m$ (also called col A).
+        </div>
+        <div class="note">
+          <div class="note-label">Subspace Test (Exercise 5.1.20)</div>
+          A nonempty set $U \subseteq \mathbb{R}^n$ is a subspace <strong>if and only if</strong> S2 and S3 hold (S1 follows automatically if U is nonempty and closed under scalar multiplication with a = 0).
+        </div>
+      </div>
+
+      <!-- Card 2 — Span -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Span — Definition &amp; Smallest Subspace</div>
+        <div class="def">
+          <div class="def-label">Definition 5.2 — Span</div>
+          Given <strong>x₁, x₂, …, xₖ</strong> ∈ $\mathbb{R}^n$, a vector t₁<strong>x₁</strong> + ··· + tₖ<strong>xₖ</strong> (tᵢ ∈ ℝ) is a <span class="tt" data-t="A sum t₁x₁ + t₂x₂ + ⋯ + tₖxₖ where each tᵢ is a real scalar coefficient">linear combination</span>. The set of <em>all</em> such combinations is:
+          <br/><br/>
+          $$\text{span}\{\mathbf{x}_1, \ldots, \mathbf{x}_k\} = \{t_1\mathbf{x}_1 + \cdots + t_k\mathbf{x}_k \mid t_i \in \mathbb{R}\}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.1.1 — Span is the Smallest Subspace</div>
+          Let $U = \text{span}\{\mathbf{x}_1, \ldots, \mathbf{x}_k\}$ in $\mathbb{R}^n$. Then:<br/>
+          1. $U$ is a subspace of $\mathbb{R}^n$ containing each $\mathbf{x}_i$.<br/>
+          2. If $W$ is any subspace of $\mathbb{R}^n$ containing all $\mathbf{x}_i$, then $U \subseteq W$.<br/>
+          <em>(span is the smallest subspace containing those vectors)</em>
+        </div>
+        <div class="note">
+          <div class="note-label">Geometric Meaning</div>
+          • span{<strong>d</strong>} = $\mathbb{R}^n$ line through origin with direction <strong>d</strong> ≠ <strong>0</strong>.<br/>
+          • span{<strong>v</strong>, <strong>w</strong>} = plane through origin (if <strong>v</strong>, <strong>w</strong> nonparallel in R³).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Spanning Sets for null A and im A</div>
+          • Let $\mathbf{x}_1, \ldots, \mathbf{x}_k$ be the <em>basic solutions</em> of $A\mathbf{x} = \mathbf{0}$ (§5.1): &ensp;$\text{null}(A) = \text{span}\{\mathbf{x}_1, \ldots, \mathbf{x}_k\}$.<br/>
+          • Let $\mathbf{c}_1, \ldots, \mathbf{c}_n$ be the columns of $A$: &ensp;$\text{im}(A) = \text{span}\{\mathbf{c}_1, \ldots, \mathbf{c}_n\}$.
+        </div>
+        <div class="example">
+          <div class="example-label">Membership Test (Example 5.1.4)</div>
+          $\mathbf{p} \in \text{span}\{\mathbf{x}, \mathbf{y}\} \Leftrightarrow s\mathbf{x} + t\mathbf{y} = \mathbf{p}$ has a solution.<br/>
+          Equate components → linear system. Consistent ⟹ in span; inconsistent ⟹ not in span.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 5.1.6 — Standard Basis</div>
+          $\mathbb{R}^n = \text{span}\{\mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_n\}$ where $\mathbf{e}_j$ = column $j$ of $I_n$.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 2 — §5.2–§5.3 Independence and Basis
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§5.2–§5.3 Independence and Basis</div>
+    <div class="grid grid-2">
+
+      <!-- Card 3 — Linear Independence -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Independence</div>
+        <div class="def">
+          <div class="def-label">Definition 5.3 — Linear Independence</div>
+          A set {<strong>x₁, x₂, …, xₖ</strong>} is <strong>linearly independent</strong> if:
+          <br/><br/>
+          $$t_1\mathbf{x}_1 + t_2\mathbf{x}_2 + \cdots + t_k\mathbf{x}_k = \mathbf{0} \implies t_1 = t_2 = \cdots = t_k = 0$$
+          <br/><br/>
+          i.e., the only <span class="tt" data-t="A linear combination with all scalar coefficients equal to zero: every tᵢ = 0">trivial combination</span> vanishes.
+        </div>
+        <div class="def">
+          <div class="def-label">Independence Test — Procedure</div>
+        </div>
+        <ol class="steps">
+          <li>Set $t_1\mathbf{x}_1 + \cdots + t_k\mathbf{x}_k = \mathbf{0}$.</li>
+          <li>Equate components → homogeneous linear system.</li>
+          <li>Show the only solution is $t_1 = \cdots = t_k = 0$ (no free variables in RREF).</li>
+        </ol>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.2 — Column Independence via Matrix</div>
+          For $A$ an $m \times n$ matrix with columns $\mathbf{c}_1, \ldots, \mathbf{c}_n$:<br/>
+          1. $\{\mathbf{c}_1, \ldots, \mathbf{c}_n\}$ is independent in $\mathbb{R}^m$ $\Leftrightarrow$ $A\mathbf{x}=\mathbf{0}$ implies $\mathbf{x}=\mathbf{0}$.<br/>
+          2. $\text{span}\{\mathbf{c}_1, \ldots, \mathbf{c}_n\} = \mathbb{R}^m$ $\Leftrightarrow$ $A\mathbf{x}=\mathbf{b}$ is consistent for every $\mathbf{b}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.3 — Square Matrix Criterion</div>
+          For an $n \times n$ matrix $A$, these are equivalent:<br/>
+          1. $A$ is invertible. &nbsp;2. Columns are independent. &nbsp;3. Columns span $\mathbb{R}^n$.<br/>
+          4. Rows are independent. &nbsp;5. Rows span all $1 \times n$ rows.
+        </div>
+        <div class="note">
+          <div class="note-label">Key Facts</div>
+          • $\{\mathbf{0}\}$ is always dependent ($1\cdot\mathbf{0} = \mathbf{0}$ is nontrivial).<br/>
+          • $\{\mathbf{x}\}$ is independent $\Leftrightarrow$ $\mathbf{x} \neq \mathbf{0}$.<br/>
+          • Nonzero rows of any <span class="tt" data-t="A matrix where each nonzero row has a leading 1 with zeros below it (and to its left in RREF)">row-echelon matrix</span> are always independent (Example 5.2.6).<br/>
+          • $\det(A) \neq 0 \Leftrightarrow$ rows (or columns) of square $A$ are independent.
+        </div>
+      </div>
+
+      <!-- Card 4 — Basis -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Basis — Definition &amp; Key Theorems</div>
+        <div class="def">
+          <div class="def-label">Definition 5.4 — Basis</div>
+          A set B = {<strong>x₁, …, xₘ</strong>} of vectors in a subspace U ⊆ $\mathbb{R}^n$ is a <strong>basis</strong> of U if:
+          <br/><br/>
+          1. $\{\mathbf{x}_1, \ldots, \mathbf{x}_m\}$ is <strong>linearly independent</strong>.<br/>
+          2. $U = \text{span}\{\mathbf{x}_1, \ldots, \mathbf{x}_m\}$. &nbsp;&nbsp;<em>($B$ spans $U$)</em>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.4 — Fundamental Theorem</div>
+          If $U \subseteq \mathbb{R}^n$ is spanned by $m$ vectors and contains $k$ linearly independent vectors, then $k \leq m$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.5 — Invariance Theorem</div>
+          If $\{\mathbf{x}_1, \ldots, \mathbf{x}_m\}$ and $\{\mathbf{y}_1, \ldots, \mathbf{y}_k\}$ are both bases of $U$, then $m = k$.<br/>
+          <em>(All bases of a subspace have the same number of vectors.)</em>
+        </div>
+        <div class="example">
+          <div class="example-label">Standard Basis of $\mathbb{R}^n$ (Example 5.2.10)</div>
+          $\{\mathbf{e}_1, \mathbf{e}_2, \ldots, \mathbf{e}_n\}$ (columns of $I_n$) is a basis of $\mathbb{R}^n$. &nbsp; $\dim(\mathbb{R}^n) = n$, $\dim(\{\mathbf{0}\}) = 0$.
+        </div>
+        <div class="note">
+          <div class="note-label">Geometry of Proper Subspaces (Example 5.2.14)</div>
+          In $\mathbb{R}^2$: $\dim(U) = 1 \Leftrightarrow U$ is a line through origin.<br/>
+          In $\mathbb{R}^3$: $\dim(U) = 1 \Leftrightarrow$ line; &nbsp;$\dim(U) = 2 \Leftrightarrow$ plane through origin.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <!-- Card 5 — Unique Representation Theorem -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Unique Representation &amp; Coordinates</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.1 — Unique Representation</div>
+          If $\{\mathbf{x}_1, \ldots, \mathbf{x}_k\}$ is <strong>independent</strong>, then every vector in $\text{span}\{\mathbf{x}_1, \ldots, \mathbf{x}_k\}$ has a <strong>unique</strong> representation as a linear combination of the $\mathbf{x}_i$.
+        </div>
+        <div class="def">
+          <div class="def-label">Coordinate Vector</div>
+          If B = {<strong>x₁, …, xₘ</strong>} is a basis of U and <strong>v</strong> ∈ U, then the <span class="tt" data-t="The column vector (c₁,…,cₘ)ᵀ of coefficients when v is written uniquely as a linear combination of the basis B">coordinate vector</span> of <strong>v</strong> relative to B is:
+          <br/><br/>
+          $$\mathbf{v} = c_1\mathbf{x}_1 + c_2\mathbf{x}_2 + \cdots + c_m\mathbf{x}_m \implies [\mathbf{v}]_B = (c_1, c_2, \ldots, c_m)$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.3.6 — Expansion Theorem (Fourier Expansion)</div>
+          If $\{\mathbf{f}_1, \ldots, \mathbf{f}_m\}$ is an <strong>orthogonal basis</strong> of $U \subseteq \mathbb{R}^n$, then for any $\mathbf{x} \in U$:
+          <br/><br/>
+          $$\mathbf{x} = \frac{\mathbf{x}\cdot\mathbf{f}_1}{\|\mathbf{f}_1\|^2}\mathbf{f}_1 + \frac{\mathbf{x}\cdot\mathbf{f}_2}{\|\mathbf{f}_2\|^2}\mathbf{f}_2 + \cdots + \frac{\mathbf{x}\cdot\mathbf{f}_m}{\|\mathbf{f}_m\|^2}\mathbf{f}_m$$
+          <br/><br/>
+          The coefficients $t_i = \mathbf{x}\cdot\mathbf{f}_i/\|\mathbf{f}_i\|^2$ are the <span class="tt" data-t="The coefficients tᵢ = (x·fᵢ)/‖fᵢ‖² in the Fourier expansion; simplify to tᵢ = x·fᵢ when the basis is orthonormal">Fourier coefficients</span>. If orthonormal: $t_i = \mathbf{x}\cdot\mathbf{f}_i$.
+        </div>
+        <div class="example">
+          <div class="example-label">Finding Coordinates</div>
+          Given basis B = {<strong>x₁</strong>, <strong>x₂</strong>} and <strong>v</strong> ∈ U, solve:<br/>
+          $c_1\mathbf{x}_1 + c_2\mathbf{x}_2 = \mathbf{v}$ &nbsp;$\to$&nbsp; the solution $(c_1, c_2) = [\mathbf{v}]_B$.<br/>
+          For orthogonal basis: use Expansion Theorem directly (no system to solve).
+        </div>
+      </div>
+
+      <!-- Card 6 — Dimension -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Dimension — Existence &amp; Extension Theorems</div>
+        <div class="def">
+          <div class="def-label">Definition 5.5 — Dimension</div>
+          If {<strong>x₁, …, xₘ</strong>} is any basis of U, the <strong>dimension</strong> of U is:
+          <br/>$\dim(U) = m$
+          <br/>Well-defined by the Invariance Theorem. &nbsp; $\dim(\{\mathbf{0}\}) = 0$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.6 — Existence of Basis</div>
+          Let $U \neq \{\mathbf{0}\}$ be a subspace of $\mathbb{R}^n$. Then:<br/>
+          1. $U$ has a basis and $\dim(U) \leq n$.<br/>
+          2. Any <strong>independent set</strong> in $U$ can be <em>extended</em> to a basis of $U$ (by adding standard basis vectors).<br/>
+          3. Any <strong>spanning set</strong> for $U$ can be <em>reduced</em> to a basis (by deleting vectors).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.7 — Labour-Saving Result</div>
+          Let $\dim(U) = m$. For a set $B$ of exactly $m$ vectors in $U$:<br/>
+          $B$ is independent $\Leftrightarrow$ $B$ spans $U$ &nbsp;(only one needs verification!)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.8 — Dimension Comparison</div>
+          If $U \subseteq W$ are subspaces of $\mathbb{R}^n$:<br/>
+          1. $\dim(U) \leq \dim(W)$.<br/>
+          2. If $\dim(U) = \dim(W)$, then $U = W$.
+        </div>
+        <div class="note">
+          <div class="note-label">Dimension Extremes</div>
+          $\dim(U) = 0 \Leftrightarrow U = \{\mathbf{0}\}$;&ensp; $\dim(U) = n \Leftrightarrow U = \mathbb{R}^n$.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 3 — §5.4–§5.5 Fundamental Subspaces
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§5.4–§5.5 Fundamental Subspaces &amp; Rank</div>
+    <div class="grid grid-2">
+
+      <!-- Card 7 — Row Space -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Row Space</div>
+        <div class="def">
+          <div class="def-label">Definition 5.10 — Row Space</div>
+          The <span class="tt" data-t="The subspace of Rⁿ spanned by the rows of A; written row A. Row operations preserve row A">row space</span> of an m×n matrix A:
+          <br/><br/>
+          $\text{row}(A)$ = span of the rows of $A$ &nbsp;$= \text{col}(A^T) \subseteq \mathbb{R}^n$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Lemma 5.4.1 — Row Operations Preserve row A</div>
+          If $A \to B$ by elementary <em>row</em> operations, then $\text{row}(A) = \text{row}(B)$.<br/>
+          (Column operations preserve $\text{col}(A)$.)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Lemma 5.4.2 + Theorem 5.4.1 — Basis for row A</div>
+          If R is a row-echelon form of A (obtained by row operations):<br/>
+          • The nonzero rows of $R$ are independent and span $\text{row}(R) = \text{row}(A)$.<br/>
+          • Therefore: the $r$ nonzero rows of $R$ form a basis of $\text{row}(A)$.<br/>
+          • $\dim(\text{row}(A)) = \text{rank}(A) = r$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 5.4.1</div>
+          U = span{(1,1,2,3),(2,4,1,0),(1,5,−4,−9)} — reduce to REF:<br/>
+          Basis of U = {(1,1,2,3), (0,2,−3,−6)} &ensp;(nonzero rows of REF).<br/>
+          &ensp;$\to \dim(\text{row}(A)) = 2 = \text{rank}(A)$.
+        </div>
+        <div class="note">
+          <div class="note-label">Corollary 5.4.1 — Rank Symmetry</div>
+          $\text{rank}(A) = \text{rank}(A^T)$. &nbsp;Row rank equals column rank for any matrix.
+        </div>
+      </div>
+
+      <!-- Card 8 — Column Space -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Column Space</div>
+        <div class="def">
+          <div class="def-label">Column Space (Definition 5.10)</div>
+          The <span class="tt" data-t="The subspace of Rᵐ spanned by the columns of A; written col A = im A. Column operations preserve col A">column space</span> of an m×n matrix A:
+          <br/><br/>
+          $\text{col}(A) = \text{span}\{\mathbf{c}_1, \mathbf{c}_2, \ldots, \mathbf{c}_n\} = \text{im}(A) \subseteq \mathbb{R}^m$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.4.1 — Basis for col A</div>
+          Let A → R (row-echelon form) with leading 1s in columns j₁, j₂, …, jᵣ. Then:<br/>
+          • Columns j₁, …, jᵣ of the <strong>original matrix A</strong> are a basis of col A.<br/>
+          • $\dim(\text{col}(A)) = \text{rank}(A) = r$.<br/>
+          <em>(Use original $A$ columns, NOT the REF columns!)</em>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.4.1 — Key Identity</div>
+          For any m×n matrix A of rank r:
+          <br/><br/>
+          $$\dim(\text{col}(A)) = \dim(\text{row}(A)) = \text{rank}(A) = r$$
+        </div>
+        <div class="note">
+          <div class="note-label">Corollaries 5.4.2–5.4.4</div>
+          • $\text{rank}(A) \leq m$ and $\text{rank}(A) \leq n$ (bounded by both dimensions).<br/>
+          • $\text{rank}(UA) = \text{rank}(AV) = \text{rank}(A)$ for any invertible $U$, $V$.<br/>
+          • $\text{rank}(AB) \leq \text{rank}(A)$ and $\text{rank}(AB) \leq \text{rank}(B)$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 5.4.2</div>
+          A is 3×4 of rank 2: basis of col A = two specific columns of A (the pivot-column positions from the REF of A).<br/>
+          $\dim(\text{col}(A)) = \dim(\text{row}(A)) = 2$.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <!-- Card 9 — Null Space -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Null Space</div>
+        <div class="def">
+          <div class="def-label">Null Space (§5.1, §5.4)</div>
+          The <span class="tt" data-t="null A = {x ∈ Rⁿ | Ax = 0}; the solution set of the homogeneous system; always a subspace of Rⁿ">null space</span> of an m×n matrix A:
+          <br/><br/>
+          $$\text{null}(A) = \{\mathbf{x} \in \mathbb{R}^n \mid A\mathbf{x} = \mathbf{0}\}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.4.2 (1) — Basis for null A</div>
+          Let $A$ have rank $r$. The $n-r$ <em>basic solutions</em> of $A\mathbf{x} = \mathbf{0}$ given by the Gaussian algorithm form a basis of $\text{null}(A)$.<br/>
+          • $\dim(\text{null}(A)) = \text{nullity}(A) = n - r$.<br/>
+          • One basic solution per free variable (assign 1 to one free variable, 0 to others).
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 5.13 — Eigenspace (§5.5)</div>
+          For an n×n matrix A and eigenvalue λ, the <span class="tt" data-t="Eλ(A) = null(λI − A) = {x ∈ Rⁿ | Ax = λx}; eigenvectors are the nonzero vectors in the eigenspace">eigenspace</span>:<br/>
+          $E_\lambda(A) = \text{null}(\lambda I - A)$ is a subspace of $\mathbb{R}^n$.
+        </div>
+        <div class="example">
+          <div class="example-label">Example 5.4.3 — Finding null A and im A</div>
+          For $A$ $3\times 4$ of rank $r = 2$: &nbsp;$\dim(\text{null}(A)) = 4 - 2 = 2$.<br/>
+          Reduce $[A|\mathbf{0}]$ to RREF $\to$ identify 2 free variables $\to$ 2 basic solutions $\mathbf{x}_1, \mathbf{x}_2$.<br/>
+          $\text{null}(A) = \text{span}\{\mathbf{x}_1, \mathbf{x}_2\}$; &nbsp;$\text{im}(A)$ = span of 2 pivot columns of $A$.
+        </div>
+        <div class="note">
+          <div class="note-label">Eigenspace Dimension (§5.5 — Lemma 5.5.3)</div>
+          If $\lambda$ has algebraic multiplicity $m$, then $\dim(E_\lambda(A)) \leq m$.<br/>
+          $A$ is diagonalizable (when $c_A(x)$ factors completely) $\Leftrightarrow$ $\dim(E_\lambda(A)) = $ multiplicity of $\lambda$ for every eigenvalue $\lambda$.
+        </div>
+      </div>
+
+      <!-- Card 10 — Rank-Nullity Theorem -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Rank-Nullity Theorem</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.4.2 — Rank-Nullity Theorem</div>
+          For an $m \times n$ matrix $A$ of rank $r$:
+          <br/><br/>
+          1. &nbsp;$\dim(\text{null}(A)) = n - r$ &nbsp;&nbsp;(nullity $= n - r$)<br/>
+          2. &nbsp;$\dim(\text{im}(A)) = \dim(\text{col}(A)) = r$<br/><br/>
+          $$\text{rank}(A) + \text{nullity}(A) = n$$
+          <span style="font-size:0.85em">($n$ = number of columns of $A$)</span>
+        </div>
+        <div class="formula">
+          <span class="formula-label">Summary table for m×n matrix A of rank r</span>
+          <table class="tbl">
+            <thead><tr><th>Subspace</th><th>Lives in</th><th>Dimension</th><th>Basis from</th></tr></thead>
+            <tbody>
+              <tr><td>$\text{row}(A)$</td><td>$\mathbb{R}^n$</td><td>$r$</td><td>Nonzero rows of REF of $A$</td></tr>
+              <tr><td>$\text{col}(A) = \text{im}(A)$</td><td>$\mathbb{R}^m$</td><td>$r$</td><td>Pivot columns of $A$ (not REF)</td></tr>
+              <tr><td>$\text{null}(A)$</td><td>$\mathbb{R}^n$</td><td>$n - r$</td><td>Basic solutions of $A\mathbf{x} = \mathbf{0}$</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.4.3 — Full Column Rank (rank A = n)</div>
+          Equivalent: rows of $A$ span $\mathbb{R}^n$; columns of $A$ are independent in $\mathbb{R}^m$; $A^TA$ invertible; left inverse $CA = I_n$ exists; $A\mathbf{x} = \mathbf{0} \Rightarrow \mathbf{x} = \mathbf{0}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.4.4 — Full Row Rank (rank A = m)</div>
+          Equivalent: columns of $A$ span $\mathbb{R}^m$; rows of $A$ are independent; $AA^T$ invertible; right inverse $AC = I_m$ exists; $A\mathbf{x} = \mathbf{b}$ consistent for every $\mathbf{b}$.
+        </div>
+        <div class="note">
+          <div class="note-label">Applications</div>
+          • A $3\times 6$ matrix has $\text{nullity} \geq 3$ (always has free variables).<br/>
+          • Rank-nullity is the key tool for counting degrees of freedom in $A\mathbf{x} = \mathbf{b}$.
+        </div>
+        <figure class="math-fig">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Matrix_multiplication_diagram_2.svg" alt="Column space and null space" loading="lazy"/>
+          <figcaption>Rank-nullity: $\text{rank}(A) + \text{nullity}(A) = n$ (number of columns)</figcaption>
+        </figure>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════
+       SECTION 4 — §5.3 / §5.6 Orthogonality &amp; Coordinates
+  ══════════════════════════════════════════════ -->
+  <div class="section">
+    <div class="section-title">§5.3 &amp; §5.6 Orthogonality, Coordinates &amp; Best Approximation</div>
+    <div class="grid grid-2">
+
+      <!-- Card 11 — Orthogonal Complement -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Orthogonal Complement</div>
+        <div class="def">
+          <div class="def-label">Orthogonal Complement (§5.3)</div>
+          For a subspace U ⊆ $\mathbb{R}^n$, the <span class="tt" data-t="U⊥ = {v ∈ Rⁿ | v·u = 0 for all u ∈ U}; the set of all vectors orthogonal to every vector in U; always a subspace">orthogonal complement</span> is:
+          <br/><br/>
+          $$U^\perp = \{\mathbf{v} \in \mathbb{R}^n \mid \mathbf{v}\cdot\mathbf{u} = 0 \text{ for all } \mathbf{u} \in U\}$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Fundamental Subspace Theorem</div>
+          For any m×n matrix A:
+          <br/><br/>
+          • $\mathbb{R}^n = \text{row}(A) \oplus \text{null}(A)$ &nbsp;&nbsp;(direct sum, orthogonal)<br/>
+          • $\mathbb{R}^m = \text{col}(A) \oplus \text{null}(A^T)$ &nbsp;(direct sum, orthogonal)<br/><br/>
+          This means every $\mathbf{x} \in \mathbb{R}^n$ decomposes uniquely as:<br/>
+          $\mathbf{x} = \mathbf{x}_{\text{row}} + \mathbf{x}_{\text{null}}$, &nbsp; $\mathbf{x}_{\text{row}} \in \text{row}(A)$, &nbsp;$\mathbf{x}_{\text{null}} \in \text{null}(A)$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Properties of U⊥ (§5.3)</div>
+          • $(U^\perp)^\perp = U$ &nbsp;&nbsp;(double complement returns $U$).<br/>
+          • $\dim(U) + \dim(U^\perp) = n$.<br/>
+          • $U \cap U^\perp = \{\mathbf{0}\}$.<br/>
+          • $(\text{row}(A))^\perp = \text{null}(A)$; &nbsp;$(\text{col}(A))^\perp = \text{null}(A^T)$.
+        </div>
+        <div class="note">
+          <div class="note-label">Theorem 5.3.5 — Orthogonal ⟹ Independent</div>
+          Every <span class="tt" data-t="A set of nonzero vectors {x₁,…,xₖ} with xᵢ·xⱼ = 0 for all i ≠ j; pairwise perpendicular">orthogonal set</span> of nonzero vectors in $\mathbb{R}^n$ is linearly independent.<br/>
+          <em>Proof: take dot product of vanishing combination with each xᵢ.</em>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.3.4 — Pythagoras in $\mathbb{R}^n$</div>
+          If {<strong>x₁, …, xₖ</strong>} is an orthogonal set:<br/>
+          $$\|\mathbf{x}_1 + \cdots + \mathbf{x}_k\|^2 = \|\mathbf{x}_1\|^2 + \cdots + \|\mathbf{x}_k\|^2$$
+        </div>
+      </div>
+
+      <!-- Card 12 — Projection onto Subspace & Least Squares -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Projection &amp; Best Approximation</div>
+        <div class="def">
+          <div class="def-label">Projection onto a Subspace</div>
+          For U ⊆ $\mathbb{R}^n$ and <strong>v</strong> ∈ $\mathbb{R}^n$, <span class="tt" data-t="The unique vector in U closest to v; minimises ‖v − u‖ over all u ∈ U; the foot of perpendicular from v to U">proj<sub>U</sub>(<strong>v</strong>)</span> is the unique closest vector in U to <strong>v</strong>:
+          <br/><br/>
+          $\mathbf{v} = \text{proj}_U(\mathbf{v}) + \mathbf{v}^\perp$ &nbsp;where &nbsp;$\mathbf{v}^\perp \in U^\perp$.
+        </div>
+        <div class="formula">
+          <span class="formula-label">If {f₁, …, fₖ} is an ONB for U (Expansion Theorem)</span>
+          $$\text{proj}_U(\mathbf{v}) = (\mathbf{v}\cdot\mathbf{f}_1)\mathbf{f}_1 + (\mathbf{v}\cdot\mathbf{f}_2)\mathbf{f}_2 + \cdots + (\mathbf{v}\cdot\mathbf{f}_k)\mathbf{f}_k$$
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.6.1 — Best Approximation Theorem (§5.6)</div>
+          Let A be m×n and <strong>b</strong> ∈ $\mathbb{R}^m$. Consider Ax = b (possibly inconsistent). Any solution <strong>z</strong> of the <em>normal equations</em>:
+          <br/><br/>
+          $$(A^TA)\mathbf{z} = A^T\mathbf{b}$$
+          minimises $\|\mathbf{b} - A\mathbf{z}\|$ over all $\mathbf{x} \in \mathbb{R}^n$ (best approximation to a solution).<br/>
+          If columns of $A$ are independent: $A^TA$ is invertible and $\mathbf{z} = (A^TA)^{-1}A^T\mathbf{b}$ uniquely.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.6.2 — Least Squares Line (§5.6)</div>
+          Given data points (x₁,y₁), …, (xₙ,yₙ) with at least two distinct xᵢ. Form:<br/>
+          M = [1 xᵢ] matrix (n×2), &nbsp;<strong>y</strong> = (y₁,…,yₙ)ᵀ. Solve normal equations:<br/>
+          $(M^TM)\mathbf{z} = M^T\mathbf{y}$ &nbsp;$\to$&nbsp; least squares line $y = z_0 + z_1 x$.
+        </div>
+        <div class="note">
+          <div class="note-label">Gram-Schmidt Preview (§8.1)</div>
+          Every subspace U ⊆ $\mathbb{R}^n$ has an orthogonal basis. The <span class="tt" data-t="Algorithm converting any basis of U to an orthogonal one by subtracting successive projections; covered in §8.1">Gram-Schmidt algorithm</span> constructs one from any given basis and enables explicit projection computation.
+        </div>
+      </div>
+
+    </div>
+
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <!-- Card 13 — Coordinates and Coordinate Isomorphism -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Coordinates &amp; Coordinate Isomorphism</div>
+        <div class="def">
+          <div class="def-label">The Coordinate Map C<sub>B</sub></div>
+          Let B = {<strong>b₁, …, bₘ</strong>} be a basis of a subspace U ⊆ $\mathbb{R}^n$. The <span class="tt" data-t="The bijective linear map C_B: U → Rᵐ sending v to its coordinate vector [v]_B; an isomorphism of vector spaces">coordinate map</span>:
+          <br/><br/>
+          $C_B: U \to \mathbb{R}^m$ &nbsp;&nbsp;defined by &nbsp;&nbsp;$C_B(\mathbf{v}) = [\mathbf{v}]_B$
+          <br/><br/>
+          is an <strong>isomorphism</strong>: it preserves addition and scalar multiplication.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Properties of the Coordinate Isomorphism</div>
+          • [<strong>v</strong> + <strong>w</strong>]<sub>B</sub> = [<strong>v</strong>]<sub>B</sub> + [<strong>w</strong>]<sub>B</sub> &nbsp;&nbsp;(preserves addition).<br/>
+          • [c<strong>v</strong>]<sub>B</sub> = c[<strong>v</strong>]<sub>B</sub> &nbsp;&nbsp;(preserves scalar multiplication).<br/>
+          • C<sub>B</sub> is a bijection: dim(U) = m iff U ≅ $\mathbb{R}^m$.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 5.8 — Orthonormal Set (§5.3)</div>
+          A set $\{\mathbf{x}_1, \ldots, \mathbf{x}_k\}$ is <strong>orthonormal</strong> if it is orthogonal and $\|\mathbf{x}_i\| = 1$ for each $i$.<br/>
+          From an orthogonal set $\{\mathbf{x}_1, \ldots, \mathbf{x}_k\}$: normalise via $\mathbf{x}_i \to \mathbf{x}_i/\|\mathbf{x}_i\|$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.3.1 — Properties of Dot Product in $\mathbb{R}^n$</div>
+          For <strong>x</strong>, <strong>y</strong>, <strong>z</strong> ∈ $\mathbb{R}^n$, scalar a:
+        </div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Property</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>$\mathbf{x}\cdot\mathbf{y} = \mathbf{y}\cdot\mathbf{x}$</td></tr>
+            <tr><td>2</td><td>$\mathbf{x}\cdot(\mathbf{y}+\mathbf{z}) = \mathbf{x}\cdot\mathbf{y} + \mathbf{x}\cdot\mathbf{z}$</td></tr>
+            <tr><td>3</td><td>$(a\mathbf{x})\cdot\mathbf{y} = a(\mathbf{x}\cdot\mathbf{y})$</td></tr>
+            <tr><td>4</td><td>$\|\mathbf{x}\|^2 = \mathbf{x}\cdot\mathbf{x} \geq 0$; $= 0$ iff $\mathbf{x} = \mathbf{0}$</td></tr>
+          </tbody>
+        </table>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.3.2 — Cauchy–Schwarz Inequality</div>
+          $|\mathbf{x}\cdot\mathbf{y}| \leq \|\mathbf{x}\| \|\mathbf{y}\|$; equality iff one is a multiple of the other.
+        </div>
+      </div>
+
+      <!-- Card 14 — Basis Theorem & Diagonalization -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Basis Extension/Contraction &amp; Diagonalization</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.2.6 — Extension &amp; Contraction</div>
+          In any subspace U ≠ {<strong>0</strong>} of $\mathbb{R}^n$:<br/>
+          • Any <strong>independent set</strong> in U can be <em>extended</em> to a basis of U.<br/>
+          • Any <strong>spanning set</strong> for U can be <em>contracted</em> (reduced) to a basis.<br/>
+          • In an n-dimensional space: n independent vectors <strong>form a basis</strong>; n spanning vectors <strong>form a basis</strong>.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 5.11 — Similar Matrices (§5.5)</div>
+          A and B are <span class="tt" data-t="Two n×n matrices A ~ B if B = P⁻¹AP for some invertible P; similar matrices represent the same linear map in different bases">similar</span> (write $A \sim B$) if $B = P^{-1}AP$ for some invertible $P$.<br/>
+          <em>Similarity is an equivalence relation</em> (reflexive, symmetric, transitive).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.5.1 — Shared Properties of Similar Matrices</div>
+          If $A \sim B$ then $A$ and $B$ have the same:<br/>
+          <strong>determinant, rank, trace, characteristic polynomial, eigenvalues</strong>.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.5.3 — Diagonalization Criterion</div>
+          An n×n matrix A is <strong>diagonalizable</strong> iff $\mathbb{R}^n$ has a basis $\{\mathbf{x}_1, \ldots, \mathbf{x}_n\}$ of eigenvectors of $A$. Then $P = [\mathbf{x}_1 \cdots \mathbf{x}_n]$ gives $P^{-1}AP = \text{diag}(\lambda_1, \ldots, \lambda_n)$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.5.4 — Distinct Eigenvalues ⟹ Independence</div>
+          Eigenvectors corresponding to <em>distinct</em> eigenvalues are linearly independent.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 5.5.6 — Complete Diagonalization Criterion</div>
+          When $c_A(x)$ factors completely: $A$ is diagonalizable iff $\dim(E_\lambda(A)) = $ multiplicity of $\lambda$ for every eigenvalue $\lambda$.
+        </div>
+        <div class="note">
+          <div class="note-label">Theorem 5.5.7 — Symmetric Matrices Have Real Eigenvalues</div>
+          If $A$ is a <strong>real symmetric matrix</strong> ($A^T = A$), then all eigenvalues of $A$ are real.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div><!-- end .page-body -->
+
+<footer class="chapter-footer">
+  <a href="CH04-Vector-Geometry-CheatSheet.html">← CH4 Vector Geometry</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH5</span>
+  <a href="CH06-Abstract-Vector-Spaces-CheatSheet.html">CH6 Abstract Vector Spaces →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-5';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

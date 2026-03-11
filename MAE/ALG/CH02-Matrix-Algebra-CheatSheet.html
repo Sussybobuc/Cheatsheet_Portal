@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Matrix Algebra — Linear Algebra Cheatsheet</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="alg.css"/>
+</head>
+<body>
+<nav id="page-toc"><div class="toc-hdr">Contents</div></nav>
+
+<header class="page-header">
+  <div class="page-header-inner">
+    <div class="page-eyebrow">MAE · ALG · Chapter 2</div>
+    <h1>Matrix Algebra <span>— Chapter 2</span></h1>
+    <p class="page-subtitle">Matrix operations, inverses, elementary matrices, LU factorization, linear transformations, and geometric transformations in the plane.</p>
+    <span class="page-badge">LAW · CH2 · §2.1–§2.9</span>
+  </div>
+</header>
+
+<div class="page-body">
+
+  <!-- ─── §2.1 Matrix Foundations ─── -->
+  <div class="section">
+    <div class="section-title">§2.1 Matrix Foundations</div>
+    <div class="section-subtitle">Notation, special matrices, addition, scalar multiplication, transpose</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 1: Matrix Notation & Types -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Matrix Notation &amp; Special Types</div>
+        <div class="def">
+          <div class="def-label">Definition 2.1 — Matrix</div>
+          A rectangular array of numbers. An <span class="tt" data-t="Has m rows and n columns; we say A has size m×n. Rows counted top-down, columns left-right.">m×n matrix</span> A has entries a<sub>ij</sub> in row i and column j. Notation: A = [a<sub>ij</sub>].
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Type</th><th>Condition</th><th>Notation</th></tr></thead>
+          <tbody>
+            <tr><td>Square</td><td>m = n (n×n)</td><td>A<sub>n×n</sub></td></tr>
+            <tr><td>Row matrix</td><td>m = 1 (1×n)</td><td>row vector</td></tr>
+            <tr><td>Column matrix</td><td>n = 1 (m×1)</td><td>column vector</td></tr>
+            <tr><td>Zero matrix</td><td>every entry = 0</td><td>0 or 0<sub>mn</sub></td></tr>
+            <tr><td>Identity matrix</td><td>square; 1s on diagonal, 0s elsewhere</td><td>I or I<sub>n</sub></td></tr>
+            <tr><td>Diagonal matrix</td><td>square; all off-diagonal entries = 0</td><td>diag(d<sub>1</sub>,…,d<sub>n</sub>)</td></tr>
+          </tbody>
+        </table>
+        <div class="def">
+          <div class="def-label">Matrix Equality</div>
+          A = B if and only if: (1) they have the same size, and (2) a<sub>ij</sub> = b<sub>ij</sub> for all i, j.
+        </div>
+        <div class="note">
+          <div class="note-label">Rows vs Columns Convention</div>
+          Size is always stated as rows × columns. The (i, j)-entry lies in row i (first index) and column j (second index).
+        </div>
+      </div>
+
+      <!-- CARD 2: Addition, Scalar Mult & Properties -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Addition, Scalar Multiplication &amp; Properties</div>
+        <div class="def">
+          <div class="def-label">Definition 2.1 — Matrix Addition</div>
+          If A and B have the same size: A + B = [a<sub>ij</sub> + b<sub>ij</sub>]. Not defined for different sizes.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 2.2 — Scalar Multiple</div>
+          For any matrix A and scalar k: kA = [ka<sub>ij</sub>]. Thus −A = [−a<sub>ij</sub>] and A−B = A+(−B).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.1.1 — Properties of Addition &amp; Scalar Mult.</div>
+          For m×n matrices A, B, C and scalars k, p:
+          <ol class="steps">
+            <li>$A + B = B + A$ &nbsp;&nbsp;<em>(commutative)</em></li>
+            <li>$A + (B + C) = (A + B) + C$ &nbsp;&nbsp;<em>(associative)</em></li>
+            <li>$\mathbf{0} + A = A$ &nbsp;&nbsp;<em>(zero matrix)</em></li>
+            <li>$A + (-A) = \mathbf{0}$ &nbsp;&nbsp;<em>(additive inverse)</em></li>
+            <li>$k(A + B) = kA + kB$ &nbsp;&nbsp;<em>(distributive)</em></li>
+            <li>$(k + p)A = kA + pA$ &nbsp;&nbsp;<em>(distributive)</em></li>
+            <li>$(kp)A = k(pA)$ &nbsp;&nbsp;<em>(scalar assoc.)</em></li>
+            <li>$1 \cdot A = A$</li>
+          </ol>
+        </div>
+        <div class="example">
+          <div class="example-label">Key Facts</div>
+          $kA = \mathbf{0}$ implies $k = 0$ or $A = \mathbf{0}$ (converse is also true).<br>
+          $\mathbf{0}A = \mathbf{0}$ and $k\mathbf{0} = \mathbf{0}$ for all $A$, $k$.
+        </div>
+      </div>
+
+    </div><!-- /.grid -->
+
+    <!-- CARD 3: Transpose — full-width below -->
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Matrix Transpose</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="def">
+              <div class="def-label">Definition 2.3 — Transpose</div>
+              If A is m×n, the <span class="tt" data-t="A^T is n×m; the rows of A^T are the columns of A in the same order. Equivalently, (A^T)_{ij} = a_{ji}.">transpose A<sup>T</sup></span> is the n×m matrix whose rows are the columns of A. Formally: if A = [a<sub>ij</sub>] then A<sup>T</sup> = [a<sub>ji</sub>].
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.1.2 — Transpose Properties</div>
+              <ol class="steps">
+                <li>If $A$ is $m \times n$ then $A^T$ is $n \times m$.</li>
+                <li>$(A^T)^T = A$</li>
+                <li>$(kA)^T = kA^T$</li>
+                <li>$(A + B)^T = A^T + B^T$</li>
+              </ol>
+            </div>
+          </div>
+          <div>
+            <div class="def">
+              <div class="def-label">Symmetric Matrix</div>
+              A square matrix $A$ is <span class="tt" data-t="Entries symmetric about the main diagonal: a_{ij} = a_{ji}. Equivalently A = A^T.">symmetric</span> if $A = A^T$. Symmetric matrices are necessarily square.
+            </div>
+            <div class="def">
+              <div class="def-label">Skew-Symmetric Matrix</div>
+              A square matrix $W$ is skew-symmetric if $W^T = -W$. All diagonal entries of a skew-symmetric matrix are zero.
+            </div>
+            <div class="note">
+              <div class="note-label">Decomposition</div>
+              Every square matrix $A$ can be written uniquely as $A = S + W$ where $S = \tfrac{1}{2}(A + A^T)$ is symmetric and $W = \tfrac{1}{2}(A - A^T)$ is skew-symmetric.
+            </div>
+          </div>
+        </div>
+        <div class="formula">
+          <span class="formula-label">Geometric view</span>
+          Forming $A^T$ = "flip $A$ about its main diagonal" (rotate 180° about the diagonal line).
+          Transpose of a $3 \times 2$ matrix is $2 \times 3$.
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.section §2.1 -->
+
+  <!-- ─── §2.2–§2.3 Matrix Multiplication ─── -->
+  <div class="section">
+    <div class="section-title">§2.2–§2.3 Matrix-Vector &amp; Matrix Multiplication</div>
+    <div class="section-subtitle">Column-combination definition, dot product rule, properties</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 4: Matrix-Vector Multiplication -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Matrix-Vector Multiplication</div>
+        <div class="def">
+          <div class="def-label">Definition 2.5 — Matrix-Vector Product</div>
+          Let A = [a<sub>1</sub> a<sub>2</sub> … a<sub>n</sub>] (m×n, written in terms of columns) and x = (x<sub>1</sub>, …, x<sub>n</sub>)<sup>T</sup>. Then:
+        </div>
+        <div class="formula">
+          $$A\mathbf{x} = x_1\mathbf{a}_1 + x_2\mathbf{a}_2 + \cdots + x_n\mathbf{a}_n$$
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0;">Ax is a <strong>linear combination</strong> of the columns of A with coefficients from x. Ax is an m-vector.</p>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.2.1 — Systems in Matrix Form</div>
+          <ol class="steps">
+            <li>Every linear system has matrix form $A\mathbf{x} = \mathbf{b}$ ($A$ = coefficient matrix, $\mathbf{b}$ = constant matrix, $\mathbf{x}$ = variables).</li>
+            <li>System $A\mathbf{x} = \mathbf{b}$ is consistent iff $\mathbf{b}$ is a <span class="tt" data-t="b = x₁a₁ + x₂a₂ + ⋯ + xₙaₙ for some scalars x₁,…,xₙ">linear combination</span> of the columns of $A$.</li>
+            <li>If a<sub>1</sub>,…,a<sub>n</sub> are columns of A, then x solves Ax = b iff x<sub>1</sub>a<sub>1</sub>+⋯+x<sub>n</sub>a<sub>n</sub> = b.</li>
+          </ol>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.2.2 — Linearity of Ax</div>
+          For matrix A and vectors x, y and scalar k:
+          <ol class="steps">
+            <li>$A(\mathbf{x} + \mathbf{y}) = A\mathbf{x} + A\mathbf{y}$</li>
+            <li>$A(k\mathbf{x}) = k(A\mathbf{x})$</li>
+          </ol>
+          In particular, if $A\mathbf{x}_0 = \mathbf{0}$ and $A\mathbf{x}_1 = \mathbf{b}$, then $\mathbf{x}_1 + t\mathbf{x}_0$ ($t$ any scalar) is an infinite family of solutions to $A\mathbf{x} = \mathbf{b}$.
+        </div>
+      </div>
+
+      <!-- CARD 5: Matrix Multiplication -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Matrix Multiplication</div>
+        <div class="def">
+          <div class="def-label">Definition 2.9 — Matrix Product</div>
+          Let $A$ be $m \times n$ and $B = [\mathbf{b}_1\ \mathbf{b}_2\ \cdots\ \mathbf{b}_k]$ be $n \times k$ (written in terms of its columns). The product $AB$ is the $m \times k$ matrix:
+        </div>
+        <div class="formula">
+          $$AB = A[\mathbf{b}_1\ \mathbf{b}_2\ \cdots\ \mathbf{b}_k] = [A\mathbf{b}_1\ A\mathbf{b}_2\ \cdots\ A\mathbf{b}_k]$$
+          <figure class="math-fig">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/e/eb/Matrix_multiplication_diagram_2.svg" alt="Matrix multiplication diagram" loading="lazy"/>
+            <figcaption>$(AB)_{ij} = \sum_{k} a_{ik} b_{kj}$: row $i$ of $A$ dotted with column $j$ of $B$</figcaption>
+          </figure>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.3.2 — Dot Product Rule</div>
+          The <span class="tt" data-t="Go across row i of A and down column j of B, multiply corresponding entries, sum the results. Requires A is m×n and B is n×k.">dot product rule</span>: the $(i,j)$-entry of $AB$ = dot product of row $i$ of $A$ with column $j$ of $B$.
+        </div>
+        <div class="def">
+          <div class="def-label">Compatibility Rule</div>
+          $AB$ is defined only if the number of columns of $A$ equals the number of rows of $B$.<br>
+          <strong>$(m \times n)(n \times k) \to m \times k$</strong>
+        </div>
+        <div class="warn">
+          <strong>⚠ Non-commutativity:</strong> $AB$ and $BA$ are generally not equal — they may not even be the same size. Changing the order of factors in a product can change (or destroy) the result. This is the single most common error in matrix algebra.
+        </div>
+        <div class="example">
+          <div class="example-label">Example — A² = 0 with A ≠ 0</div>
+          $A = \begin{bmatrix} 6 & 9 \\ -4 & -6 \end{bmatrix}$: $A^2 = \mathbf{0}$ despite $A \neq \mathbf{0}$. Also $AB \neq BA$ for generic matrices.
+        </div>
+      </div>
+
+    </div><!-- /.grid -->
+
+    <!-- CARD 6: Multiplication Properties -->
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Properties of Matrix Multiplication</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.3.3 — Core Properties</div>
+              Let a be any scalar; A, B, C matrices of compatible sizes:
+              <ol class="steps">
+                <li>$IA = A$ and $AI = A$ &nbsp;&nbsp;<em>(identity)</em></li>
+                <li>$A(BC) = (AB)C$ &nbsp;&nbsp;<em>(associative)</em></li>
+                <li>$A(B + C) = AB + AC$ &nbsp;&nbsp;<em>(left-distributive)</em></li>
+                <li>$(B + C)A = BA + CA$ &nbsp;&nbsp;<em>(right-distributive)</em></li>
+                <li>$a(AB) = (aA)B = A(aB)$</li>
+                <li><strong>$(AB)^T = B^T A^T$</strong> &nbsp;&nbsp;<em>(reversal rule)</em></li>
+              </ol>
+            </div>
+          </div>
+          <div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.3.1 — Associativity via Vectors</div>
+              If A is m×n and B is n×k, then for all $\mathbf{x} \in \mathbb{R}^k$:<br>
+              $A(B\mathbf{x}) = (AB)\mathbf{x}$<br>
+              This is how matrix multiplication is motivated: it corresponds to composition of matrix transformations.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.3.4 — Block Multiplication</div>
+              If matrices A and B are partitioned compatibly into blocks, AB can be computed using ordinary matrix multiplication with blocks as entries.
+            </div>
+          </div>
+        </div>
+        <div class="note">
+          <div class="note-label">Commuting Matrices</div>
+          A and B <span class="tt" data-t="AB = BA. This is rare for general matrices but holds for diagonal matrices, scalar multiples of I, and powers of the same matrix.">commute</span> if $AB = BA$. $(A-B)(A+B) = A^2 - B^2$ if and only if $AB = BA$.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Transpose of product — reversal rule</span>
+          $$(AB)^T = B^T A^T$$
+          $$(ABC)^T = C^T B^T A^T$$
+          More generally: $$(A_1 A_2 \cdots A_k)^T = A_k^T \cdots A_2^T A_1^T$$
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /.section §2.2–§2.3 -->
+
+  <!-- ─── §2.4 Matrix Inverses ─── -->
+  <div class="section">
+    <div class="section-title">§2.4 Matrix Inverses</div>
+    <div class="section-subtitle">Definition, uniqueness, 2×2 formula, Gauss-Jordan algorithm, properties</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 7: Inverse Definition & 2×2 Formula -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Inverse Definition &amp; 2×2 Formula</div>
+        <div class="def">
+          <div class="def-label">Definition 2.11 — Matrix Inverse</div>
+          If A is a square matrix, a matrix B is an <span class="tt" data-t="Only square matrices can have inverses. A is invertible iff it has an inverse, which must satisfy both AB=I and BA=I.">inverse of A</span> if $AB = I$ and $BA = I$. A matrix that has an inverse is called invertible (or non-singular).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.4.1 — Uniqueness of Inverse</div>
+          If B and C are both inverses of A, then B = C.<br>
+          <em>Proof:</em> $B = IB = (CA)B = C(AB) = CI = C$.
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin:6px 0 10px;">If A is invertible its unique inverse is written A<sup>−1</sup>, satisfying AA<sup>−1</sup> = I = A<sup>−1</sup>A.</p>
+        <div class="formula">
+          <span class="formula-label">2×2 Inverse Formula (Example 2.4.4)</span>
+          For $A = \begin{bmatrix} a & b \\ c & d \end{bmatrix}$:
+          $$\det A = ad - bc$$
+          $$\operatorname{adj} A = \begin{bmatrix} d & -b \\ -c & a \end{bmatrix}$$
+          $$A^{-1} = \frac{1}{\det A} \cdot \operatorname{adj} A, \quad \text{provided } \det A \neq 0$$
+          $A$ is invertible iff $\det A \neq 0$.
+        </div>
+        <div class="example">
+          <div class="example-label">Solving Ax = b with Inverse</div>
+          If $A$ ($n \times n$) is invertible, the system $A\mathbf{x} = \mathbf{b}$ has unique solution $\mathbf{x} = A^{-1}\mathbf{b}$ (Theorem 2.4.2).
+        </div>
+        <div class="note">
+          <div class="note-label">Corollary 2.4.1</div>
+          For square $A$, $C$: if $AC = I$, then automatically $CA = I$. Both $A$ and $C$ are invertible with $C = A^{-1}$.
+        </div>
+      </div>
+
+      <!-- CARD 8: Computing Inverses — Gauss-Jordan -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Computing Inverses — Gauss-Jordan Algorithm</div>
+        <div class="def">
+          <div class="def-label">Matrix Inversion Algorithm</div>
+          If A is invertible, a sequence of elementary row operations carries A to I, and the same operations carry I to A<sup>−1</sup>:
+        </div>
+        <div class="formula">
+          $$\left[A \mid I\right] \xrightarrow{\text{row operations}} \left[I \mid A^{-1}\right]$$
+        </div>
+        <ol class="steps" style="margin:8px 0 8px 18px;font-size:12px;color:var(--text-muted);">
+          <li>Form the augmented matrix [A | I<sub>n</sub>].</li>
+          <li>Perform row operations to reduce A to reduced row-echelon form.</li>
+          <li>If A reduces to I<sub>n</sub>, the right block is A<sup>−1</sup>.</li>
+          <li>If A does not reduce to I<sub>n</sub>, A has a row of zeros → A is not invertible.</li>
+        </ol>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.4.3 — Algorithm is Effective</div>
+          For any n×n matrix A, either A can be reduced to I by row operations (algorithm produces A<sup>−1</sup>), or it cannot (A<sup>−1</sup> does not exist).
+        </div>
+        <div class="example">
+          <div class="example-label">Example 2.4.6 — 3×3 Inverse</div>
+          A = [[2,7,1],[1,4,−1],[1,3,0]]<br>
+          Apply [A|I] → [I|A<sup>−1</sup>] via row operations (swap rows, eliminate).<br>
+          Result: A<sup>−1</sup> = (1/2)[[−3,−3,11],[1,1,−3],[1,−1,−1]]
+        </div>
+        <div class="note">
+          <div class="note-label">Corollary 2.4.2 — Rank Condition</div>
+          An $n \times n$ matrix $A$ is invertible if and only if $\text{rank}(A) = n$.
+        </div>
+      </div>
+
+    </div><!-- /.grid -->
+
+    <!-- CARD 9: Inverse Properties + Invertible Theorem -->
+    <div class="grid grid-2" style="margin-top:16px;">
+
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Properties of Inverses</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.4.4 — Inverse Properties</div>
+          All matrices square of the same size:
+          <ol class="steps">
+            <li>$I^{-1} = I$</li>
+            <li>$(A^{-1})^{-1} = A$</li>
+            <li>$(AB)^{-1} = B^{-1}A^{-1}$ &nbsp;&nbsp;<em>(reversal)</em></li>
+            <li>$(A_1 A_2 \cdots A_k)^{-1} = A_k^{-1} \cdots A_2^{-1} A_1^{-1}$</li>
+            <li>$(A^k)^{-1} = (A^{-1})^k$ for $k \geq 1$</li>
+            <li>$(aA)^{-1} = (1/a)A^{-1}$ for $a \neq 0$</li>
+            <li>$(A^T)^{-1} = (A^{-1})^T$</li>
+          </ol>
+        </div>
+        <div class="warn">
+          <strong>⚠ Order reversal:</strong> $(AB)^{-1} = B^{-1}A^{-1}$, NOT $A^{-1}B^{-1}$. This is because matrix multiplication is not commutative.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Corollary 2.4.1 — Invertibility of Transpose</div>
+          A square matrix $A$ is invertible if and only if $A^T$ is invertible.
+        </div>
+        <div class="example">
+          <div class="example-label">Cancellation Laws (Example 2.4.7)</div>
+          If A is invertible:<br>
+          • $AB = AC \Rightarrow B = C$ &nbsp;(left cancellation)<br>
+          • $BA = CA \Rightarrow B = C$ &nbsp;(right cancellation)<br>
+          But <em>mixed</em> cancellation may fail: $AB = CA$ does not imply $B = C$.
+        </div>
+      </div>
+
+      <!-- CARD 10: Invertible Matrix Theorem -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Invertible Matrix Theorem (Theorem 2.4.5)</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.4.5 — Equivalent Conditions for Invertibility</div>
+          The following are equivalent for an n×n matrix A:
+        </div>
+        <table class="tbl">
+          <thead><tr><th>#</th><th>Condition</th></tr></thead>
+          <tbody>
+            <tr><td>(1)</td><td>A is invertible (A<sup>−1</sup> exists).</td></tr>
+            <tr><td>(2)</td><td>The homogeneous system $A\mathbf{x} = \mathbf{0}$ has only the trivial solution $\mathbf{x} = \mathbf{0}$.</td></tr>
+            <tr><td>(3)</td><td>$A$ can be reduced to the identity matrix $I_n$ by elementary row operations.</td></tr>
+            <tr><td>(4)</td><td>For every column $\mathbf{b}$, $A\mathbf{x} = \mathbf{b}$ has at least one solution.</td></tr>
+            <tr><td>(5)</td><td>There exists an n×n matrix C such that AC = I<sub>n</sub>.</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">Proof Chain</div>
+          $(1)\Rightarrow(2)\Rightarrow(3)\Rightarrow(4)\Rightarrow(5)\Rightarrow(1)$. Key step: $(3)\Rightarrow(4)$ because row-reducing $[A|\mathbf{b}]$ always produces a solution; $(5)\Rightarrow(1)$ because $AC = I$ forces $CA = I$ (Corollary 2.4.1).
+        </div>
+        <div class="formula">
+          <span class="formula-label">Consequences</span>
+          $$\text{rank}(A) = n \;\Leftrightarrow\; A \text{ invertible} \quad \text{(Corollary 2.4.2)}$$
+          $A$ has a row of zeros $\Rightarrow$ $A$ is NOT invertible.
+          $A$ has a column of zeros $\Rightarrow$ $A$ is NOT invertible.
+          Each row (column) of $A$ sums to 0 $\Rightarrow$ NOT invertible.
+        </div>
+      </div>
+
+    </div>
+
+  </div><!-- /.section §2.4 -->
+
+  <!-- ─── §2.5 Elementary Matrices ─── -->
+  <div class="section">
+    <div class="section-title">§2.5 Elementary Matrices</div>
+    <div class="section-subtitle">Three types, left-multiplication = row operation, product representation</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 11: Elementary Matrices -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Elementary Matrices &amp; Row Operations</div>
+        <div class="def">
+          <div class="def-label">Definition 2.12 — Elementary Matrix</div>
+          An n×n matrix E is an <span class="tt" data-t="Obtained from I_n by a single elementary row operation. Three types: I (swap rows), II (scale a row), III (add multiple of one row to another).">elementary matrix</span> if it is obtained from I<sub>n</sub> by a single elementary row operation.
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Type</th><th>Operation on I</th><th>Inverse Operation</th></tr></thead>
+          <tbody>
+            <tr><td>I</td><td>Interchange rows p and q</td><td>Interchange rows p and q (self-inverse)</td></tr>
+            <tr><td>II</td><td>Multiply row p by k ≠ 0</td><td>Multiply row p by 1/k</td></tr>
+            <tr><td>III</td><td>Add k × row p to row q (p ≠ q)</td><td>Subtract k × row p from row q</td></tr>
+          </tbody>
+        </table>
+        <div class="theorem">
+          <div class="theorem-label">Lemma 2.5.1 — Left Multiplication = Row Operation</div>
+          Performing an elementary row operation on $A$ is the same as left-multiplying $A$ by the corresponding elementary matrix $E$:<br>
+          $EA$ = $A$ with that row operation applied.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Lemma 2.5.2 — Every E is Invertible</div>
+          Every elementary matrix E is invertible, and E<sup>−1</sup> is also elementary of the same type (corresponding to the inverse row operation).
+        </div>
+        <div class="example">
+          <div class="example-label">Example (2×2)</div>
+          E<sub>1</sub>=[[0,1],[1,0]] (type I, swap rows) — self-inverse<br>
+          E<sub>2</sub>=[[1,0],[0,9]] (type II, scale row 2 by 9) — inverse has 1/9<br>
+          E<sub>3</sub>=[[1,5],[0,1]] (type III, add 5×row2 to row1) — inverse has −5
+        </div>
+      </div>
+
+      <!-- CARD 12: A as Product of Elementaries -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Factoring as Product of Elementary Matrices</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.5.1 — Row Reduction = Left Multiplication by Invertible U</div>
+          If A is m×n and A →B by elementary row operations with elementary matrices E<sub>1</sub>, E<sub>2</sub>, …, E<sub>k</sub> (in order), then B = UA where U = E<sub>k</sub>⋯E<sub>2</sub>E<sub>1</sub> is invertible. Moreover, U can be computed from:
+          <div class="formula" style="margin:6px 0;">$$[A \mid I_m] \;\longrightarrow\; [B \mid U]$$</div>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.5.2 — Invertible ⟺ Product of Elementaries</div>
+          A square matrix is invertible if and only if it is a product of elementary matrices.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Factorization Formula</span>
+          If $A \to I$ via $E_1, E_2, \ldots, E_k$ (in order), then:
+          $$A^{-1} = E_k E_{k-1} \cdots E_2 E_1$$
+          $$A = E_1^{-1} E_2^{-1} \cdots E_k^{-1}$$
+          (product of elementary matrices, each of the same type as $E_i$)
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.5.3 — Smith Normal Form</div>
+          For any m×n matrix A of rank r, there exist invertible U (m×m) and V (n×n) such that:
+          <div class="formula" style="margin:6px 0;">$$UAV = \begin{bmatrix} I_r & 0 \\ 0 & 0 \end{bmatrix}$$</div>
+          This is the Smith normal form of A — the "nicest" matrix reachable by both row and column operations.
+        </div>
+        <div class="note">
+          <div class="note-label">Row-Equivalent Matrices</div>
+          A and B are row-equivalent (A ~ B) if A = UB for some invertible U. Every matrix is row-equivalent to a unique reduced row-echelon form (Theorem 2.5.4).
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /.section §2.5 -->
+
+  <!-- ─── §2.7 LU Factorization ─── -->
+  <div class="section">
+    <div class="section-title">§2.7 LU-Factorization</div>
+    <div class="section-subtitle">Triangular factorization, algorithm, solving Ax = b efficiently</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 13: LU Factorization -->
+      <div class="card col-span-2">
+        <div class="card-title"><div class="dot"></div>LU-Factorization</div>
+        <div class="grid grid-2">
+          <div>
+            <div class="def">
+              <div class="def-label">Definition 2.14 — LU-Factorization</div>
+              $A = LU$ where $L$ is <span class="tt" data-t="Lower triangular: all entries above the main diagonal are zero. Invertible iff all diagonal entries are nonzero.">lower triangular</span> and invertible, $U$ is upper triangular and row-echelon. Exists when A can be reduced to row-echelon form without row interchanges.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.7.1 — Existence</div>
+              If $A$ can be lower-reduced (no row interchanges) to row-echelon matrix $U$, then $A = LU$ where $L$ is invertible lower triangular.
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.7.2 — PLU-Factorization</div>
+              For any $m \times n$ matrix $A$: there exists a <span class="tt" data-t="A permutation matrix has exactly one 1 in each row and column (0s elsewhere). It is the product of elementary row-swap matrices.">permutation matrix</span> $P$ such that $PA$ has an LU-factorization $PA = LU$ (PLU-factorization of $A$).
+            </div>
+            <div class="theorem">
+              <div class="theorem-label">Theorem 2.7.3 — Uniqueness</div>
+              If $A = LU$ and $\text{rank}(A) = m$ ($U$ has no zero rows), then $L$ and $U$ are uniquely determined.
+            </div>
+          </div>
+          <div>
+            <div class="def">
+              <div class="def-label">LU-Algorithm (Theorem 2.7.1)</div>
+              <ol class="steps">
+                <li>Let A<sub>1</sub> = A. Find the leading column c<sub>1</sub> of A<sub>1</sub>; create the first leading 1 and zeros below (lower reduction only).</li>
+                <li>Let A<sub>2</sub> = rows 2–m of result. Find leading column c<sub>2</sub> of A<sub>2</sub>; repeat.</li>
+                <li>Continue for r steps (r = rank A) until row-echelon U is reached.</li>
+                <li>Construct L: place c<sub>1</sub>, c<sub>2</sub>, …, c<sub>r</sub> at the bottom of the first r columns of I<sub>m</sub>.</li>
+              </ol>
+            </div>
+            <div class="formula">
+              <span class="formula-label">Solving Ax = b via LU</span>
+              Given $A = LU$:
+              $$\text{Step 1: Solve } L\mathbf{y} = \mathbf{b} \quad \text{(forward substitution)}$$
+              $$\text{Step 2: Solve } U\mathbf{x} = \mathbf{y} \quad \text{(back substitution)}$$
+              Then $A\mathbf{x} = L(U\mathbf{x}) = L\mathbf{y} = \mathbf{b}$. ✓
+              Advantage: If the same $A$ with different $\mathbf{b}$'s must be solved,
+              factor once and forward/back-substitute repeatedly.
+            </div>
+            <div class="note">
+              <div class="note-label">Lemma 2.7.1 — Triangular Closure</div>
+              (1) Product of lower (upper) triangular matrices is lower (upper) triangular.<br>
+              (2) A triangular n×n matrix is invertible iff all diagonal entries are nonzero; its inverse is also triangular of the same type.
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /.section §2.7 -->
+
+  <!-- ─── §2.6 Linear Transformations ─── -->
+  <div class="section">
+    <div class="section-title">§2.6 Linear Transformations</div>
+    <div class="section-subtitle">Definition, matrix of a transformation, rotations, reflections, projections</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 14: Linear Transformations -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Linear Transformations</div>
+        <div class="def">
+          <div class="def-label">Definition 2.13 — Linear Transformation</div>
+          $T: \mathbb{R}^n \to \mathbb{R}^m$ is a <span class="tt" data-t="T must preserve vector addition (T1) and scalar multiplication (T2). These two conditions imply T preserves all linear combinations.">linear transformation</span> if for all $\mathbf{x}, \mathbf{y} \in \mathbb{R}^n$ and all scalars $a$:
+          <ul class="items">
+            <li><strong>T1:</strong> $T(\mathbf{x} + \mathbf{y}) = T(\mathbf{x}) + T(\mathbf{y})$ &nbsp;(preserves addition)</li>
+            <li><strong>T2:</strong> $T(a\mathbf{x}) = aT(\mathbf{x})$ &nbsp;(preserves scalar multiplication)</li>
+          </ul>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Immediate Consequences</div>
+          $T(\mathbf{0}) = \mathbf{0}$, $T(-\mathbf{x}) = -T(\mathbf{x})$, and $T$ preserves all linear combinations (Theorem 2.6.1):
+          <div class="formula" style="margin:6px 0;">$$T(a_1\mathbf{x}_1 + \cdots + a_k\mathbf{x}_k) = a_1 T(\mathbf{x}_1) + \cdots + a_k T(\mathbf{x}_k)$$</div>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.6.2 — Matrix of a Linear Transformation</div>
+          Every linear transformation $T: \mathbb{R}^n \to \mathbb{R}^m$ is induced by a unique $m \times n$ matrix $A$. Specifically, A = [T(e<sub>1</sub>) T(e<sub>2</sub>) ⋯ T(e<sub>n</sub>)] where e<sub>1</sub>,…,e<sub>n</sub> are the standard basis vectors of R<sup>n</sup>. Then:
+          <div class="formula" style="margin:6px 0;">$$T(\mathbf{x}) = A\mathbf{x} \text{ for all } \mathbf{x} \in \mathbb{R}^n$$</div>
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.6.3 — Composition = Matrix Product</div>
+          If $T_A: \mathbb{R}^k \to \mathbb{R}^n$ and $T_B: \mathbb{R}^n \to \mathbb{R}^m$ are matrix transformations, their composite $T_B \circ T_A: \mathbb{R}^k \to \mathbb{R}^m$ is induced by the matrix $BA$ (product of the individual matrices).
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.4.6 — Invertibility of Matrix Transformation</div>
+          The matrix transformation T<sub>A</sub>: R<sup>n</sup> → R<sup>n</sup> (induced by A) has an inverse iff A is invertible. The inverse transformation is T<sub>A⁻¹</sub>, and the fundamental identities hold:<br>
+          $T^{-1}[T(\mathbf{x})] = \mathbf{x}$ and $T[T^{-1}(\mathbf{x})] = \mathbf{x}$ for all $\mathbf{x}$.
+        </div>
+      </div>
+
+      <!-- CARD 15: Geometric Transformations -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Geometric Transformations of R²</div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.6.4 — Rotation by Angle θ</div>
+          Counterclockwise rotation $R_\theta: \mathbb{R}^2 \to \mathbb{R}^2$ is linear with matrix:
+          <div class="formula" style="margin:6px 0;">$$R_\theta = \begin{bmatrix} \cos\theta & -\sin\theta \\ \sin\theta & \cos\theta \end{bmatrix}$$</div>
+          R<sub>π/2</sub> = [[0,−1],[1,0]]; R<sub>π</sub> = [[−1,0],[0,−1]].<br>
+          Composition: $R_{\theta+\varphi} = R_\theta \circ R_\varphi$ — gives addition formulas for $\cos$ and $\sin$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.6.5 — Reflection in y = mx</div>
+          Reflection $Q_m: \mathbb{R}^2 \to \mathbb{R}^2$ in the line $y = mx$ is linear with matrix:
+          <div class="formula" style="margin:6px 0;">$$Q_m = \frac{1}{1+m^2} \begin{bmatrix} 1-m^2 & 2m \\ 2m & m^2-1 \end{bmatrix}$$</div>
+          m = 0 (x-axis): [[1,0],[0,−1]]; &nbsp; y-axis: [[−1,0],[0,1]]; &nbsp; y = x (m=1): [[0,1],[1,0]].
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.6.6 — Projection onto y = mx</div>
+          Projection $P_m: \mathbb{R}^2 \to \mathbb{R}^2$ onto the line $y = mx$ is linear with matrix:
+          <div class="formula" style="margin:6px 0;">$$P_m = \frac{1}{1+m^2} \begin{bmatrix} 1 & m \\ m & m^2 \end{bmatrix}$$</div>
+          Note $P_m \circ P_m = P_m$ (idempotent), so the matrix $A$ satisfies $A^2 = A$.
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Transformation</th><th>Matrix</th></tr></thead>
+          <tbody>
+            <tr><td>x-expansion/compression (factor a)</td><td>[[a,0],[0,1]]</td></tr>
+            <tr><td>y-expansion/compression (factor b)</td><td>[[1,0],[0,b]]</td></tr>
+            <tr><td>x-shear by factor a</td><td>[[1,a],[0,1]]</td></tr>
+            <tr><td>Reflection in x-axis</td><td>[[1,0],[0,−1]]</td></tr>
+            <tr><td>Reflection in y=x</td><td>[[0,1],[1,0]]</td></tr>
+            <tr><td>90° CCW rotation</td><td>[[0,−1],[1,0]]</td></tr>
+          </tbody>
+        </table>
+        <div class="note">
+          <div class="note-label">Key Method: Q_m = R_θ ∘ Q_0 ∘ R_{−θ}</div>
+          Reflection in y=mx = rotate by −θ (align line with x-axis), reflect in x-axis, rotate back by θ.
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /.section §2.6 -->
+
+  <!-- ─── §2.2 Matrix Transformations (additional) ─── -->
+  <div class="section">
+    <div class="section-title">§2.2 Vectors in Rⁿ &amp; Matrix Transformations</div>
+    <div class="section-subtitle">n-tuples, matrix transformation, identity and zero transformations</div>
+    <div class="grid grid-2">
+
+      <!-- CARD 16: Vectors in Rⁿ -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Vectors, Rⁿ, and the Matrix Transformation</div>
+        <div class="def">
+          <div class="def-label">Definition 2.4 — Rⁿ</div>
+          $\mathbb{R}^n$ denotes the set of all ordered $n$-tuples $(a_1, a_2, \ldots, a_n)$ of real numbers. Elements are called vectors or n-vectors, written as rows or columns. R<sup>n</sup> is closed under addition and scalar multiplication.
+        </div>
+        <div class="def">
+          <div class="def-label">Definition 2.8 — Matrix Transformation</div>
+          For any $m \times n$ matrix $A$, multiplication by $A$ defines a transformation $T_A: \mathbb{R}^n \to \mathbb{R}^m$ by $T_A(\mathbf{x}) = A\mathbf{x}$. This is the <em>matrix transformation induced by A</em>.
+        </div>
+        <table class="tbl">
+          <thead><tr><th>Transformation</th><th>Matrix A</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td>Zero transformation</td><td>Zero matrix 0</td><td>T(x) = 0 for all x</td></tr>
+            <tr><td>Identity transformation 1<sub>Rⁿ</sub></td><td>I<sub>n</sub></td><td>T(x) = x for all x</td></tr>
+            <tr><td>Translation by w</td><td>Not a matrix transform!</td><td>T(x) = x + w (w ≠ 0) has no matrix</td></tr>
+          </tbody>
+        </table>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.2.5 — A Determined by Its Action</div>
+          If $A$ and $B$ are $m \times n$ matrices such that $A\mathbf{x} = B\mathbf{x}$ for every $\mathbf{x} \in \mathbb{R}^n$, then $A = B$. Thus a matrix transformation is entirely determined by its action on R<sup>n</sup>.
+        </div>
+        <div class="note">
+          <div class="note-label">Geometric Examples (§2.2)</div>
+          Reflection in x-axis: [[1,0],[0,−1]]; &nbsp; reflection in y=x: [[0,1],[1,0]];<br>
+          Rotation 90° CCW: [[0,−1],[1,0]].
+        </div>
+      </div>
+
+      <!-- CARD 17: Markov / Economic Applications (brief) -->
+      <div class="card">
+        <div class="card-title"><div class="dot"></div>Applications: Input-Output &amp; Markov Chains (§2.8–§2.9)</div>
+        <div class="def">
+          <div class="def-label">§2.8 — Input-Output (Leontief) Model</div>
+          E = [e<sub>ij</sub>] is the <em>input-output matrix</em> (e<sub>ij</sub> = fraction of industry j's output consumed by industry i). A <em>stochastic matrix</em> has 0 ≤ e<sub>ij</sub> ≤ 1 and each column sums to 1 (closed model). Equilibrium prices satisfy $E\mathbf{p} = \mathbf{p}$, i.e., $(I - E)\mathbf{p} = \mathbf{0}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.8.1 — Equilibrium Exists</div>
+          For any stochastic matrix $E$, there is a nonzero $\mathbf{p} \geq \mathbf{0}$ with $E\mathbf{p} = \mathbf{p}$.
+        </div>
+        <div class="theorem">
+          <div class="theorem-label">Theorem 2.8.2 — Open Model</div>
+          Let E ≥ 0. Then $(I-E)$ is invertible and $(I-E)^{-1} \geq 0$ if and only if there exists $\mathbf{p} > \mathbf{0}$ with $\mathbf{p} > E\mathbf{p}$ (each industry produces more than it consumes = profitable).
+        </div>
+        <div class="def">
+          <div class="def-label">§2.9 — Markov Chains (Definition 2.15)</div>
+          A Markov chain is a system where the next state depends only on the present state, not history. The transition matrix P is stochastic; state vector at stage $k$ is $\mathbf{s}_k = P \cdot \mathbf{s}_{k-1} = P^k \cdot \mathbf{s}_0$.
+        </div>
+        <div class="note">
+          <div class="note-label">Steady-State Vector</div>
+          A state vector $\mathbf{q} \geq \mathbf{0}$ with $P\mathbf{q} = \mathbf{q}$ (sum of entries $= 1$) is the <em>steady-state distribution</em>. It is the eigenvector of $P$ for eigenvalue $\lambda = 1$.
+        </div>
+        <div class="formula">
+          <span class="formula-label">Open Model — Production Equation</span>
+          $$(I - E)\mathbf{p} = \mathbf{d} \quad \text{where } \mathbf{d} = \text{demand vector (external sector)}$$
+          $$\mathbf{p} = (I - E)^{-1}\mathbf{d} \quad \text{(exists if each industry runs at profit)}$$
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /.section §2.2 extra -->
+
+</div><!-- /.page-body -->
+
+<footer class="chapter-footer">
+  <a href="CH01-Systems-Linear-Equations-CheatSheet.html">← CH1 Systems of Linear Equations</a>
+  <span class="footer-center">Linear Algebra with Applications · Nicholson · CH2</span>
+  <a href="CH03-Determinants-Diagonalization-CheatSheet.html">CH3 Determinants →</a>
+</footer>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  if(!toc)return;
+  var hdr=toc.querySelector('.toc-hdr');
+  var chev=document.createElement('span');chev.className='toc-chevron';chev.textContent='▾';hdr.appendChild(chev);
+  var body=document.createElement('div');body.className='toc-body';toc.appendChild(body);
+  var STORE='toc-alg-2';
+  function applyState(c){toc.classList.toggle('toc-collapsed',c);toc.classList.toggle('toc-open',!c);}
+  applyState(localStorage.getItem(STORE)==='1');
+  hdr.addEventListener('click',function(){var c=!toc.classList.contains('toc-collapsed');applyState(c);localStorage.setItem(STORE,c?'1':'0');});
+  var cards=Array.from(document.querySelectorAll('.card'));
+  cards.forEach(function(card,i){
+    var title=card.querySelector('.card-title');
+    if(!title)return;
+    var id='card-'+i;card.id=id;
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+id;
+    a.textContent=title.textContent.trim();
+    a.onclick=function(e){e.preventDefault();card.scrollIntoView({behavior:'smooth',block:'start'});card.classList.remove('card-focus');void card.offsetWidth;card.classList.add('card-focus');setTimeout(function(){card.classList.remove('card-focus');},900);};
+    body.appendChild(a);
+  });
+  var links=Array.from(body.querySelectorAll('.toc-link'));
+  function updateActive(){var mid=window.scrollY+window.innerHeight*0.3;var best=null,bestDist=Infinity;cards.forEach(function(c){if(!c.id)return;var top=c.getBoundingClientRect().top+window.scrollY;var dist=Math.abs(top-mid);if(dist<bestDist){bestDist=dist;best=c.id;}});links.forEach(function(l){l.classList.toggle('active',!!(best&&l.href.endsWith('#'+best)));});}
+  window.addEventListener('scroll',updateActive,{passive:true});updateActive();
+  document.querySelectorAll('.tt').forEach(function(el){
+    el.addEventListener('mouseenter',function(){var r=el.getBoundingClientRect(),w=220,cx=r.left+r.width/2,shift=0;if(cx-w/2<10)shift=10-(cx-w/2);else if(cx+w/2>window.innerWidth-10)shift=window.innerWidth-10-(cx+w/2);el.style.setProperty('--tt-shift',shift+'px');});
+    el.addEventListener('mouseleave',function(){el.style.removeProperty('--tt-shift');});
+  });
+})();
+</script>
+<script src="../katex.js"></script>
+</body>
+</html>

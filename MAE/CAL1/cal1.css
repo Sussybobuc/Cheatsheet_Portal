@@ -1,0 +1,10 @@
+/* CAL1 — Calculus 1  |  accent: indigo-blue */
+:root{
+  --accent:#6e7fe6;
+  --accent-soft:rgba(110,127,230,0.1);
+  --accent-border:rgba(110,127,230,0.3);
+}
+.card::before{background:linear-gradient(90deg,#6e7fe6,#8b9cf7);}
+.def{background:rgba(110,127,230,0.07);border-left-color:#6e7fe6;}
+.def-label{color:#6e7fe6;}
+.page-header::before{background:radial-gradient(ellipse 600px 350px at 65% 50%, rgba(110,127,230,0.08) 0%, transparent 70%);}

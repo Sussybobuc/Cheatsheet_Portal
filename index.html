@@ -199,16 +199,21 @@
 
   /* ── Search ── */
   .search-wrap{
-    max-width:1200px;margin:0 auto;padding:20px 40px 0;
+    max-width:640px;margin:0 auto;padding:32px 24px 48px;
   }
-  @media(max-width:560px){.search-wrap{padding:16px 20px 0;}}
   .search-box{
-    display:flex;align-items:center;gap:10px;
-    background:var(--surface);border:1px solid var(--border);border-radius:8px;
-    padding:10px 14px;transition:border-color 0.18s;
+    display:flex;align-items:center;gap:8px;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:6px;padding:10px 14px;
+    transition:border-color 0.18s,box-shadow 0.18s;
+    font-family:'IBM Plex Mono',monospace;
   }
-  .search-box:focus-within{border-color:rgba(88,166,255,0.5);}
-  .search-icon{color:var(--text-dim);font-size:14px;flex-shrink:0;}
+  .search-box:focus-within{
+    border-color:rgba(88,166,255,0.6);
+    box-shadow:0 0 0 3px rgba(88,166,255,0.08);
+  }
+  .search-clock{color:var(--text-dim);font-family:'IBM Plex Mono',monospace;font-size:11px;flex-shrink:0;}
+  .search-prompt{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:13px;flex-shrink:0;}
   .search-input{
     flex:1;background:none;border:none;outline:none;
     font-family:'IBM Plex Mono',monospace;font-size:12px;
@@ -233,6 +238,19 @@
   .area.hidden{display:none;}
   .subject-card.hidden{display:none;}
   .search-highlight{background:rgba(227,179,65,0.25);color:var(--yellow);border-radius:2px;padding:0 1px;}
+  /* ── Chapter results panel ── */
+  .chapter-results{max-width:640px;margin:0 auto 32px;display:none;border:1px solid var(--border);border-radius:6px;overflow:hidden;}
+  .chapter-results-hdr{padding:6px 14px;background:var(--surface-raised);font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);border-bottom:1px solid var(--border);}
+  .chapter-result{display:flex;align-items:center;gap:10px;padding:9px 14px;text-decoration:none;color:var(--text);border-bottom:1px solid var(--border);transition:background 0.12s;}
+  .chapter-result:last-child{border-bottom:none;}
+  .chapter-result:hover{background:var(--surface-raised);}
+  .chapter-result-code{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;color:var(--accent);background:rgba(88,166,255,0.08);border:1px solid rgba(88,166,255,0.2);border-radius:4px;padding:2px 6px;flex-shrink:0;white-space:nowrap;}
+  .chapter-result-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);flex-shrink:0;}
+  .chapter-result-name{font-family:'IBM Plex Sans',sans-serif;font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .chapter-result-sub{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);flex-shrink:0;}
+  .chapter-result-arrow{color:var(--text-dim);font-size:12px;flex-shrink:0;transition:color 0.12s;}
+  .chapter-result:hover .chapter-result-arrow{color:var(--accent);}
+  .chapter-results-more{padding:7px 14px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-align:center;background:var(--surface-raised);}
 </style>
 </head>
 <body>
@@ -245,8 +263,8 @@
     <p class="hero-subtitle"><strong>Quick-reference cheatsheets</strong> &nbsp;·&nbsp; Organized by subject area</p>
     <div class="hero-stats">
       <div class="hero-stat"><div class="dot"></div>3 Subject Areas</div>
-      <div class="hero-stat r"><div class="dot"></div>2 Active · 3 Coming Soon</div>
-      <div class="hero-stat p"><div class="dot"></div>41 Chapters Available</div>
+      <div class="hero-stat r"><div class="dot"></div>5 Active Subjects</div>
+      <div class="hero-stat p"><div class="dot"></div>65 Chapters Available</div>
     </div>
   </div>
 </header>
@@ -257,13 +275,17 @@
 <!-- ── Search bar ── -->
 <div class="search-wrap">
   <div class="search-box">
-    <span class="search-icon">⌕</span>
-    <input class="search-input" id="searchInput" type="search" placeholder="Search subjects, chapters, topics…" autocomplete="off" spellcheck="false">
+    <span class="search-clock" id="searchClock"></span>
+    <span class="search-prompt">❯</span>
+    <input class="search-input" id="searchInput" type="search" placeholder="filter subjects, chapters, topics…" autocomplete="off" spellcheck="false">
     <span class="search-count" id="searchCount"></span>
     <button class="search-clear" id="searchClear" title="Clear search">✕</button>
   </div>
 </div>
 <div class="no-results" id="noResults">No subjects match "<span id="noResultsQuery"></span>"</div>
+<div class="chapter-results" id="chapterResults">
+  <div class="chapter-results-hdr" id="chapterResultsHdr"></div>
+</div>
 
   <!-- ━━━ CEA ━━━ -->
   <section class="area area-cea">
@@ -337,57 +359,57 @@
         <div class="area-label">MAE</div>
         <div class="area-title">Mathematics &amp; Engineering</div>
       </div>
-      <div class="area-desc">3 subjects · coming soon</div>
+      <div class="area-desc">3 subjects · 24 chapters</div>
     </div>
     <div class="cards">
 
-      <a class="subject-card coming-soon" href="MAE/CAL1.html">
+      <a class="subject-card" href="MAE/CAL1.html">
         <div class="card-accent"></div>
         <div class="card-inner">
           <div class="card-top">
             <span class="subject-code">CAL1</span>
-            <span class="badge-soon">Coming Soon</span>
           </div>
           <div class="card-body">
             <div class="card-title">Calculus 1</div>
             <div class="card-meta">Limits, Derivatives &amp; Integrals</div>
           </div>
           <div class="card-footer">
-            <span class="card-edition">In preparation</span>
+            <span class="card-edition">OpenStax · 6 Chapters</span>
+            <span class="card-arrow">↗</span>
           </div>
         </div>
       </a>
 
-      <a class="subject-card coming-soon" href="MAE/CAL2.html">
+      <a class="subject-card" href="MAE/CAL2.html">
         <div class="card-accent"></div>
         <div class="card-inner">
           <div class="card-top">
             <span class="subject-code">CAL2</span>
-            <span class="badge-soon">Coming Soon</span>
           </div>
           <div class="card-body">
             <div class="card-title">Calculus 2</div>
-            <div class="card-meta">Series, Multivariable &amp; Vector Calc</div>
+            <div class="card-meta">Techniques, Series &amp; Parametric</div>
           </div>
           <div class="card-footer">
-            <span class="card-edition">In preparation</span>
+            <span class="card-edition">OpenStax · 7 Chapters</span>
+            <span class="card-arrow">↗</span>
           </div>
         </div>
       </a>
 
-      <a class="subject-card coming-soon" href="MAE/ALG.html">
+      <a class="subject-card" href="MAE/ALG.html">
         <div class="card-accent"></div>
         <div class="card-inner">
           <div class="card-top">
             <span class="subject-code">ALG</span>
-            <span class="badge-soon">Coming Soon</span>
           </div>
           <div class="card-body">
             <div class="card-title">Linear Algebra</div>
             <div class="card-meta">Vectors, Matrices &amp; Transformations</div>
           </div>
           <div class="card-footer">
-            <span class="card-edition">In preparation</span>
+            <span class="card-edition">Nicholson · 11 Chapters</span>
+            <span class="card-arrow">↗</span>
           </div>
         </div>
       </a>
@@ -407,16 +429,108 @@
 
 <script>
 (function(){
+  var clock = document.getElementById('searchClock');
+  function tick(){
+    var now = new Date();
+    var h = String(now.getHours()).padStart(2,'0');
+    var m = String(now.getMinutes()).padStart(2,'0');
+    var s = String(now.getSeconds()).padStart(2,'0');
+    clock.textContent = h+':'+m+':'+s;
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+(function(){
   var input = document.getElementById('searchInput');
   var clearBtn = document.getElementById('searchClear');
   var countEl = document.getElementById('searchCount');
   var noResults = document.getElementById('noResults');
   var noResultsQuery = document.getElementById('noResultsQuery');
+  var chapterResults = document.getElementById('chapterResults');
+  var chapterResultsHdr = document.getElementById('chapterResultsHdr');
   var cards = Array.from(document.querySelectorAll('.subject-card'));
   var areas = Array.from(document.querySelectorAll('.area'));
 
-  function getText(card){
-    return card.textContent.toLowerCase();
+  var CHAPTERS = [
+    // COA — Computer Organization & Architecture
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH01',name:'Basic Concepts',url:'CEA/COA/CH01-Basic-Concepts-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH02',name:'Performance Issues',url:'CEA/COA/CH02-Performance-Issues-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH03',name:'Computer Function & Interconnection',url:'CEA/COA/CH03-Computer-Function-Interconnection-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH04',name:'Cache Memory',url:'CEA/COA/CH04-Cache-Memory-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH05',name:'Internal Memory',url:'CEA/COA/CH05-Internal-Memory-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH06',name:'External Memory',url:'CEA/COA/CH06-External-Memory-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH07',name:'Input / Output',url:'CEA/COA/CH07-Input-Output-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH08',name:'OS Support',url:'CEA/COA/CH08-OS-Support-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH09',name:'Number Systems',url:'CEA/COA/CH09-Number-Systems-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH10',name:'Computer Arithmetic',url:'CEA/COA/CH10-Computer-Arithmetic-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH11',name:'Digital Logic',url:'CEA/COA/CH11-Digital-Logic-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH12',name:'Instruction Sets: Characteristics',url:'CEA/COA/CH12-Instruction-Sets-Characteristics-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH13',name:'Addressing Modes',url:'CEA/COA/CH13-Addressing-Modes-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH14',name:'Processor Structure & Function',url:'CEA/COA/CH14-Processor-Structure-Function-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH15',name:'RISC',url:'CEA/COA/CH15-RISC-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH16',name:'ILP & Superscalar',url:'CEA/COA/CH16-ILP-Superscalar-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH17',name:'Parallel Processing',url:'CEA/COA/CH17-Parallel-Processing-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH18',name:'Multicore',url:'CEA/COA/CH18-Multicore-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH19',name:'GPGPU',url:'CEA/COA/CH19-GPGPU-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH20',name:'Control Unit Operation',url:'CEA/COA/CH20-Control-Unit-Operation-CheatSheet.html'},
+    {code:'COA',subject:'Computer Organization & Architecture',num:'CH21',name:'Microprogrammed Control',url:'CEA/COA/CH21-Microprogrammed-Control-CheatSheet.html'},
+    // FCS — Foundations of Computer Science
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH01',name:'Introduction',url:'CSI/CH/CH01-Introduction-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH02',name:'Number Systems',url:'CSI/CH/CH02-Number-Systems-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH03',name:'Data Storage',url:'CSI/CH/CH03-Data-Storage-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH04',name:'Operations on Data',url:'CSI/CH/CH04-Operations-on-Data-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH05',name:'Computer Organization',url:'CSI/CH/CH05-Computer-Organization-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH06',name:'Computer Networks',url:'CSI/CH/CH06-Computer-Networks-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH07',name:'Operating Systems',url:'CSI/CH/CH07-Operating-Systems-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH08',name:'Algorithms',url:'CSI/CH/CH08-Algorithms-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH09',name:'Programming Languages',url:'CSI/CH/CH09-Programming-Languages-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH10',name:'Software Engineering',url:'CSI/CH/CH10-Software-Engineering-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH11',name:'Data Structures',url:'CSI/CH/CH11-Data-Structures-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH12',name:'Abstract Data Types',url:'CSI/CH/CH12-Abstract-Data-Types-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH13',name:'File Structure',url:'CSI/CH/CH13-File-Structure-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH14',name:'Databases',url:'CSI/CH/CH14-Databases-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH15',name:'Data Compression',url:'CSI/CH/CH15-Data-Compression-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH16',name:'Security',url:'CSI/CH/CH16-Security-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH17',name:'Theory of Computation',url:'CSI/CH/CH17-Theory-of-Computation-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH18',name:'Artificial Intelligence',url:'CSI/CH/CH18-Artificial-Intelligence-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH19',name:'Social Media',url:'CSI/CH/CH19-Social-Media-CheatSheet.html'},
+    {code:'FCS',subject:'Foundations of Computer Science',num:'CH20',name:'Social & Ethical Issues',url:'CSI/CH/CH20-Social-Ethical-Issues-CheatSheet.html'},
+    // ALG — Linear Algebra
+    {code:'ALG',subject:'Linear Algebra',num:'CH01',name:'Systems of Linear Equations',url:'MAE/ALG/CH01-Systems-Linear-Equations-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH02',name:'Matrix Algebra',url:'MAE/ALG/CH02-Matrix-Algebra-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH03',name:'Determinants & Diagonalization',url:'MAE/ALG/CH03-Determinants-Diagonalization-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH04',name:'Vector Geometry',url:'MAE/ALG/CH04-Vector-Geometry-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH05',name:'Vector Space Rⁿ',url:'MAE/ALG/CH05-Vector-Space-Rn-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH06',name:'Abstract Vector Spaces',url:'MAE/ALG/CH06-Abstract-Vector-Spaces-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH07',name:'Linear Transformations',url:'MAE/ALG/CH07-Linear-Transformations-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH08',name:'Orthogonality',url:'MAE/ALG/CH08-Orthogonality-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH09',name:'Change of Basis',url:'MAE/ALG/CH09-Change-of-Basis-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH10',name:'Inner Product Spaces',url:'MAE/ALG/CH10-Inner-Product-Spaces-CheatSheet.html'},
+    {code:'ALG',subject:'Linear Algebra',num:'CH11',name:'Canonical Forms',url:'MAE/ALG/CH11-Canonical-Forms-CheatSheet.html'},
+    // CAL1 — Calculus 1
+    {code:'CAL1',subject:'Calculus 1',num:'CH01',name:'Functions & Graphs',url:'MAE/CAL1/CH01-Functions-Graphs-CheatSheet.html'},
+    {code:'CAL1',subject:'Calculus 1',num:'CH02',name:'Limits',url:'MAE/CAL1/CH02-Limits-CheatSheet.html'},
+    {code:'CAL1',subject:'Calculus 1',num:'CH03',name:'Derivatives',url:'MAE/CAL1/CH03-Derivatives-CheatSheet.html'},
+    {code:'CAL1',subject:'Calculus 1',num:'CH04',name:'Applications of Derivatives',url:'MAE/CAL1/CH04-Applications-Derivatives-CheatSheet.html'},
+    {code:'CAL1',subject:'Calculus 1',num:'CH05',name:'Integration',url:'MAE/CAL1/CH05-Integration-CheatSheet.html'},
+    {code:'CAL1',subject:'Calculus 1',num:'CH06',name:'Applications of Integration',url:'MAE/CAL1/CH06-Applications-Integration-CheatSheet.html'},
+    // CAL2 — Calculus 2
+    {code:'CAL2',subject:'Calculus 2',num:'CH01',name:'Integration',url:'MAE/CAL2/CH01-Integration-CheatSheet.html'},
+    {code:'CAL2',subject:'Calculus 2',num:'CH02',name:'Applications of Integration',url:'MAE/CAL2/CH02-Applications-Integration-CheatSheet.html'},
+    {code:'CAL2',subject:'Calculus 2',num:'CH03',name:'Techniques of Integration',url:'MAE/CAL2/CH03-Techniques-Integration-CheatSheet.html'},
+    {code:'CAL2',subject:'Calculus 2',num:'CH04',name:'Differential Equations',url:'MAE/CAL2/CH04-Differential-Equations-CheatSheet.html'},
+    {code:'CAL2',subject:'Calculus 2',num:'CH05',name:'Sequences & Series',url:'MAE/CAL2/CH05-Sequences-Series-CheatSheet.html'},
+    {code:'CAL2',subject:'Calculus 2',num:'CH06',name:'Power Series',url:'MAE/CAL2/CH06-Power-Series-CheatSheet.html'},
+    {code:'CAL2',subject:'Calculus 2',num:'CH07',name:'Parametric Equations & Polar Coordinates',url:'MAE/CAL2/CH07-Parametric-Polar-CheatSheet.html'},
+  ];
+
+  var MAX_CHAPTER_RESULTS = 8;
+
+  function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+  function hlText(str, q){
+    if(!q) return str;
+    return str.replace(new RegExp('('+esc(q)+')','gi'),'<mark class="search-highlight">$1</mark>');
   }
 
   function highlight(el, query){
@@ -426,8 +540,7 @@
       var orig = n.getAttribute('data-orig') || n.textContent;
       n.setAttribute('data-orig', orig);
       if(!query){ n.textContent = orig; return; }
-      var re = new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');
-      n.innerHTML = orig.replace(re,'<mark class="search-highlight">$1</mark>');
+      n.innerHTML = orig.replace(new RegExp('('+esc(query)+')','gi'),'<mark class="search-highlight">$1</mark>');
     });
   }
 
@@ -436,6 +549,45 @@
       var orig = n.getAttribute('data-orig');
       if(orig){ n.textContent = orig; n.removeAttribute('data-orig'); }
     });
+  }
+
+  function buildChapterResults(q){
+    // Clear old results (keep header)
+    Array.from(chapterResults.querySelectorAll('.chapter-result,.chapter-results-more')).forEach(function(el){ el.remove(); });
+
+    if(!q){ chapterResults.style.display='none'; return; }
+
+    var matches = CHAPTERS.filter(function(ch){
+      var haystack = (ch.code+' '+ch.subject+' '+ch.num+' '+ch.name).toLowerCase();
+      return haystack.includes(q);
+    });
+
+    if(!matches.length){ chapterResults.style.display='none'; return; }
+
+    var shown = matches.slice(0, MAX_CHAPTER_RESULTS);
+    chapterResultsHdr.textContent = matches.length + ' chapter' + (matches.length===1?'':'s') + ' matched';
+
+    shown.forEach(function(ch){
+      var a = document.createElement('a');
+      a.className = 'chapter-result';
+      a.href = ch.url;
+      a.innerHTML =
+        '<span class="chapter-result-code">'+ch.code+'</span>'+
+        '<span class="chapter-result-num">'+ch.num+'</span>'+
+        '<span class="chapter-result-name">'+hlText(ch.name, q)+'</span>'+
+        '<span class="chapter-result-sub">'+hlText(ch.subject, q)+'</span>'+
+        '<span class="chapter-result-arrow">↗</span>';
+      chapterResults.appendChild(a);
+    });
+
+    if(matches.length > MAX_CHAPTER_RESULTS){
+      var more = document.createElement('div');
+      more.className = 'chapter-results-more';
+      more.textContent = '+'+(matches.length - MAX_CHAPTER_RESULTS)+' more — refine your search';
+      chapterResults.appendChild(more);
+    }
+
+    chapterResults.style.display = 'block';
   }
 
   function doSearch(){
@@ -448,12 +600,13 @@
       areas.forEach(function(a){ a.classList.remove('hidden'); });
       countEl.textContent = '';
       noResults.style.display = 'none';
+      chapterResults.style.display = 'none';
       return;
     }
 
     var visible = 0;
     cards.forEach(function(c){
-      var match = getText(c).includes(q);
+      var match = c.textContent.toLowerCase().includes(q);
       c.classList.toggle('hidden', !match);
       if(match){ highlight(c, q); visible++; }
     });
@@ -463,9 +616,14 @@
       a.classList.toggle('hidden', !anyVisible);
     });
 
-    countEl.textContent = visible + ' result' + (visible===1?'':'s');
+    buildChapterResults(q);
+
+    var chCount = chapterResults.style.display==='block'
+      ? parseInt(chapterResultsHdr.textContent) : 0;
+    var total = visible + chCount;
+    countEl.textContent = total + ' result' + (total===1?'':'s');
     noResultsQuery.textContent = input.value.trim();
-    noResults.style.display = visible ? 'none' : 'block';
+    noResults.style.display = (visible===0 && chCount===0) ? 'block' : 'none';
   }
 
   input.addEventListener('input', doSearch);

@@ -1,0 +1,10 @@
+/* CAL2 — Calculus 2  |  accent: teal */
+:root{
+  --accent:#3fb5a8;
+  --accent-soft:rgba(63,181,168,0.1);
+  --accent-border:rgba(63,181,168,0.3);
+}
+.card::before{background:linear-gradient(90deg,#3fb5a8,#5dd3c5);}
+.def{background:rgba(63,181,168,0.07);border-left-color:#3fb5a8;}
+.def-label{color:#3fb5a8;}
+.page-header::before{background:radial-gradient(ellipse 600px 350px at 65% 50%, rgba(63,181,168,0.08) 0%, transparent 70%);}
