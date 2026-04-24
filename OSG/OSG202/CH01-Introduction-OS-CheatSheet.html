@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH01 – Introduction to Operating Systems | OSG202</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH01 — Introduction to Operating Systems</h1>
+    <h2>OSG202 · Modern Operating Systems 4th Ed. · Tanenbaum · Ch. 1</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">What is an OS</span>
+      <span class="toc-item">History</span>
+      <span class="toc-item">Hardware Review</span>
+      <span class="toc-item">OS Types</span>
+      <span class="toc-item">OS Structure</span>
+      <span class="toc-item">System Calls</span>
+      <span class="toc-item">Processes</span>
+      <span class="toc-item">Files &amp; I/O</span>
+      <span class="toc-item">Security</span>
+    </div>
+  </div>
+  <div><span class="badge">OSG202</span></div>
+</div>
+
+<!-- ROW 1: What is an OS -->
+<div class="grid" id="what-is-os">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>What Is an Operating System?</h3></div>
+    <div class="card-body">
+      <div class="rule">OS = Extended Machine + Resource Manager</div>
+      <p>The OS sits between the <strong style="color:var(--osg)">hardware</strong> and user applications, providing two key abstractions:</p>
+      <div class="label">Extended Machine View</div>
+      <ul class="items">
+        <li>Hides messy hardware details behind clean abstractions</li>
+        <li>Provides <strong style="color:var(--osg)">processes</strong>, <code>files</code>, <code>sockets</code> instead of raw disk sectors and registers</li>
+        <li>Top-down view: OS as convenience provider</li>
+      </ul>
+      <div class="label">Resource Manager View</div>
+      <ul class="items">
+        <li>Manages <strong style="color:var(--osg)">CPU time</strong>, <strong style="color:var(--osg)">memory</strong>, I/O devices, storage</li>
+        <li>Multiplexes resources: <strong>time multiplexing</strong> (CPU scheduling) and <strong>space multiplexing</strong> (memory partitioning)</li>
+        <li>Bottom-up view: OS as traffic cop</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Key Insight</div>
+        The OS runs in <strong style="color:var(--accent2)">kernel mode</strong> (supervisor mode) with full hardware access. User programs run in <strong>user mode</strong> — restricted. Switching between them is done via <code>system calls</code> (traps).
+      </div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Kernel Mode vs User Mode</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Property</th><th>Kernel Mode</th><th>User Mode</th></tr>
+        <tr><td>Access to hardware</td><td>Full, unrestricted</td><td>None (via OS only)</td></tr>
+        <tr><td>Execute privileged instructions</td><td>Yes</td><td>No (trap/fault)</td></tr>
+        <tr><td>Access all memory</td><td>Yes</td><td>Own address space only</td></tr>
+        <tr><td>Who runs here</td><td>OS kernel</td><td>Applications, shells</td></tr>
+        <tr><td>Error consequence</td><td>System crash</td><td>Process killed</td></tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">System Call Mechanism</div>
+        User program places args in registers → executes <code>TRAP</code> instruction → CPU switches to kernel mode → OS handles request → returns result → CPU switches back to user mode.
+      </div>
+      <div class="formula">User → TRAP → Kernel → execute → return → User</div>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>OS Abstractions at a Glance</h3></div>
+    <div class="card-body">
+      <div class="label">Core Abstractions</div>
+      <table class="tbl">
+        <tr><th>Abstraction</th><th>Hides</th></tr>
+        <tr><td><code>Process</code></td><td>CPU scheduling, context switches</td></tr>
+        <tr><td><code>Address Space</code></td><td>Physical RAM layout, fragmentation</td></tr>
+        <tr><td><code>File</code></td><td>Disk sectors, block sizes, I/O details</td></tr>
+        <tr><td><code>Pipe</code></td><td>IPC buffering, synchronization</td></tr>
+        <tr><td><code>Socket</code></td><td>Network protocols, packet details</td></tr>
+        <tr><td><code>Semaphore</code></td><td>Concurrent access coordination</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">Why Abstractions Matter</div>
+        Without abstractions, every application would need to know disk geometry, CPU scheduling policies, and interrupt handling — making software portability impossible.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: History -->
+<div class="grid section-gap" id="history">
+  <div class="card orange col-span-3">
+    <div class="card-header"><div class="dot"></div><h3>History of Operating Systems — Five Generations</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:10px;">
+        <div>
+          <div class="label">Gen 1: 1945–55</div>
+          <div class="rule" style="font-size:10px;">Vacuum Tubes</div>
+          <ul class="items">
+            <li>No OS — machine programmed in <strong>machine language</strong> or plug boards</li>
+            <li>One job at a time, operator is programmer</li>
+            <li>ENIAC, UNIVAC era</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Gen 2: 1955–65</div>
+          <div class="rule" style="font-size:10px;">Transistors &amp; Batch</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Batch systems</strong>: jobs collected on cards, run sequentially</li>
+            <li><code>FMS</code> (Fortran Monitor System), <code>IBSYS</code></li>
+            <li>Operator loads job decks</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Gen 3: 1965–80</div>
+          <div class="rule" style="font-size:10px;">ICs &amp; Multiprogramming</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Multiprogramming</strong>: multiple jobs in memory; CPU switches to keep busy during I/O</li>
+            <li><strong style="color:var(--osg)">Timesharing</strong>: multiple interactive users (CTSS, MULTICS)</li>
+            <li>IBM OS/360 — one OS for all models</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Gen 4: 1980–present</div>
+          <div class="rule" style="font-size:10px;">Personal Computers</div>
+          <ul class="items">
+            <li>PC revolution: <code>CP/M</code>, <code>DOS</code>, <code>Windows</code>, <code>macOS</code></li>
+            <li>GUI interfaces (Xerox Alto → Apple Mac → Windows)</li>
+            <li>UNIX → Linux → Android/iOS</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Gen 5: Now</div>
+          <div class="rule" style="font-size:10px;">Mobile &amp; Cloud</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Distributed OS</strong>, cloud computing, VMs</li>
+            <li>Android, iOS dominate mobile</li>
+            <li>Containers: <code>Docker</code>, <code>Kubernetes</code></li>
+          </ul>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="info">
+        <div class="i-title">Key Insight: Why Multiprogramming?</div>
+        CPU is <strong>fast</strong>, I/O is <strong>slow</strong>. In batch, CPU sat idle waiting for tape/disk. Multiprogramming keeps CPU busy by switching to another job while the first waits for I/O — crucial efficiency gain.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: Hardware Review -->
+<div class="grid section-gap" id="hardware">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>CPU Architecture</h3></div>
+    <div class="card-body">
+      <div class="label">Key CPU Registers</div>
+      <table class="tbl">
+        <tr><th>Register</th><th>Purpose</th></tr>
+        <tr><td><code>PC</code></td><td>Program Counter — next instruction address</td></tr>
+        <tr><td><code>SP</code></td><td>Stack Pointer — top of current stack</td></tr>
+        <tr><td><code>PSW</code></td><td>Program Status Word — flags, mode bit, condition codes</td></tr>
+        <tr><td><code>MAR</code></td><td>Memory Address Register — address for memory op</td></tr>
+        <tr><td><code>MDR</code></td><td>Memory Data Register — data being read/written</td></tr>
+        <tr><td><code>IR</code></td><td>Instruction Register — current instruction</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">Pipeline</div>
+        Modern CPUs use <strong style="color:var(--osg)">pipelining</strong>: fetch, decode, execute overlap. <strong>Superscalar</strong> CPUs execute multiple instructions per cycle. <strong>Hyperthreading</strong> presents 2 logical CPUs per physical core.
+      </div>
+      <div class="tip">
+        <div class="t-title">Cache Hierarchy</div>
+        L1 (fastest, ~1ns, 32-64KB) → L2 (~5ns, 256KB-1MB) → L3 (~20ns, 4-32MB) → RAM (~60ns) → Disk (~10ms)
+      </div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>I/O, Interrupts &amp; DMA</h3></div>
+    <div class="card-body">
+      <div class="label">Three I/O Methods</div>
+      <ol class="steps">
+        <li><strong>Programmed I/O (Busy Wait)</strong> — CPU polls device constantly, wastes cycles. <code>while(!done) check();</code></li>
+        <li><strong>Interrupt-Driven I/O</strong> — CPU starts I/O, does other work. Device fires interrupt when done. OS runs <strong style="color:var(--osg)">interrupt handler</strong> via <code>interrupt vector</code>.</li>
+        <li><strong>DMA (Direct Memory Access)</strong> — DMA controller transfers data between device and RAM <em>without CPU</em>. CPU sets up DMA chip (count, address, direction) and is interrupted only when done.</li>
+      </ol>
+      <div class="warn">
+        <div class="w-title">⚠ Interrupt Handling Steps</div>
+        1. Device asserts interrupt line → 2. CPU finishes current instruction → 3. Saves <code>PC</code> + <code>PSW</code> on stack → 4. Looks up handler in <strong>interrupt vector</strong> → 5. Handler runs → 6. Returns, restores <code>PC</code>/<code>PSW</code>
+      </div>
+      <div class="formula">Interrupt Vector[device_number] → handler_address</div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Memory Hierarchy &amp; Buses</h3></div>
+    <div class="card-body">
+      <div class="label">Memory Hierarchy (speed ↑, size ↓)</div>
+      <div class="formula">Registers → Cache (L1/L2/L3) → RAM → SSD → HDD → Tape</div>
+      <div class="label">Modern Bus Architecture</div>
+      <ul class="items">
+        <li><code>PCIe</code> — main bus; serial, point-to-point, replaces parallel PCI; 16x PCIe 3.0 = 128 Gbps</li>
+        <li><code>DMI</code> — CPU to Platform Controller Hub (south bridge)</li>
+        <li><code>USB</code> — slow peripherals; USB 3.0 = 5 Gbps; hot-pluggable</li>
+        <li><code>SATA</code> — hard disks &amp; SSDs via hub</li>
+        <li><code>DDR3/4</code> — CPU to RAM; dedicated high-speed bus</li>
+      </ul>
+      <div class="label">Boot Process</div>
+      <ol class="steps">
+        <li>Power on → <strong style="color:var(--osg)">BIOS</strong> in Flash ROM runs, checks RAM, scans PCIe/PCI devices</li>
+        <li>BIOS reads <strong>MBR</strong> from boot device; executes boot loader</li>
+        <li>Boot loader loads OS kernel into RAM</li>
+        <li>Kernel initializes tables, loads device drivers, starts processes</li>
+        <li>Login program / GUI starts</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4: OS Types -->
+<div class="grid-2 section-gap" id="os-types">
+  <div class="card yellow col-span-2">
+    <div class="card-header"><div class="dot"></div><h3>Operating System Zoo — Types &amp; Characteristics</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>OS Type</th><th>Example</th><th>Key Feature</th><th>Notes</th></tr>
+        <tr><td><strong style="color:var(--osg)">Mainframe</strong></td><td>OS/390, z/OS</td><td>Batch + transaction + timesharing; massive I/O</td><td>Slowly replaced by Linux</td></tr>
+        <tr><td><strong style="color:var(--osg)">Server</strong></td><td>Linux, Windows Server, Solaris</td><td>Serve multiple users over network</td><td>Web, file, print services</td></tr>
+        <tr><td><strong style="color:var(--osg)">Multiprocessor</strong></td><td>Linux SMP, Windows</td><td>Multiple CPUs, shared memory</td><td>Special IPC, consistency needed</td></tr>
+        <tr><td><strong style="color:var(--osg)">Personal Computer</strong></td><td>Windows, macOS, Linux</td><td>Single user, multiprogramming, GUI</td><td>Most common type</td></tr>
+        <tr><td><strong style="color:var(--osg)">Handheld / Mobile</strong></td><td>Android, iOS</td><td>Low power, touch UI, sensors</td><td>ARM CPUs, GPS, cameras</td></tr>
+        <tr><td><strong style="color:var(--osg)">Embedded</strong></td><td>VxWorks, QNX, Embedded Linux</td><td>No user-installed software; ROM-based</td><td>Microwave, car, TV</td></tr>
+        <tr><td><strong style="color:var(--osg)">Sensor Node</strong></td><td>TinyOS</td><td>Event-driven, tiny RAM, battery-powered</td><td>Wireless sensor networks</td></tr>
+        <tr><td><strong style="color:var(--osg)">Real-Time</strong></td><td>eCos, VxWorks</td><td>Hard deadlines must be met</td><td>Industrial, avionics, military</td></tr>
+        <tr><td><strong style="color:var(--osg)">Smart Card</strong></td><td>Java Card</td><td>Extreme constraints: tiny CPU, memory</td><td>JVM interpreter in ROM</td></tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">Hard vs Soft Real-Time</div>
+        <strong>Hard real-time</strong>: missing a deadline = catastrophic failure (assembly robot, pacemaker). <strong>Soft real-time</strong>: occasionally missing a deadline is acceptable (audio streaming, smartphones).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5: OS Structure -->
+<div class="grid section-gap" id="os-structure">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Monolithic &amp; Layered Kernels</h3></div>
+    <div class="card-body">
+      <div class="label">Monolithic Kernel</div>
+      <p><strong style="color:var(--osg)">Monolithic</strong> kernels run the entire OS as a single large program in kernel space. All OS services share the same address space.</p>
+      <ul class="items">
+        <li><strong>Pros:</strong> fast — no user/kernel switches for internal calls</li>
+        <li><strong>Cons:</strong> one bug can crash entire system; hard to maintain</li>
+        <li>Examples: <code>Linux</code>, early <code>UNIX</code>, <code>MS-DOS</code></li>
+        <li>Can use <strong>loadable kernel modules</strong> (LKMs) for extensibility</li>
+      </ul>
+      <hr class="divider">
+      <div class="label">Layered Kernel (THE System)</div>
+      <p><strong style="color:var(--osg)">Layered</strong> design: OS divided into N layers, each built on top of the one below. Layer 0 = hardware, Layer N = user interface.</p>
+      <ul class="items">
+        <li><strong>Pros:</strong> clean separation; easier to debug layer by layer</li>
+        <li><strong>Cons:</strong> defining clean layer boundaries is hard; performance overhead</li>
+        <li>THE system (Dijkstra, 1968) — first layered OS</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>Microkernel &amp; Client-Server</h3></div>
+    <div class="card-body">
+      <div class="rule">Microkernel = minimal kernel; everything else as user-space servers</div>
+      <div class="label">What lives in the microkernel?</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">IPC</strong> (message passing between processes)</li>
+        <li>Basic <strong style="color:var(--osg)">memory management</strong></li>
+        <li>Basic <strong style="color:var(--osg)">CPU scheduling</strong></li>
+      </ul>
+      <div class="label">What moves to user space?</div>
+      <ul class="items">
+        <li>File systems, device drivers, network stacks, window managers</li>
+        <li>Run as normal user-space processes</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Microkernel Pros &amp; Cons</div>
+        ✅ Reliability: driver crash doesn't kill OS<br>
+        ✅ Security: smaller attack surface<br>
+        ❌ Performance: user↔kernel switches for every message<br>
+        Examples: <code>MINIX 3</code>, <code>QNX</code>, <code>L4</code>, <code>Mach</code>
+      </div>
+      <div class="label">Client-Server Model</div>
+      <p>Variant of microkernel: OS services are <strong>servers</strong>; apps are <strong>clients</strong> sending requests via <code>message passing</code>. Works across networks for distributed OS.</p>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>Virtual Machines &amp; Hypervisors</h3></div>
+    <div class="card-body">
+      <div class="rule">VM = exact copy of underlying hardware exposed to guest OS</div>
+      <div class="label">Type 1 Hypervisor (Bare Metal)</div>
+      <ul class="items">
+        <li>Runs <em>directly on hardware</em>; no host OS</li>
+        <li>Examples: <code>VMware ESXi</code>, <code>Xen</code>, <code>Hyper-V</code></li>
+        <li>Each guest OS thinks it owns the machine</li>
+        <li>Better performance than Type 2</li>
+      </ul>
+      <div class="label">Type 2 Hypervisor (Hosted)</div>
+      <ul class="items">
+        <li>Runs on top of a host OS as an application</li>
+        <li>Examples: <code>VirtualBox</code>, <code>VMware Workstation</code></li>
+        <li>Slower but easier to install/use</li>
+      </ul>
+      <div class="info">
+        <div class="i-title">Java Virtual Machine</div>
+        JVM is a different kind of VM — compiles Java bytecode; provides portability, not hardware emulation. "Write once, run anywhere."
+      </div>
+      <div class="label">Containers vs VMs</div>
+      <p><strong style="color:var(--osg)">Containers</strong> (<code>Docker</code>) share the host OS kernel; much lighter than VMs. VMs each have their own OS.</p>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 6: System Calls -->
+<div class="grid section-gap" id="syscalls">
+  <div class="card green col-span-2">
+    <div class="card-header"><div class="dot"></div><h3>System Calls — Complete Reference Table</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Process Management Calls</div>
+          <table class="tbl">
+            <tr><th>Syscall</th><th>Description</th></tr>
+            <tr><td><code>fork()</code></td><td>Create exact copy of calling process (child)</td></tr>
+            <tr><td><code>exec()</code></td><td>Replace process image with new program</td></tr>
+            <tr><td><code>exit(status)</code></td><td>Terminate process, return status to parent</td></tr>
+            <tr><td><code>wait(&amp;status)</code></td><td>Block until child exits; collect exit code</td></tr>
+            <tr><td><code>getpid()</code></td><td>Return current process ID</td></tr>
+            <tr><td><code>kill(pid,sig)</code></td><td>Send signal to a process</td></tr>
+            <tr><td><code>pause()</code></td><td>Suspend until a signal arrives</td></tr>
+            <tr><td><code>alarm(seconds)</code></td><td>Schedule SIGALRM signal</td></tr>
+            <tr><td><code>brk(addr)</code></td><td>Set data segment size (heap growth)</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">File &amp; Directory Calls</div>
+          <table class="tbl">
+            <tr><th>Syscall</th><th>Description</th></tr>
+            <tr><td><code>open(path,flags)</code></td><td>Open file; return file descriptor</td></tr>
+            <tr><td><code>close(fd)</code></td><td>Release file descriptor</td></tr>
+            <tr><td><code>read(fd,buf,n)</code></td><td>Read n bytes from fd into buf</td></tr>
+            <tr><td><code>write(fd,buf,n)</code></td><td>Write n bytes from buf to fd</td></tr>
+            <tr><td><code>lseek(fd,off,whence)</code></td><td>Reposition file read/write pointer</td></tr>
+            <tr><td><code>stat(path,&amp;buf)</code></td><td>Get file metadata (size, times, mode)</td></tr>
+            <tr><td><code>mkdir(path,mode)</code></td><td>Create directory</td></tr>
+            <tr><td><code>rmdir(path)</code></td><td>Remove empty directory</td></tr>
+            <tr><td><code>link(old,new)</code></td><td>Create hard link</td></tr>
+            <tr><td><code>unlink(path)</code></td><td>Delete file (remove directory entry)</td></tr>
+          </table>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="label">System Call Execution in C</div>
+      <pre><code class="language-c">/* fork() + exec() pattern — how shell runs commands */
+pid_t pid = fork();          /* create child */
+if (pid == 0) {
+    /* child process */
+    execve("/bin/ls", argv, envp);   /* replace with ls */
+    exit(1);                          /* exec failed */
+} else {
+    /* parent */
+    wait(NULL);              /* wait for child to finish */
+}</code></pre>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>I/O &amp; Misc System Calls</h3></div>
+    <div class="card-body">
+      <div class="label">I/O System Calls</div>
+      <table class="tbl">
+        <tr><th>Syscall</th><th>Description</th></tr>
+        <tr><td><code>ioctl(fd,req,arg)</code></td><td>Device-specific control operations</td></tr>
+        <tr><td><code>pipe(&amp;fd[2])</code></td><td>Create unidirectional pipe (fd[0]=read, fd[1]=write)</td></tr>
+        <tr><td><code>dup2(old,new)</code></td><td>Duplicate file descriptor</td></tr>
+        <tr><td><code>select()</code></td><td>Wait on multiple fds simultaneously</td></tr>
+        <tr><td><code>mmap()</code></td><td>Map file/device into address space</td></tr>
+      </table>
+      <div class="label">Windows API Equivalents</div>
+      <table class="tbl">
+        <tr><th>POSIX</th><th>Win32</th></tr>
+        <tr><td><code>fork()</code></td><td><code>CreateProcess()</code></td></tr>
+        <tr><td><code>open()</code></td><td><code>CreateFile()</code></td></tr>
+        <tr><td><code>read()</code></td><td><code>ReadFile()</code></td></tr>
+        <tr><td><code>write()</code></td><td><code>WriteFile()</code></td></tr>
+      </table>
+      <div class="warn">
+        <div class="w-title">⚠ System calls are slow</div>
+        Each syscall involves a <strong>mode switch</strong> (user→kernel→user), saving/restoring registers, and looking up handlers. Minimize unnecessary syscalls in tight loops.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 7: Processes, Files, I/O -->
+<div class="grid section-gap" id="processes-files">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Process Concepts Overview</h3></div>
+    <div class="card-body">
+      <div class="rule">Process = Program in Execution = Program + State + Resources</div>
+      <div class="label">What a Process Contains</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Address space</strong>: code (text), data, heap, stack</li>
+        <li><strong style="color:var(--osg)">Process table entry</strong> (PCB): registers, open files, signals, memory maps</li>
+        <li>Resources: open file descriptors, pending alarms, child processes</li>
+      </ul>
+      <div class="label">Process Hierarchy (UNIX)</div>
+      <p>UNIX processes form a <strong style="color:var(--osg)">tree</strong>. <code>init</code> (PID 1) is the root — ancestor of all user processes. Parent-child relationship via <code>fork()</code>. Child inherits parent's UID.</p>
+      <div class="label">Signals</div>
+      <p><strong style="color:var(--osg)">Signals</strong> are software interrupts sent to processes. Handler runs briefly, then process resumes. Common signals:</p>
+      <table class="tbl">
+        <tr><th>Signal</th><th>Cause</th></tr>
+        <tr><td><code>SIGKILL</code></td><td>Unconditional kill (cannot catch)</td></tr>
+        <tr><td><code>SIGSEGV</code></td><td>Segmentation fault (invalid memory)</td></tr>
+        <tr><td><code>SIGALRM</code></td><td>Timer expired (from alarm())</td></tr>
+        <tr><td><code>SIGCHLD</code></td><td>Child process terminated</td></tr>
+        <tr><td><code>SIGINT</code></td><td>Ctrl+C from terminal</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>Files &amp; File System Concepts</h3></div>
+    <div class="card-body">
+      <div class="rule">File = named sequence of bytes — OS provides uniform I/O interface</div>
+      <div class="label">File Descriptor</div>
+      <p>An integer <strong style="color:var(--osg)">file descriptor</strong> (<code>fd</code>) identifies an open file. Inherited by child processes via <code>fork()</code>.</p>
+      <table class="tbl">
+        <tr><th>fd</th><th>Name</th><th>Default</th></tr>
+        <tr><td><code>0</code></td><td>stdin</td><td>Keyboard</td></tr>
+        <tr><td><code>1</code></td><td>stdout</td><td>Terminal</td></tr>
+        <tr><td><code>2</code></td><td>stderr</td><td>Terminal</td></tr>
+      </table>
+      <div class="label">Directory Structure</div>
+      <ul class="items">
+        <li>Hierarchical: root <code>/</code> → subdirectories → files</li>
+        <li><strong style="color:var(--osg)">Path names</strong>: absolute (<code>/usr/bin/ls</code>) or relative (<code>../lib</code>)</li>
+        <li><code>.</code> = current dir, <code>..</code> = parent dir</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Special Files</div>
+        UNIX unifies I/O: block special files (disks), character special files (keyboard, printer), pipes, and sockets — all accessed via <code>read()</code>/<code>write()</code>.
+      </div>
+      <div class="label">Pipe Example</div>
+      <pre><code class="language-bash">ls -l | grep ".c" | wc -l
+# Pipeline: stdout of ls → stdin of grep → stdin of wc</code></pre>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Security — UIDs, GIDs &amp; Protection</h3></div>
+    <div class="card-body">
+      <div class="rule">Every process has a UID and GID — determines access rights</div>
+      <div class="label">User &amp; Group IDs</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">UID</strong> (User ID): integer assigned by sysadmin. Process inherits parent's UID.</li>
+        <li><strong style="color:var(--osg)">GID</strong> (Group ID): users belong to groups for shared file access</li>
+        <li><strong style="color:var(--osg)">Superuser</strong> (root, UID=0): bypasses all protection checks — full system access</li>
+      </ul>
+      <div class="label">File Permissions (9 bits)</div>
+      <div class="formula">rwxrwxrwx = owner|group|others</div>
+      <table class="tbl">
+        <tr><th>Bit</th><th>Octal</th><th>Meaning on file</th></tr>
+        <tr><td>r (read)</td><td>4</td><td>Read file contents</td></tr>
+        <tr><td>w (write)</td><td>2</td><td>Modify file</td></tr>
+        <tr><td>x (execute)</td><td>1</td><td>Run as program</td></tr>
+      </table>
+      <div class="label">setuid Bit</div>
+      <p>When <code>setuid</code> bit is set on executable, it runs with the <strong>file owner's UID</strong>, not the caller's. Used by <code>passwd</code> to modify <code>/etc/shadow</code> as root.</p>
+      <div class="warn">
+        <div class="w-title">⚠ Security Risk</div>
+        Setuid programs are prime targets for exploits — a bug in a setuid-root program can give attacker root access.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 8: Shell & I/O Redirection -->
+<div class="grid-2 section-gap" id="shell-io">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>The Shell &amp; I/O Redirection</h3></div>
+    <div class="card-body">
+      <div class="label">Shell as Command Interpreter</div>
+      <p>The <strong style="color:var(--osg)">shell</strong> is a regular user-space program (not part of OS). It reads commands, forks child processes, and waits for them. Shell types: <code>sh</code>, <code>bash</code>, <code>zsh</code>, <code>csh</code>.</p>
+      <div class="label">I/O Redirection Examples</div>
+      <pre><code class="language-bash">ls > output.txt        # redirect stdout to file
+cat < input.txt        # redirect stdin from file
+ls 2> errors.txt       # redirect stderr
+ls > out.txt 2>&amp;1     # both stdout and stderr to file
+sort &lt; words | uniq    # pipe with input redirect</code></pre>
+      <div class="label">Background Processes</div>
+      <pre><code class="language-bash">./longprogram &amp;        # run in background (shell doesn't wait)
+jobs                   # list background jobs
+fg %1                  # bring job 1 to foreground</code></pre>
+      <div class="tip">
+        <div class="t-title">How Shell Runs a Command</div>
+        1. Read line from terminal → 2. <code>fork()</code> → 3. Child: <code>exec(command)</code> → 4. Parent: <code>wait()</code> → 5. Return to prompt
+      </div>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>OS Design Principles &amp; Trade-offs</h3></div>
+    <div class="card-body">
+      <div class="label">Key Design Principles</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Policy vs Mechanism</strong> — separate <em>what</em> to do (policy) from <em>how</em> to do it (mechanism). Enables flexibility without changing implementation.</li>
+        <li><strong style="color:var(--osg)">Portability</strong> — write OS in C, not assembly; isolate machine-dependent code</li>
+        <li><strong style="color:var(--osg)">Performance</strong> — avoid unnecessary work; batch similar operations; use caching</li>
+        <li><strong style="color:var(--osg)">Simplicity</strong> — simple interfaces even if complex implementation</li>
+      </ul>
+      <div class="label">Common OS Trade-offs</div>
+      <table class="tbl">
+        <tr><th>Trade-off</th><th>Option A</th><th>Option B</th></tr>
+        <tr><td>Safety</td><td>User mode (isolation)</td><td>Kernel mode (performance)</td></tr>
+        <tr><td>Complexity</td><td>Monolithic (fast)</td><td>Microkernel (reliable)</td></tr>
+        <tr><td>Fairness</td><td>Round-robin scheduling</td><td>Priority scheduling</td></tr>
+        <tr><td>Space</td><td>Keep in memory</td><td>Swap to disk</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">POSIX Standard</div>
+        <strong>POSIX</strong> (Portable Operating System Interface) defines a standard API for UNIX-like OS. Programs written to POSIX run on Linux, macOS, BSDs without changes.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>OSG202 — Operating Systems · Modern OS 4th Ed. · Tanenbaum</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<script>
+function toggleTOC(){
+  var t=document.getElementById('page-toc');
+  t.classList.toggle('toc-collapsed');
+  t.classList.toggle('toc-open');
+}
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  toc.classList.add('toc-open');
+  var sections=[
+    {id:'what-is-os',label:'What is an OS'},
+    {id:'history',label:'OS History'},
+    {id:'hardware',label:'Hardware Review'},
+    {id:'os-types',label:'OS Zoo / Types'},
+    {id:'os-structure',label:'OS Structure'},
+    {id:'syscalls',label:'System Calls'},
+    {id:'processes-files',label:'Processes &amp; Files'},
+    {id:'shell-io',label:'Shell &amp; Design'}
+  ];
+  sections.forEach(function(s){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+s.id;
+    a.innerHTML=s.label;
+    body.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  var domSections=sections.map(function(s){return document.getElementById(s.id);});
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    domSections.forEach(function(s,i){
+      if(s&&s.offsetTop<=pos){
+        links.forEach(function(l){l.classList.remove('active');});
+        if(links[i])links[i].classList.add('active');
+      }
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code=document.createElement('code');
+    code.className='language-c';
+    code.textContent=pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

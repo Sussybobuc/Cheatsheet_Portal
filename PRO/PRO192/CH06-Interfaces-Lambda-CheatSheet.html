@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH06 – Interfaces, Lambda &amp; Inner Classes | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Interfaces, Lambda Expressions &amp; Inner Classes — Chapter 6</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+  </div>
+  <div>
+    <div class="badge">PRO192</div>
+    <div class="toc" style="margin-top:8px;">
+      <span class="toc-item">§Interfaces</span>
+      <span class="toc-item">§Comparable</span>
+      <span class="toc-item">§Functional Interfaces</span>
+      <span class="toc-item">§Lambda</span>
+      <span class="toc-item">§Method Refs</span>
+      <span class="toc-item">§Inner Classes</span>
+      <span class="toc-item">§Anonymous</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROW 1 ─────────────────────────────────────────────────────────────── -->
+<div class="grid">
+
+  <!-- Card 1: Interfaces -->
+  <div class="card yellow" id="interfaces">
+    <div class="card-header"><div class="dot"></div><h3>Interfaces</h3></div>
+    <div class="card-body">
+      <div class="formula">Interface = contract of methods a class must implement. No state (mostly). Multiple interfaces allowed.</div>
+      <pre>public interface Drawable {
+    // Abstract method (implicitly public abstract)
+    void draw();
+
+    // Default method (Java 8+) — has implementation
+    default void drawWithBorder() {
+        System.out.println("--- border ---");
+        draw();
+        System.out.println("--- border ---");
+    }
+
+    // Static method (Java 8+)
+    static Drawable noOp() { return () -&gt; {}; }
+
+    // Constant (implicitly public static final)
+    int MAX_SIZE = 1000;
+}
+
+public class Circle implements Drawable {
+    @Override
+    public void draw() {
+        System.out.println("Drawing circle");
+    }
+}</pre>
+      <div class="label">Interface vs Abstract Class</div>
+      <table class="tbl">
+        <tr><th></th><th>Interface</th><th>Abstract Class</th></tr>
+        <tr><td>Multiple</td><td>✓ (implements many)</td><td>✗ (extends one)</td></tr>
+        <tr><td>State</td><td>✗ (no instance fields)</td><td>✓</td></tr>
+        <tr><td>Constructors</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Access modifiers</td><td>public only</td><td>Any</td></tr>
+        <tr><td>When</td><td>"can-do" capability</td><td>"is-a" with shared code</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 2: Comparable & Comparator -->
+  <div class="card blue" id="comparable">
+    <div class="card-header"><div class="dot"></div><h3>Comparable &amp; Comparator</h3></div>
+    <div class="card-body">
+      <div class="label">Comparable (natural ordering — implement in the class)</div>
+      <pre>public class Employee implements Comparable&lt;Employee&gt; {
+    private String name;
+    private double salary;
+
+    @Override
+    public int compareTo(Employee other) {
+        // Negative: this &lt; other
+        // Zero:     this == other
+        // Positive: this &gt; other
+        return Double.compare(this.salary, other.salary);
+    }
+}
+
+// Now can sort:
+Employee[] staff = { /* ... */ };
+Arrays.sort(staff); // uses compareTo</pre>
+      <div class="label">Comparator (external comparison — no need to modify class)</div>
+      <pre>// Sort by name:
+Arrays.sort(staff, Comparator.comparing(Employee::getName));
+
+// Sort by salary descending:
+Arrays.sort(staff,
+    Comparator.comparingDouble(Employee::getSalary).reversed());
+
+// Chained: sort by dept, then by salary
+Arrays.sort(staff,
+    Comparator.comparing(Employee::getDept)
+        .thenComparingDouble(Employee::getSalary));</pre>
+      <div class="tip"><div class="t-title">Tip</div>Use <code>Comparator.comparing()</code> with method references — clean and readable</div>
+    </div>
+  </div>
+
+  <!-- Card 3: Functional Interfaces -->
+  <div class="card green" id="functional-interfaces">
+    <div class="card-header"><div class="dot"></div><h3>Functional Interfaces</h3></div>
+    <div class="card-body">
+      <div class="formula">Functional interface = interface with exactly ONE abstract method. Can be implemented with lambda.</div>
+      <table class="tbl">
+        <tr><th>Interface</th><th>Method</th><th>Use</th></tr>
+        <tr><td><code>Runnable</code></td><td><code>void run()</code></td><td>Thread tasks</td></tr>
+        <tr><td><code>Callable&lt;V&gt;</code></td><td><code>V call()</code></td><td>Task returning result</td></tr>
+        <tr><td><code>Predicate&lt;T&gt;</code></td><td><code>boolean test(T t)</code></td><td>Test/filter condition</td></tr>
+        <tr><td><code>Function&lt;T,R&gt;</code></td><td><code>R apply(T t)</code></td><td>Transform T to R</td></tr>
+        <tr><td><code>Consumer&lt;T&gt;</code></td><td><code>void accept(T t)</code></td><td>Process, no return</td></tr>
+        <tr><td><code>Supplier&lt;T&gt;</code></td><td><code>T get()</code></td><td>Provide a value</td></tr>
+        <tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>R apply(T t, U u)</code></td><td>Two-arg function</td></tr>
+        <tr><td><code>UnaryOperator&lt;T&gt;</code></td><td><code>T apply(T t)</code></td><td>T → T transform</td></tr>
+        <tr><td><code>BinaryOperator&lt;T&gt;</code></td><td><code>T apply(T,T)</code></td><td>Combine two T's</td></tr>
+        <tr><td><code>Comparator&lt;T&gt;</code></td><td><code>int compare(T,T)</code></td><td>Ordering</td></tr>
+      </table>
+      <pre>@FunctionalInterface
+interface StringTransformer {
+    String transform(String input);
+    // Only one abstract method — functional!
+}</pre>
+    </div>
+  </div>
+
+</div><!-- end row 1 -->
+
+<!-- ── ROW 2: Full-width Lambda ──────────────────────────────────────────── -->
+<div class="card blue section-gap" id="lambda">
+  <div class="card-header"><div class="dot"></div><h3>Lambda Expressions</h3></div>
+  <div class="card-body">
+    <div class="grid-2">
+
+      <div>
+        <div class="label">Lambda Syntax</div>
+        <pre>// (parameters) -> expression   or   (parameters) -> { statements; }
+
+// No parameters
+Runnable r = () -&gt; System.out.println("Hello");
+
+// One parameter (type inferred, parens optional)
+Predicate&lt;String&gt; isEmpty = s -&gt; s.isEmpty();
+Predicate&lt;String&gt; isEmpty2 = (String s) -&gt; s.isEmpty(); // explicit type
+
+// Multiple parameters
+Comparator&lt;String&gt; cmp = (a, b) -&gt; a.length() - b.length();
+
+// Block body (multiple statements)
+Comparator&lt;String&gt; cmp2 = (a, b) -&gt; {
+    int diff = a.length() - b.length();
+    return diff != 0 ? diff : a.compareTo(b);
+};</pre>
+        <div class="label">Method References (shorthand for lambdas)</div>
+        <table class="tbl">
+          <tr><th>Kind</th><th>Syntax</th><th>Lambda Equivalent</th></tr>
+          <tr><td>Static method</td><td><code>Math::abs</code></td><td><code>x -&gt; Math.abs(x)</code></td></tr>
+          <tr><td>Instance (bound)</td><td><code>str::toUpperCase</code></td><td><code>() -&gt; str.toUpperCase()</code></td></tr>
+          <tr><td>Instance (unbound)</td><td><code>String::toUpperCase</code></td><td><code>s -&gt; s.toUpperCase()</code></td></tr>
+          <tr><td>Constructor</td><td><code>ArrayList::new</code></td><td><code>() -&gt; new ArrayList&lt;&gt;()</code></td></tr>
+        </table>
+      </div>
+
+      <div>
+        <div class="label">Lambda Examples in Practice</div>
+        <pre>import java.util.*;
+import java.util.function.*;
+
+List&lt;String&gt; names = Arrays.asList("Alice", "Bob", "Charlie");
+
+// Sort with lambda
+names.sort((a, b) -&gt; a.compareTo(b));
+// Same with method reference:
+names.sort(String::compareTo);
+
+// forEach with lambda
+names.forEach(name -&gt; System.out.println(name));
+// Method reference version:
+names.forEach(System.out::println);
+
+// Predicate
+Predicate&lt;String&gt; longName = s -&gt; s.length() &gt; 4;
+names.stream()
+     .filter(longName)
+     .forEach(System.out::println);  // Alice, Charlie
+
+// Function
+Function&lt;String, Integer&gt; strLen = String::length;
+names.stream()
+     .map(strLen)
+     .forEach(System.out::println);  // 5, 3, 7</pre>
+        <div class="tip"><div class="t-title">Tip</div>Lambdas can capture effectively-final local variables from the enclosing scope</div>
+        <div class="warn"><div class="w-title">Warning</div>Lambda cannot modify captured local variables (they must be effectively final)</div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- end row 2 -->
+
+<!-- ── ROW 3 ─────────────────────────────────────────────────────────────── -->
+<div class="grid section-gap">
+
+  <!-- Card 4: Inner Classes -->
+  <div class="card purple" id="inner-classes">
+    <div class="card-header"><div class="dot"></div><h3>Inner Classes</h3></div>
+    <div class="card-body">
+      <div class="label">Member Inner Class</div>
+      <pre>public class Outer {
+    private int x = 10;
+
+    class Inner {
+        void show() {
+            System.out.println(x);  // can access outer's private!
+        }
+    }
+
+    void demo() {
+        Inner inner = new Inner();
+        inner.show();
+    }
+}
+
+// From outside:
+Outer.Inner inner = new Outer().new Inner();</pre>
+      <div class="label">When to use inner classes</div>
+      <ul class="items">
+        <li>Need access to outer class's private members</li>
+        <li>Logically grouped with outer class</li>
+        <li>Iterator implementations (classic use case)</li>
+        <li>Event listeners (GUI)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 5: Static Nested Classes -->
+  <div class="card orange" id="static-nested">
+    <div class="card-header"><div class="dot"></div><h3>Static Nested Classes</h3></div>
+    <div class="card-body">
+      <pre>public class LinkedList&lt;E&gt; {
+    private Node&lt;E&gt; head;
+
+    // Static nested — no access to outer instance
+    private static class Node&lt;E&gt; {
+        E data;
+        Node&lt;E&gt; next;
+        Node(E data) { this.data = data; }
+    }
+
+    public void addFirst(E data) {
+        head = new Node&lt;&gt;(data);
+    }
+}</pre>
+      <div class="label">4 Types of Inner Classes</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>static</th><th>Access outer</th><th>Created</th></tr>
+        <tr><td>Member inner</td><td>✗</td><td>✓</td><td><code>outer.new Inner()</code></td></tr>
+        <tr><td>Static nested</td><td>✓</td><td>✗</td><td><code>new Outer.Nested()</code></td></tr>
+        <tr><td>Local class</td><td>✗</td><td>✓ (eff. final)</td><td>Inside method</td></tr>
+        <tr><td>Anonymous</td><td>✗</td><td>✓ (eff. final)</td><td>Inline expression</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 6: Anonymous Classes -->
+  <div class="card yellow" id="anonymous">
+    <div class="card-header"><div class="dot"></div><h3>Anonymous Classes &amp; Functional Programming</h3></div>
+    <div class="card-body">
+      <div class="label">Anonymous class (pre-lambda way)</div>
+      <pre>// Old way: anonymous class
+Runnable r = new Runnable() {
+    @Override
+    public void run() {
+        System.out.println("Running");
+    }
+};
+
+// Modern way: lambda
+Runnable r2 = () -&gt; System.out.println("Running");
+
+// Anonymous Comparator (old)
+Arrays.sort(names, new Comparator&lt;String&gt;() {
+    @Override
+    public int compare(String a, String b) {
+        return a.length() - b.length();
+    }
+});
+
+// Lambda (modern)
+Arrays.sort(names, (a, b) -&gt; a.length() - b.length());
+// Method reference (cleanest)
+Arrays.sort(names, Comparator.comparingInt(String::length));</pre>
+      <div class="tip"><div class="t-title">Tip</div>Use anonymous classes when you need to store state; use lambdas for single-method interfaces without state</div>
+    </div>
+  </div>
+
+</div><!-- end row 3 -->
+
+<!-- ── ROW 4: 2 cols ─────────────────────────────────────────────────────── -->
+<div class="grid-2 section-gap">
+
+  <!-- Card 7: Interface Default & Static Methods -->
+  <div class="card green" id="interface-advanced">
+    <div class="card-header"><div class="dot"></div><h3>Interface Default &amp; Static Methods</h3></div>
+    <div class="card-body">
+      <pre>public interface Collection&lt;E&gt; {
+    boolean add(E element);     // abstract
+    int size();                 // abstract
+
+    // Default — backwards compatible addition
+    default boolean isEmpty() {
+        return size() == 0;
+    }
+
+    // Static utility
+    static &lt;E&gt; Collection&lt;E&gt; empty() {
+        return new EmptyCollection&lt;&gt;();
+    }
+}</pre>
+      <div class="label">Resolving default method conflicts</div>
+      <pre>interface A { default void hello() { System.out.println("A"); } }
+interface B { default void hello() { System.out.println("B"); } }
+
+class C implements A, B {
+    @Override
+    public void hello() {
+        A.super.hello();  // explicitly choose A's version
+    }
+}</pre>
+      <div class="warn"><div class="w-title">Warning</div>If two interfaces have same default method, implementing class must override to resolve ambiguity</div>
+    </div>
+  </div>
+
+  <!-- Card 8: Predicate & Function Composition -->
+  <div class="card blue" id="function-composition">
+    <div class="card-header"><div class="dot"></div><h3>Predicate Composition &amp; Function Chains</h3></div>
+    <div class="card-body">
+      <pre>Predicate&lt;Integer&gt; isPositive = n -&gt; n &gt; 0;
+Predicate&lt;Integer&gt; isEven = n -&gt; n % 2 == 0;
+
+// Compose predicates
+Predicate&lt;Integer&gt; isPositiveAndEven = isPositive.and(isEven);
+Predicate&lt;Integer&gt; isPositiveOrEven  = isPositive.or(isEven);
+Predicate&lt;Integer&gt; isNegative        = isPositive.negate();
+
+// Compose Functions
+Function&lt;Integer, Integer&gt; times2 = x -&gt; x * 2;
+Function&lt;Integer, Integer&gt; plus3  = x -&gt; x + 3;
+
+// andThen: apply times2 then plus3
+Function&lt;Integer, Integer&gt; times2Plus3 = times2.andThen(plus3);
+times2Plus3.apply(5); // (5*2)+3 = 13
+
+// compose: apply plus3 first then times2
+Function&lt;Integer, Integer&gt; plus3Times2 = times2.compose(plus3);
+plus3Times2.apply(5); // (5+3)*2 = 16</pre>
+      <div class="tip"><div class="t-title">Tip</div>Function composition lets you build complex transformations from simple pieces — building blocks of functional style</div>
+    </div>
+  </div>
+
+</div><!-- end row 4 -->
+
+<div class="footer">
+  <a href="../PRO192.html">← PRO192 Index</a>
+  <span>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell</span>
+  <span>CH06 / 09</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  function toggleTOC(){open=!open;toc.className=open?'toc-open':'toc-collapsed';}
+  document.querySelector('.toc-hdr').addEventListener('click',toggleTOC);
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

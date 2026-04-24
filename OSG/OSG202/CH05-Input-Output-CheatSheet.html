@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH05 – Input/Output | OSG202</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH05 — Input/Output</h1>
+    <h2>Modern Operating Systems · Tanenbaum · 4th Ed. · Chapter 5</h2>
+    <div class="toc">
+      <span class="toc-item">I/O Hardware</span>
+      <span class="toc-item">Software Layers</span>
+      <span class="toc-item">Programmed I/O</span>
+      <span class="toc-item">Interrupt I/O</span>
+      <span class="toc-item">DMA</span>
+      <span class="toc-item">Device Drivers</span>
+      <span class="toc-item">Disk Hardware</span>
+      <span class="toc-item">Disk Scheduling</span>
+      <span class="toc-item">RAID</span>
+      <span class="toc-item">Clocks</span>
+    </div>
+  </div>
+  <span class="badge">OSG202</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 1 · I/O HARDWARE FUNDAMENTALS
+     ═══════════════════════════════════════════════════ -->
+<div class="grid">
+
+  <div class="card blue" id="s1-device-categories">
+    <div class="card-header"><div class="dot"></div><h3>I/O Device Categories</h3></div>
+    <div class="card-body">
+      <div class="label">Block Devices</div>
+      <p><strong style="color:var(--osg)">Block devices</strong> store information in fixed-size <code>blocks</code>, each with its own address. Transfers are always in whole blocks; each block is independently readable and writable regardless of all others.</p>
+      <ul class="items">
+        <li>Hard disk drives (HDDs) — typical block <code>512 B</code> or <code>4096 B</code></li>
+        <li>Solid-state drives (SSDs) — page-based internally, block interface externally</li>
+        <li>USB flash drives — NAND flash, block-addressable</li>
+        <li>CD-ROM / Blu-Ray — read-only optical, block-addressed</li>
+        <li>Magnetic tape drives — sequential block access only</li>
+      </ul>
+      <div class="label">Character Devices</div>
+      <p><strong style="color:var(--osg)">Character devices</strong> deliver or accept a stream of characters with no block structure; they are not addressable and support no seek operation.</p>
+      <ul class="items">
+        <li>Keyboards, mice — input character streams</li>
+        <li>Serial / parallel printers — output character streams</li>
+        <li>Network interface cards — deliver packet streams</li>
+        <li>Audio input/output — sample streams</li>
+        <li>Terminals, PTYs — bidirectional character streams</li>
+      </ul>
+      <div class="label">Other / Special Categories</div>
+      <ul class="items">
+        <li><code>Clocks</code> — generate periodic interrupts; do not fit block/char model</li>
+        <li><code>Frame buffers</code> — special memory-mapped display devices; byte-addressable</li>
+        <li><code>Memory-mapped files</code> — OS abstraction layered over block devices</li>
+      </ul>
+      <div class="note"><div class="n-title">Design Impact</div>Block devices use <strong>buffer caches</strong> for performance; character devices use <strong>raw I/O streams</strong> or line disciplines (termios).</div>
+    </div>
+  </div>
+
+  <div class="card green" id="s1-hardware-concepts">
+    <div class="card-header"><div class="dot"></div><h3>I/O Hardware Concepts</h3></div>
+    <div class="card-body">
+      <div class="label">Ports</div>
+      <p>A <strong style="color:var(--osg)">port</strong> is a connection point — a specific address — through which the CPU communicates with a device controller. Each device family has a unique port address in the I/O address space (e.g., <code>0x3F8</code> for COM1 on x86).</p>
+      <div class="label">Buses</div>
+      <p>A <strong style="color:var(--osg)">bus</strong> is a shared set of wires carrying address, data, and control signals. Multiple devices share the bus; arbitration resolves simultaneous requests.</p>
+      <table class="tbl">
+        <tr><th>Bus</th><th>Speed</th><th>Used For</th></tr>
+        <tr><td><code>PCIe</code></td><td>Up to 64 GB/s (×16 Gen5)</td><td>GPUs, NVMe SSDs, NICs</td></tr>
+        <tr><td><code>USB 3.2</code></td><td>20 Gb/s</td><td>Peripherals, storage</td></tr>
+        <tr><td><code>SATA III</code></td><td>6 Gb/s</td><td>HDDs, SSDs</td></tr>
+        <tr><td><code>SCSI</code></td><td>Up to 640 MB/s</td><td>Server storage</td></tr>
+        <tr><td><code>I²C / SPI</code></td><td>&lt;100 MB/s</td><td>Embedded sensors</td></tr>
+      </table>
+      <div class="label">Device Controllers</div>
+      <p>A <strong style="color:var(--osg)">device controller</strong> (adapter) is the chip or board that physically controls the device. It presents a simple register interface to the CPU and hides all hardware complexity (e.g., a SATA controller hides disk head mechanics).</p>
+      <hr class="divider">
+      <div class="label">Memory-Mapped vs Port-Mapped I/O</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>CPU Instructions</th><th>Address Space</th><th>Notes</th></tr>
+        <tr><td><strong style="color:var(--accent3)">Port-mapped</strong></td><td><code>IN</code> / <code>OUT</code></td><td>Separate I/O space</td><td>x86 legacy; requires special instructions</td></tr>
+        <tr><td><strong style="color:var(--accent2)">Memory-mapped</strong></td><td><code>MOV</code> to/from addr</td><td>Unified memory space</td><td>Modern; C pointers work directly</td></tr>
+      </table>
+      <div class="tip"><div class="t-title">Tip</div>Memory-mapped I/O lets C code use <code>volatile uint32_t *reg = (uint32_t*)0xFEA00000;</code> — no special instructions needed, works on any architecture.</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="s1-device-registers">
+    <div class="card-header"><div class="dot"></div><h3>Device Registers &amp; I/O Methods</h3></div>
+    <div class="card-body">
+      <div class="label">The Four Device Register Types</div>
+      <table class="tbl">
+        <tr><th>Register</th><th>Direction</th><th>Purpose &amp; Example</th></tr>
+        <tr><td><code>Control</code></td><td>CPU → Device</td><td>Issue commands: START, STOP, SEEK, RESET, SELECT</td></tr>
+        <tr><td><code>Status</code></td><td>Device → CPU</td><td>Report DONE, ERROR, BUSY, READY, MEDIA_CHANGED</td></tr>
+        <tr><td><code>Data-In</code></td><td>Device → CPU</td><td>Data device sends to host; read by CPU or DMA</td></tr>
+        <tr><td><code>Data-Out</code></td><td>CPU → Device</td><td>Data CPU writes for device to consume or transmit</td></tr>
+      </table>
+      <div class="label">Three I/O Control Techniques</div>
+      <table class="tbl">
+        <tr><th>Method</th><th>CPU Involvement</th><th>Mechanism</th><th>Best For</th></tr>
+        <tr><td><strong style="color:var(--accent3)">Polling</strong></td><td>100%</td><td>Busy-loops on <code>status_reg</code></td><td>Fast devices, embedded, real-time</td></tr>
+        <tr><td><strong style="color:var(--accent2)">Interrupts</strong></td><td>Low (on completion)</td><td>Device raises IRQ; CPU runs ISR</td><td>Slow devices; multiprogrammed OS</td></tr>
+        <tr><td><strong style="color:var(--accent4)">DMA</strong></td><td>Minimal (setup only)</td><td>DMA controller handles bulk transfer</td><td>High-bandwidth disk/network I/O</td></tr>
+      </table>
+      <div class="label">Interrupt Controller</div>
+      <p>The <strong style="color:var(--osg)">Programmable Interrupt Controller</strong> (<code>PIC</code> / <code>APIC</code> on x86) arbitrates multiple IRQ lines and forwards the highest-priority pending interrupt to the CPU's <code>INTR</code> pin. The OS programs the interrupt vector table (<code>IDT</code>) mapping IRQ numbers to <strong>Interrupt Service Routines</strong>.</p>
+      <div class="rule">Each controller has: Control · Status · Data-In · Data-Out registers</div>
+      <div class="formula">IRQ_line → PIC/APIC → CPU INTR pin → IDT lookup → ISR runs</div>
+    </div>
+  </div>
+
+</div><!-- /grid s1 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 2 · I/O SOFTWARE LAYERS
+     ═══════════════════════════════════════════════════ -->
+<div class="grid-2 section-gap">
+
+  <div class="card blue col-span-2" id="s2-software-layers">
+    <div class="card-header"><div class="dot"></div><h3>The Four I/O Software Layers</h3></div>
+    <div class="card-body">
+      <p>I/O software is organized in <strong style="color:var(--osg)">four hierarchical layers</strong>. Requests flow <strong style="color:var(--accent)">top-down</strong> from user program to hardware; completion notifications flow <strong style="color:var(--accent2)">bottom-up</strong> from interrupt handler back to user space. Each layer provides a clean interface to the layer above it.</p>
+      <hr class="divider">
+      <div class="grid" style="gap:12px;grid-template-columns:1fr 1fr 1fr;">
+        <div>
+          <div class="label" style="margin-top:0">Layer 4 — User-Space Libraries</div>
+          <div class="formula">printf() · scanf() · fread() · fwrite()</div>
+          <p style="font-size:11px;color:var(--text-muted);">Library routines that buffer I/O internally (stdio), format data, and eventually issue <code>write()</code> / <code>read()</code> system calls. Spooling daemons (e.g., <code>cupsd</code>) also live here. Runs in <strong>user mode</strong> — no privilege needed.</p>
+          <div class="label">Layer 3 — Device-Independent OS Software</div>
+          <div class="formula">Uniform naming · Buffering · Error reporting · Allocation</div>
+          <p style="font-size:11px;color:var(--text-muted);">Maps device names (<code>/dev/sda</code>) to drivers. Enforces uniform block sizes regardless of hardware. Manages kernel buffers, quota, and device allocation. Reports errors consistently. Protects devices from unauthorized access.</p>
+        </div>
+        <div>
+          <div class="label" style="margin-top:0">Layer 2 — Device Drivers</div>
+          <div class="formula">Set registers · Check status · Service interrupts</div>
+          <p style="font-size:11px;color:var(--text-muted);">Kernel-mode code, one per device class. Translates abstract requests into device-specific register operations. Registers interrupt handlers. Has a <strong>top half</strong> (called by kernel for requests) and <strong>bottom half</strong> (interrupt handler, deferred work via <code>tasklet</code> / <code>workqueue</code>).</p>
+          <div class="label">Layer 1 — Interrupt Handlers (bottom)</div>
+          <div class="formula">Save state → acknowledge → handle → wake driver</div>
+          <p style="font-size:11px;color:var(--text-muted);">Runs in response to hardware IRQ. Performs the minimum work needed: acknowledge interrupt controller, copy data if needed, wake the blocked driver process, restore context. Runs with interrupts <strong>disabled</strong> for critical sections.</p>
+        </div>
+        <div>
+          <div class="label" style="margin-top:0">Request Flow — Top Down</div>
+          <ol class="steps">
+            <li>User calls <code>printf()</code>; stdio buffers in user space</li>
+            <li>Buffer full → library calls <code>write()</code> syscall</li>
+            <li>Kernel switches to kernel mode</li>
+            <li>Device-independent layer checks permissions, buffers</li>
+            <li>Driver writes command to device control register</li>
+            <li>CPU releases and runs another process</li>
+          </ol>
+          <div class="label">Reply Flow — Bottom Up</div>
+          <ol class="steps">
+            <li>Device completes operation, raises IRQ</li>
+            <li>Interrupt handler runs, acknowledges controller</li>
+            <li>Handler signals (wakes) the waiting driver</li>
+            <li>Driver reads status, passes result up</li>
+            <li>Process unblocked; <code>write()</code> returns</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="s2-goals">
+    <div class="card-header"><div class="dot"></div><h3>Goals of I/O Software</h3></div>
+    <div class="card-body">
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Device independence</strong> — programs work with any device; <code>sort &lt;/dev/sda</code> same as <code>sort &lt;file.txt</code></li>
+        <li><strong style="color:var(--osg)">Uniform naming</strong> — devices mounted into filesystem namespace; no magic numbers in programs</li>
+        <li><strong style="color:var(--osg)">Error handling</strong> — hardware errors caught as close to hardware as possible; upper layers see clean interface</li>
+        <li><strong style="color:var(--osg)">Synchronous vs Async</strong> — physical I/O is async (interrupt-driven); OS presents blocking (synchronous) <code>read()</code> to user</li>
+        <li><strong style="color:var(--osg)">Buffering</strong> — data arriving from network cannot be stored directly in final destination; kernel buffers absorb rate mismatches</li>
+        <li><strong style="color:var(--osg)">Sharable vs Dedicated</strong> — disk is sharable (multi-process); printer is dedicated (must spool)</li>
+      </ul>
+      <hr class="divider">
+      <div class="label">Buffering Strategies</div>
+      <table class="tbl">
+        <tr><th>Strategy</th><th>Description</th><th>Use Case</th></tr>
+        <tr><td>No buffering</td><td>Data copied directly; user process blocks whole time</td><td>Simple hardware, character devices</td></tr>
+        <tr><td>User-space buffer</td><td><code>stdio</code> line / block buffering; eventual flush</td><td><code>printf()</code>, file I/O</td></tr>
+        <tr><td>Single kernel buffer</td><td>One buffer in kernel; process copies from/to it</td><td>Classic Unix read/write</td></tr>
+        <tr><td>Double buffer</td><td>Producer fills buf A while consumer drains buf B, then swap</td><td>Overlapping I/O and processing</td></tr>
+        <tr><td>Circular buffer</td><td>Ring of N buffers; producer/consumer with modular indexing</td><td>Network, audio streams</td></tr>
+      </table>
+      <div class="tip"><div class="t-title">Tip</div>Double buffering overlaps I/O and computation: while one buffer transfers to disk, the CPU processes the other — nearly doubling throughput on sequential workloads.</div>
+    </div>
+  </div>
+
+</div><!-- /grid-2 s2 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 3 · I/O TECHNIQUES
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card red" id="s3-programmed-io">
+    <div class="card-header"><div class="dot"></div><h3>Programmed I/O (Polling)</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">Programmed I/O</strong> (also called <em>busy-waiting</em> or <em>polling</em>) has the CPU do all the work of transferring data. The CPU continuously reads the device's status register until it reports ready, then copies data one word at a time.</p>
+      <div class="label">Classic Polling Loop (C)</div>
+      <pre><code class="language-c">/* Print a string to a character device */
+void print_string(char *str) {
+    while (*str != '\0') {
+        /* Busy-wait: spin until device not busy */
+        while (status_reg &amp; BUSY)
+            ;  /* do nothing */
+        data_reg = *str++;
+        status_reg = START;
+    }
+}
+
+/* Example read with timeout */
+int poll_read(volatile uint8_t *status, uint8_t *data) {
+    int timeout = 100000;
+    while (!(*status &amp; READY) &amp;&amp; timeout--)
+        ;
+    if (timeout &lt; 0) return -1; /* error */
+    *data = *data_reg;
+    return 0;
+}</code></pre>
+      <div class="warn"><div class="w-title">CPU Waste</div>Polling wastes CPU cycles proportional to device latency. A 1 Gbps NIC polled on a 1 GHz CPU consumes <strong>100% of a core</strong> just checking status — no other work done.</div>
+      <div class="label">When Polling Is Acceptable</div>
+      <ul class="items">
+        <li>Very fast devices where wait time is tiny (µs range)</li>
+        <li>Embedded / real-time systems needing deterministic latency</li>
+        <li>Kernel poll loops for < ~10 µs expected wait (avoids interrupt overhead)</li>
+        <li>DPDK / SPDK high-performance networking (deliberate polling)</li>
+      </ul>
+      <div class="rule">Programmed I/O: simple · predictable · CPU-intensive</div>
+    </div>
+  </div>
+
+  <div class="card green" id="s3-interrupt-io">
+    <div class="card-header"><div class="dot"></div><h3>Interrupt-Driven I/O</h3></div>
+    <div class="card-body">
+      <p>With <strong style="color:var(--osg)">interrupt-driven I/O</strong>, the CPU initiates an I/O operation, then does other useful work. When the device finishes, it asserts its IRQ line; the CPU is interrupted and runs an <strong>Interrupt Service Routine</strong> (ISR) to handle the completion.</p>
+      <div class="label">Interrupt I/O Sequence</div>
+      <ol class="steps">
+        <li>Driver writes command to device control register (<code>WRITE | START</code>)</li>
+        <li>CPU switches to another ready process (does useful work)</li>
+        <li>Device completes I/O operation asynchronously</li>
+        <li>Device asserts IRQ line to PIC/APIC</li>
+        <li>CPU finishes current instruction; checks INTR pin</li>
+        <li>CPU saves registers, switches to kernel mode (privilege escalation)</li>
+        <li>IDT lookup: calls registered ISR for this IRQ number</li>
+        <li>ISR acknowledges interrupt controller (<code>EOI</code> to PIC)</li>
+        <li>ISR copies data, wakes blocked driver process, returns</li>
+        <li>Scheduler decides: resume interrupted process or switch</li>
+      </ol>
+      <div class="label">Interrupt Types</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Source</th><th>Example</th></tr>
+        <tr><td><strong>Hardware IRQ</strong></td><td>External device</td><td>Disk, NIC, keyboard, timer</td></tr>
+        <tr><td><strong>Software INT</strong></td><td>User program</td><td><code>int 0x80</code> (Linux syscall)</td></tr>
+        <tr><td><strong>Exception</strong></td><td>CPU fault/trap</td><td>Page fault, divide-by-zero, GPF</td></tr>
+      </table>
+      <div class="tip"><div class="t-title">Interrupt Overhead</div>Saving/restoring context + cache misses = ~1–5 µs overhead per interrupt. High-rate devices (&gt;100K irq/s) may use interrupt coalescing or switch to polling (NAPI in Linux).</div>
+      <div class="formula">CPU utilization = 1 − (I/O_wait / total_time)</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="s3-dma">
+    <div class="card-header"><div class="dot"></div><h3>Direct Memory Access (DMA)</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">DMA</strong> allows a specialized controller to transfer data directly between a device and main memory <em>without CPU involvement</em>. The CPU only sets up the transfer and is interrupted only on completion — not once per byte/word.</p>
+      <div class="label">DMA Transfer Setup (C)</div>
+      <pre><code class="language-c">/* Set up DMA for disk read */
+void dma_read_disk(void *buf, size_t n, uint32_t lba) {
+    dma_ctrl.src_addr  = disk_sector_addr(lba); /* device addr */
+    dma_ctrl.dst_addr  = (uint32_t)(uintptr_t)buf; /* memory */
+    dma_ctrl.count     = n;          /* bytes to transfer */
+    dma_ctrl.direction = DMA_FROM_DEV;
+    dma_ctrl.control   = DMA_START | DMA_IRQ_ON_DONE;
+    /* CPU is now free — DMA runs autonomously */
+}
+
+/* ISR called when DMA completes */
+void dma_isr(void) {
+    ack_pic(DMA_IRQ);
+    if (dma_ctrl.status &amp; DMA_ERROR) handle_error();
+    wakeup(waiting_process);
+}</code></pre>
+      <div class="label">DMA Operation Sequence</div>
+      <ol class="steps">
+        <li>CPU programs DMA: source address, destination, byte count, direction</li>
+        <li>DMA controller takes ownership of the memory bus (<em>cycle stealing</em>)</li>
+        <li>DMA transfers one word at a time: device → memory buffer</li>
+        <li>CPU may continue executing (if bus not stolen in that cycle)</li>
+        <li>DMA interrupts CPU when full transfer complete</li>
+        <li>ISR wakes blocked process; driver signals completion</li>
+      </ol>
+      <div class="formula">T_cpu_busy = T_setup_only ≪ N × T_per_byte  (no per-byte interrupt)</div>
+      <div class="info"><div class="i-title">Cycle Stealing</div>DMA steals memory bus cycles from the CPU when transferring, slightly slowing CPU. This is still far faster than CPU doing the transfer itself. Modern systems use separate memory channels to minimize contention.</div>
+      <div class="note"><div class="n-title">IOMMU</div>Modern systems use an <strong>IOMMU</strong> (Input-Output Memory Management Unit) to translate DMA addresses, preventing rogue devices from accessing arbitrary physical memory — critical for security in virtualized environments.</div>
+    </div>
+  </div>
+
+</div><!-- /grid s3 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 4 · DEVICE DRIVERS
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card blue" id="s4-driver-structure">
+    <div class="card-header"><div class="dot"></div><h3>Device Driver Structure</h3></div>
+    <div class="card-body">
+      <p>A <strong style="color:var(--osg)">device driver</strong> is kernel-mode code that provides a standard interface between the OS and a specific class of hardware. One driver per device type (e.g., one driver for all Intel e1000 NICs).</p>
+      <div class="label">Two Halves of a Driver</div>
+      <table class="tbl">
+        <tr><th>Half</th><th>When Called</th><th>Responsibilities</th></tr>
+        <tr><td><strong style="color:var(--accent)">Top Half</strong></td><td>Called by kernel on behalf of user process (synchronous)</td><td>Validate request, set up DMA/registers, enqueue request, block process</td></tr>
+        <tr><td><strong style="color:var(--accent3)">Bottom Half</strong></td><td>Called by interrupt handler (async, after device done)</td><td>Copy data, update state, wake sleeping processes, schedule deferred work</td></tr>
+      </table>
+      <div class="label">Driver Responsibilities</div>
+      <ul class="items">
+        <li><strong>Initialization</strong> — detect device, allocate resources (<code>IRQ</code>, <code>I/O ports</code>, <code>DMA channels</code>), register with kernel</li>
+        <li><strong>Read / Write</strong> — translate abstract block/byte requests into device register sequences</li>
+        <li><strong>Interrupt processing</strong> — ISR bottom half; handle completion, errors</li>
+        <li><strong>Error recovery</strong> — retry failed commands, reset controller, report to kernel</li>
+        <li><strong>Power management</strong> — respond to suspend/resume, implement sleep states</li>
+        <li><strong>ioctl / control</strong> — device-specific configuration commands beyond read/write</li>
+      </ul>
+      <div class="info"><div class="i-title">Kernel Privilege</div>Drivers run in <strong>ring 0</strong> (kernel mode) with full hardware access. A bug in a driver can crash the entire OS — hence Linux's KUnit / kselftest driver testing frameworks.</div>
+      <div class="formula">User_read() → VFS → block layer → driver top-half → IRQ → driver bottom-half</div>
+    </div>
+  </div>
+
+  <div class="card orange" id="s4-driver-installation">
+    <div class="card-header"><div class="dot"></div><h3>Driver Installation &amp; Loading</h3></div>
+    <div class="card-body">
+      <div class="label">Static Linking (Built-in Drivers)</div>
+      <p>Driver code is <strong style="color:var(--osg)">compiled directly into the kernel binary</strong> (<code>vmlinuz</code>). Always available, no loading delay. Increases kernel size. Selected via <code>make menuconfig</code> option <code>CONFIG_XYZ=y</code>.</p>
+      <div class="label">Loadable Kernel Modules (LKMs)</div>
+      <p>Linux <strong style="color:var(--osg)">kernel modules</strong> (<code>.ko</code> files) are loaded into the running kernel at runtime without rebooting. Selected as <code>CONFIG_XYZ=m</code> in kernel config.</p>
+      <div class="info"><div class="i-title">Linux Module Commands</div>
+        <table class="tbl" style="margin-top:4px">
+          <tr><th>Command</th><th>Action</th></tr>
+          <tr><td><code>insmod driver.ko</code></td><td>Load a specific <code>.ko</code> module file</td></tr>
+          <tr><td><code>modprobe e1000</code></td><td>Load module + auto-resolve dependencies</td></tr>
+          <tr><td><code>rmmod e1000</code></td><td>Unload module (if not in use)</td></tr>
+          <tr><td><code>lsmod</code></td><td>List currently loaded modules + usage count</td></tr>
+          <tr><td><code>modinfo e1000.ko</code></td><td>Show module metadata, parameters, dependencies</td></tr>
+          <tr><td><code>depmod -a</code></td><td>Rebuild module dependency database</td></tr>
+        </table>
+      </div>
+      <div class="label">Module Entry Points (Linux)</div>
+      <pre><code class="language-c">/* Every Linux driver module needs these two */
+static int __init my_driver_init(void) {
+    /* Called on insmod: register device, alloc IRQ */
+    return register_chrdev(MY_MAJOR, "mydev", &amp;fops);
+}
+static void __exit my_driver_exit(void) {
+    /* Called on rmmod: free resources */
+    unregister_chrdev(MY_MAJOR, "mydev");
+}
+module_init(my_driver_init);
+module_exit(my_driver_exit);
+MODULE_LICENSE("GPL");</code></pre>
+      <div class="note"><div class="n-title">Windows Drivers</div>Windows uses the <strong>WDM</strong> (Windows Driver Model) / <strong>WDF</strong> framework. Driver files have <code>.sys</code> extension and are signed for Secure Boot compliance.</div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="s4-interrupt-handling">
+    <div class="card-header"><div class="dot"></div><h3>Interrupt Handling Steps</h3></div>
+    <div class="card-body">
+      <p>When a device raises an IRQ, the CPU and OS must execute a precise sequence before and after running the ISR. This sequence must be <strong style="color:var(--osg)">transparent</strong> — the interrupted program must resume exactly as if nothing happened.</p>
+      <div class="label">Complete Interrupt Sequence</div>
+      <ol class="steps">
+        <li>Device asserts IRQ line; PIC/APIC notes and prioritizes</li>
+        <li>CPU finishes current instruction (atomicity guarantee)</li>
+        <li>CPU reads interrupt vector from PIC/APIC (<code>INTA</code> cycle)</li>
+        <li>CPU <strong>saves</strong> current PC, PSW/EFLAGS, and CS onto kernel stack</li>
+        <li>CPU switches to <strong>kernel mode</strong> (ring 0) and kernel stack</li>
+        <li>Assembly interrupt stub saves all general-purpose registers</li>
+        <li>OS sets up interrupt stack frame; loads kernel data segment</li>
+        <li>OS sends <strong>End-of-Interrupt</strong> (<code>EOI</code>) to PIC to re-enable further IRQs</li>
+        <li>C interrupt handler (ISR) runs: copies data, clears status flags</li>
+        <li>ISR wakes any blocked process waiting for this device</li>
+        <li>Scheduler checks: should we preempt? Run higher-priority process?</li>
+        <li>Restore all registers; return from interrupt (<code>IRET</code> / <code>ERET</code>)</li>
+        <li>CPU resumes interrupted process (or newly scheduled one)</li>
+      </ol>
+      <div class="warn"><div class="w-title">ISR Rules</div>ISRs run with <strong>interrupts partially disabled</strong> — keep them as short as possible. Defer slow work to <strong>tasklets</strong>, <strong>workqueues</strong>, or <strong>softirqs</strong> (Linux bottom-half mechanisms).</div>
+      <div class="formula">ISR latency = interrupt detect + context save + handler + context restore</div>
+    </div>
+  </div>
+
+</div><!-- /grid s4 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 5 · DISK HARDWARE
+     ═══════════════════════════════════════════════════ -->
+<div class="grid-2 section-gap">
+
+  <div class="card blue" id="s5-disk-geometry">
+    <div class="card-header"><div class="dot"></div><h3>Disk Geometry &amp; Hardware</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="label" style="margin-top:0">Physical Structure</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Platter</strong> — circular magnetic disk; modern drives have 1–10 platters stacked on a spindle</li>
+            <li><strong style="color:var(--osg)">Track</strong> — concentric circle on one platter surface; tens of thousands per surface</li>
+            <li><strong style="color:var(--osg)">Cylinder</strong> — same track number across <em>all</em> platter surfaces simultaneously; no seek needed between cylinder surfaces</li>
+            <li><strong style="color:var(--osg)">Sector</strong> — smallest addressable unit; typically <code>512 B</code> (legacy) or <code>4096 B</code> (Advanced Format); includes sync, header, data, ECC fields</li>
+            <li><strong style="color:var(--osg)">Read/Write Head</strong> — one per surface; all heads move together on the same actuator arm</li>
+          </ul>
+          <div class="label">Access Time Components</div>
+          <div class="formula">T_access = T_seek + T_rotation + T_transfer</div>
+          <ul class="items">
+            <li><strong>T_seek</strong> — time to move actuator arm to target cylinder (mechanical; 1–20 ms)</li>
+            <li><strong>T_rotation</strong> — time for target sector to rotate under head (0–full rotation; avg = half rotation)</li>
+            <li><strong>T_transfer</strong> — time for data to pass under head at disk RPM × track density</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label" style="margin-top:0">Historical Disk Parameters</div>
+          <table class="tbl">
+            <tr><th>Parameter</th><th>IBM 360/91 Floppy</th><th>WD 3000 HLFS</th></tr>
+            <tr><td>Cylinders</td><td><code>40</code></td><td><code>36,481</code></td></tr>
+            <tr><td>Tracks/Cyl</td><td><code>2</code></td><td><code>255</code></td></tr>
+            <tr><td>Sectors/Track</td><td><code>8</code></td><td><code>63</code></td></tr>
+            <tr><td>Bytes/Sector</td><td><code>512</code></td><td><code>512</code></td></tr>
+            <tr><td>Disk Capacity</td><td>327 KB</td><td>300 GB</td></tr>
+            <tr><td>Seek Time (avg)</td><td>77 ms</td><td>4.2 ms</td></tr>
+            <tr><td>Rotation Speed</td><td>360 RPM</td><td>10,000 RPM</td></tr>
+            <tr><td>Rotational Latency</td><td>83.3 ms</td><td>3.0 ms</td></tr>
+            <tr><td>Transfer Rate</td><td>22 ms/track</td><td>1.4 µs/sector</td></tr>
+          </table>
+          <div class="label">Disk Addressing</div>
+          <p>Old: <strong>CHS</strong> (Cylinder, Head, Sector). Modern: <strong style="color:var(--osg)">LBA</strong> (Logical Block Addressing) — linear 0-based sector number; controller maps to CHS internally.</p>
+          <div class="formula">LBA = (C × H_per_cyl + H) × S_per_track + (S − 1)</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="s5-disk-performance">
+    <div class="card-header"><div class="dot"></div><h3>Disk Performance &amp; SSDs</h3></div>
+    <div class="card-body">
+      <div class="label">HDD Performance Breakdown</div>
+      <table class="tbl">
+        <tr><th>Component</th><th>Typical Range</th><th>Formula / Notes</th></tr>
+        <tr><td>Seek Time (avg)</td><td>4–9 ms (7200 RPM)</td><td>1/3 of max seek time rule-of-thumb</td></tr>
+        <tr><td>Rotational Latency (avg)</td><td>4.17 ms @ 7200 RPM</td><td><code>T_rot_avg = 30/RPM</code> seconds</td></tr>
+        <tr><td>Transfer Rate</td><td>100–250 MB/s</td><td>Outer tracks faster (more sectors/rot)</td></tr>
+        <tr><td>Full Rotation</td><td>8.33 ms @ 7200 RPM</td><td><code>60,000/RPM</code> milliseconds</td></tr>
+      </table>
+      <div class="formula">T_rot_avg (7200 RPM) = 60,000 / (7200 × 2) = 4.17 ms</div>
+      <div class="label">SSD Performance Characteristics</div>
+      <table class="tbl">
+        <tr><th>Metric</th><th>SATA SSD</th><th>NVMe SSD (PCIe 4.0)</th></tr>
+        <tr><td>Sequential Read</td><td>~550 MB/s</td><td>~7,000 MB/s</td></tr>
+        <tr><td>Sequential Write</td><td>~520 MB/s</td><td>~6,500 MB/s</td></tr>
+        <tr><td>Random Read (4K)</td><td>~90,000 IOPS</td><td>~1,000,000 IOPS</td></tr>
+        <tr><td>Access Latency</td><td>~50–100 µs</td><td>~10–20 µs</td></tr>
+        <tr><td>Seek Time</td><td><strong>None</strong></td><td><strong>None</strong></td></tr>
+        <tr><td>Rotational Latency</td><td><strong>None</strong></td><td><strong>None</strong></td></tr>
+      </table>
+      <div class="tip"><div class="t-title">SSD Advantage</div>SSDs have <strong>no seek time</strong> and <strong>no rotational latency</strong>, making random I/O orders of magnitude faster than HDDs. The access time formula collapses to just <code>T_access ≈ T_transfer</code>.</div>
+      <div class="label">SSD Internals (NAND Flash)</div>
+      <ul class="items">
+        <li><strong>Page</strong> (4–16 KB) — smallest readable/writable unit</li>
+        <li><strong>Block</strong> (128–512 pages) — smallest erasable unit; wear-out concern</li>
+        <li><strong>Wear leveling</strong> — FTL distributes writes evenly across blocks</li>
+        <li><strong>Write amplification</strong> — erasing a block to write a page amplifies writes</li>
+      </ul>
+      <div class="warn"><div class="w-title">Disk Scheduling &amp; SSDs</div>Traditional disk scheduling algorithms (FCFS, SSTF, SCAN) are designed for HDDs. For SSDs, simple FCFS or deadline schedulers work best since there is no seek overhead to optimize.</div>
+    </div>
+  </div>
+
+</div><!-- /grid-2 s5 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 6 · DISK SCHEDULING ALGORITHMS
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card blue" id="s6-fcfs">
+    <div class="card-header"><div class="dot"></div><h3>FCFS — First Come, First Served</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">FCFS</strong> services disk requests in the exact order they arrive in the queue. No reordering, no optimization — pure FIFO discipline.</p>
+      <div class="label">Characteristics</div>
+      <ul class="items">
+        <li><strong>Implementation</strong> — trivially simple; just a FIFO queue</li>
+        <li><strong>Fairness</strong> — perfectly fair; no starvation possible</li>
+        <li><strong>Throughput</strong> — poor; head may thrash back and forth across disk</li>
+        <li><strong>Predictability</strong> — bounded worst-case; maximum wait = queue length × max seek</li>
+      </ul>
+      <div class="label">Example (queue: 98, 183, 37, 122, 14, 124, 65, 67 from head=53)</div>
+      <div class="formula">53→98→183→37→122→14→124→65→67</div>
+      <div class="formula">Total seek = 45+85+146+85+108+110+59+2 = <strong>640 cylinders</strong></div>
+      <div class="note"><div class="n-title">When to Use</div>FCFS is suitable only when the disk request queue is almost always short (load &lt; 1 request at a time), or when fairness is the overriding concern (real-time systems with deadlines).</div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="s6-sstf">
+    <div class="card-header"><div class="dot"></div><h3>SSTF — Shortest Seek Time First</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">SSTF</strong> always services the pending request <em>closest</em> to the current head position, regardless of arrival order. Greedy local optimization.</p>
+      <div class="label">Characteristics</div>
+      <ul class="items">
+        <li><strong>Throughput</strong> — much better than FCFS; minimizes each individual seek</li>
+        <li><strong>Average seek</strong> — significantly reduced vs FCFS</li>
+        <li><strong>Implementation</strong> — moderate: sort by distance from current head</li>
+        <li><strong>Response time</strong> — good for middle tracks; poor for outer/inner tracks</li>
+      </ul>
+      <div class="label">Example (same queue, head=53)</div>
+      <div class="formula">53→65→67→37→14→98→122→124→183</div>
+      <div class="formula">Total seek = 12+2+30+23+84+24+2+59 = <strong>236 cylinders</strong></div>
+      <div class="warn"><div class="w-title">Starvation Risk</div>If requests keep arriving near the current head position, requests to far tracks can be <strong>starved indefinitely</strong>. Under heavy load, outer tracks may never be serviced. Use aging to prevent starvation.</div>
+      <div class="rule">SSTF ≈ 63% fewer seeks than FCFS on this example (236 vs 640)</div>
+    </div>
+  </div>
+
+  <div class="card green" id="s6-scan">
+    <div class="card-header"><div class="dot"></div><h3>SCAN / Elevator Algorithm</h3></div>
+    <div class="card-body">
+      <p>The <strong style="color:var(--osg)">SCAN algorithm</strong> (also called the <em>elevator algorithm</em>) moves the disk arm in one direction servicing all requests in its path, then reverses direction and sweeps back. Like an elevator serving floors.</p>
+      <div class="label">SCAN Variants</div>
+      <table class="tbl">
+        <tr><th>Variant</th><th>Behavior</th><th>End-of-Sweep</th></tr>
+        <tr><td><strong style="color:var(--osg)">SCAN</strong></td><td>Sweep to physical disk edge, then reverse</td><td>Goes to cylinder 0 or max, even if no requests</td></tr>
+        <tr><td><strong style="color:var(--accent2)">LOOK</strong></td><td>Only goes as far as last request in direction, then reverses</td><td>Stops at last pending request; shorter sweeps</td></tr>
+        <tr><td><strong style="color:var(--accent4)">C-SCAN</strong></td><td>Only services in one direction; jumps to start after reaching end</td><td>Uniform wait time for all cylinders</td></tr>
+        <tr><td><strong style="color:var(--yellow)">C-LOOK</strong></td><td>Like C-SCAN but only to last request in that direction</td><td>Jump to lowest pending request after sweep</td></tr>
+      </table>
+      <div class="label">LOOK Example (head=53, moving up)</div>
+      <div class="formula">53→65→67→98→122→124→183  ↓ reverse  →37→14</div>
+      <div class="formula">Total seek (LOOK) = 12+2+31+24+2+59+146+23 = <strong>299 cylinders</strong></div>
+      <div class="tip"><div class="t-title">C-SCAN Fairness</div>C-SCAN provides more uniform wait times than SCAN because both ends of the disk are serviced equally — SCAN gives shorter waits near the center of the disk.</div>
+      <div class="formula">SCAN: head sweeps like elevator → fair, no starvation, good throughput</div>
+    </div>
+  </div>
+
+  <!-- Full-width Comparison Table -->
+  <div class="card purple col-span-3" id="s6-comparison">
+    <div class="card-header"><div class="dot"></div><h3>Disk Scheduling Algorithm Comparison &amp; Worked Example</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:20px;">
+        <div>
+          <div class="label" style="margin-top:0">Algorithm Comparison</div>
+          <table class="tbl">
+            <tr><th>Algorithm</th><th>Seek Order (head=53)</th><th>Total Seek</th><th>Fairness</th><th>Starvation</th><th>Best For</th></tr>
+            <tr><td><strong style="color:var(--accent)">FCFS</strong></td><td>98,183,37,122,14,124,65,67</td><td><strong style="color:var(--accent3)">640</strong></td><td>Perfect</td><td>None</td><td>Low-load, real-time deadlines</td></tr>
+            <tr><td><strong style="color:var(--accent2)">SSTF</strong></td><td>65,67,37,14,98,122,124,183</td><td><strong style="color:var(--accent2)">236</strong></td><td>Poor</td><td>Yes (far tracks)</td><td>Lightly loaded disks</td></tr>
+            <tr><td><strong style="color:var(--osg)">SCAN</strong></td><td>65,67,98,122,124,183,37,14</td><td><strong style="color:var(--yellow)">331</strong></td><td>Good</td><td>None</td><td>General purpose</td></tr>
+            <tr><td><strong style="color:var(--accent4)">C-SCAN</strong></td><td>65,67,98,122,124,183 → jump → 14,37</td><td><strong style="color:var(--yellow)">382</strong></td><td>Excellent</td><td>None</td><td>Uniform response time needed</td></tr>
+            <tr><td><strong style="color:var(--accent2)">LOOK</strong></td><td>65,67,98,122,124,183,37,14</td><td><strong style="color:var(--accent2)">299</strong></td><td>Good</td><td>None</td><td>Better SCAN; avoids disk edge</td></tr>
+            <tr><td><strong style="color:var(--yellow)">C-LOOK</strong></td><td>65,67,98,122,124,183 → jump → 14,37</td><td><strong style="color:var(--yellow)">322</strong></td><td>Excellent</td><td>None</td><td>Best balance; Linux default basis</td></tr>
+          </table>
+          <div class="note" style="margin-top:8px"><div class="n-title">Worked Example</div>Request queue: <code>[98, 183, 37, 122, 14, 124, 65, 67]</code> · Initial head position: <code>53</code> · All seeks in cylinder units. SSTF: from 67, closest remaining is 37 (dist 30) which beats 98 (dist 31).</div>
+        </div>
+        <div>
+          <div class="label" style="margin-top:0">Linux I/O Scheduler Summary</div>
+          <table class="tbl">
+            <tr><th>Scheduler</th><th>Algorithm Base</th><th>Use Case</th></tr>
+            <tr><td><code>noop</code></td><td>FIFO (no reorder)</td><td>SSDs, RAM disks, virtual disks</td></tr>
+            <tr><td><code>deadline</code></td><td>SSTF + deadline queue</td><td>Database workloads; prevents starvation</td></tr>
+            <tr><td><code>cfq</code></td><td>Fair queuing</td><td>Desktop; fair per-process I/O bandwidth</td></tr>
+            <tr><td><code>bfq</code></td><td>Budget fair queue</td><td>Interactive; low latency for interactive tasks</td></tr>
+            <tr><td><code>mq-deadline</code></td><td>Multi-queue deadline</td><td>NVMe SSDs; default for block devices</td></tr>
+            <tr><td><code>kyber</code></td><td>Token bucket</td><td>Low-latency NVMe; latency target control</td></tr>
+          </table>
+          <div class="label">Scheduling Seek Distances Summary</div>
+          <table class="tbl">
+            <tr><th>Algorithm</th><th>Seek Distance</th><th>vs FCFS</th></tr>
+            <tr><td>FCFS</td><td>640 cyl</td><td>baseline</td></tr>
+            <tr><td>SSTF</td><td>236 cyl</td><td style="color:var(--accent2)">−63%</td></tr>
+            <tr><td>SCAN</td><td>331 cyl</td><td style="color:var(--accent2)">−48%</td></tr>
+            <tr><td>LOOK</td><td>299 cyl</td><td style="color:var(--accent2)">−53%</td></tr>
+            <tr><td>C-SCAN</td><td>382 cyl</td><td style="color:var(--accent2)">−40%</td></tr>
+            <tr><td>C-LOOK</td><td>322 cyl</td><td style="color:var(--accent2)">−50%</td></tr>
+          </table>
+          <div class="rule">Key insight: SSTF is optimal per-request but risks starvation. SCAN variants balance throughput and fairness with bounded wait times for all tracks.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid s6 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 7 · RAID
+     ═══════════════════════════════════════════════════ -->
+<div class="grid-2 section-gap">
+
+  <div class="card blue" id="s7-raid-concept">
+    <div class="card-header"><div class="dot"></div><h3>RAID Concepts</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">RAID</strong> (Redundant Array of Independent Disks, originally <em>Inexpensive</em>) presents multiple physical disks as a single logical disk to the operating system. A RAID controller intercepts all read/write operations and distributes them across the array.</p>
+      <div class="label">RAID Goals</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Performance</strong> — parallel I/O across multiple disks; multiple read/write heads active simultaneously</li>
+        <li><strong style="color:var(--osg)">Reliability</strong> — redundancy allows continued operation after one or more disk failures</li>
+        <li><strong style="color:var(--osg)">Capacity</strong> — aggregate storage of multiple drives (minus redundancy overhead)</li>
+      </ul>
+      <div class="label">RAID Implementation Types</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Description</th><th>Performance</th></tr>
+        <tr><td><strong>Hardware RAID</strong></td><td>Dedicated RAID controller with own CPU/cache; transparent to OS</td><td>Best; battery-backed write cache</td></tr>
+        <tr><td><strong>Software RAID</strong></td><td>OS handles striping/parity (Linux <code>mdadm</code>, Windows Storage Spaces)</td><td>Good; uses main CPU</td></tr>
+        <tr><td><strong>Fake RAID</strong></td><td>Motherboard "RAID" managed by driver, not real hardware</td><td>Avoid; poorest option</td></tr>
+      </table>
+      <div class="info"><div class="i-title">RAID Is Not Backup</div>RAID protects against <strong>hardware failure</strong>, not against accidental deletion, ransomware, or data corruption. A proper backup strategy is separate from RAID.</div>
+      <div class="formula">Effective capacity (RAID 5) = (N − 1) × smallest_disk</div>
+      <div class="formula">Effective capacity (RAID 1) = 1 × smallest_disk</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="s7-striping-parity">
+    <div class="card-header"><div class="dot"></div><h3>Striping, Mirroring &amp; Parity</h3></div>
+    <div class="card-body">
+      <div class="label">Striping (RAID 0 basis)</div>
+      <p><strong style="color:var(--osg)">Striping</strong> splits data into fixed-size <em>strips</em> and writes them round-robin across all N drives. Drives work in parallel, multiplying throughput. Strip size is a key tuning parameter.</p>
+      <div class="formula">Strip size k sectors → stripe = k × N total sectors across all disks</div>
+      <ul class="items">
+        <li>Small strips → better parallelism for large I/O; more spindle contention for small I/O</li>
+        <li>Large strips → each request likely served by one drive; less parallelism</li>
+        <li>Typical: <code>64 KB</code> – <code>256 KB</code> strip size</li>
+      </ul>
+      <div class="label">Mirroring (RAID 1 basis)</div>
+      <p><strong style="color:var(--osg)">Mirroring</strong> writes identical data to N disks simultaneously. Any single disk serves reads; any single disk can fail without data loss. Reads can be distributed for performance.</p>
+      <div class="label">Parity (RAID 4/5/6 basis)</div>
+      <p><strong style="color:var(--osg)">Parity</strong> uses XOR of data strips to generate a redundancy block. If one drive fails, its data can be reconstructed from the remaining data + parity.</p>
+      <div class="formula">P = D0 XOR D1 XOR D2 XOR ... XOR D(n-1)</div>
+      <div class="formula">D_lost = P XOR D0 XOR D1 XOR ... (XOR all surviving drives)</div>
+      <pre><code class="language-c">/* XOR parity reconstruction */
+uint8_t parity_reconstruct(uint8_t *drives[], int n_drives, int lost_idx) {
+    uint8_t result = 0;
+    for (int i = 0; i &lt; n_drives; i++) {
+        if (i != lost_idx)
+            result ^= drives[i][block];
+    }
+    return result; /* = lost drive's data */
+}</code></pre>
+      <div class="note"><div class="n-title">RAID 5 Write Penalty</div>Each write to RAID 5 requires 4 disk operations: read old data, read old parity, write new data, write new parity. This <strong>write penalty</strong> reduces write performance significantly under heavy random writes.</div>
+    </div>
+  </div>
+
+  <!-- Full-width RAID Levels Table -->
+  <div class="card orange col-span-2" id="s7-raid-levels">
+    <div class="card-header"><div class="dot"></div><h3>RAID Levels Reference Table</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>Level</th>
+          <th>Name</th>
+          <th>Min Drives</th>
+          <th>Description</th>
+          <th>Fault Tolerance</th>
+          <th>Read Perf</th>
+          <th>Write Perf</th>
+          <th>Capacity</th>
+          <th>Use Case</th>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent)">RAID 0</strong></td>
+          <td>Striping</td>
+          <td><code>2</code></td>
+          <td>Data split into strips, written round-robin across all drives. No redundancy whatsoever.</td>
+          <td style="color:var(--accent3)">None — any failure = total loss</td>
+          <td style="color:var(--accent2)">N× (excellent)</td>
+          <td style="color:var(--accent2)">N× (excellent)</td>
+          <td>100% of all drives</td>
+          <td>Scratch disks, temp storage, video editing where speed &gt; reliability</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent2)">RAID 1</strong></td>
+          <td>Mirroring</td>
+          <td><code>2</code></td>
+          <td>Full copy of all data on every disk in the set. All disks contain identical content at all times.</td>
+          <td style="color:var(--accent2)">N−1 drive failures (any drive can fail)</td>
+          <td style="color:var(--accent2)">N× reads (any disk)</td>
+          <td style="color:var(--text-muted)">Same as single drive</td>
+          <td>50% (N=2), 33% (N=3)</td>
+          <td>OS drives, databases needing fast recovery</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent4)">RAID 2</strong></td>
+          <td>Bit-level + Hamming</td>
+          <td><code>3+</code></td>
+          <td>Bit-level striping with Hamming code error correction stored on dedicated ECC drives. Rarely implemented — modern drives have built-in ECC.</td>
+          <td style="color:var(--accent2)">1 drive failure</td>
+          <td style="color:var(--text-muted)">Moderate</td>
+          <td style="color:var(--text-muted)">Moderate</td>
+          <td>Variable (Hamming overhead)</td>
+          <td><strong>Obsolete</strong> — academic only</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--yellow)">RAID 3</strong></td>
+          <td>Byte-level + dedicated parity</td>
+          <td><code>3</code></td>
+          <td>Byte-level striping across N−1 data drives; one dedicated parity drive. All spindles rotate in sync (synchronized spindles).</td>
+          <td style="color:var(--accent2)">1 drive failure</td>
+          <td style="color:var(--accent2)">High sequential</td>
+          <td style="color:var(--text-muted)">Parity drive bottleneck</td>
+          <td>(N−1)/N of all drives</td>
+          <td>High-bandwidth sequential I/O (video streaming)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent5)">RAID 4</strong></td>
+          <td>Block-level + dedicated parity</td>
+          <td><code>3</code></td>
+          <td>Strip-level (block-level) striping across N−1 drives; one dedicated parity drive. Allows independent I/O to data drives.</td>
+          <td style="color:var(--accent2)">1 drive failure</td>
+          <td style="color:var(--accent2)">Good (parallel reads)</td>
+          <td style="color:var(--accent3)">Poor (parity drive bottleneck on every write)</td>
+          <td>(N−1)/N of all drives</td>
+          <td>Mostly superseded by RAID 5</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">RAID 5</strong></td>
+          <td>Distributed parity</td>
+          <td><code>3</code></td>
+          <td>Strip-level striping; parity distributed round-robin across all drives (no dedicated parity drive). Eliminates parity bottleneck of RAID 4.</td>
+          <td style="color:var(--accent2)">1 drive failure</td>
+          <td style="color:var(--accent2)">Excellent (N parallel)</td>
+          <td style="color:var(--text-muted)">Good (4-write penalty)</td>
+          <td>(N−1)/N of all drives</td>
+          <td><strong>Most common</strong> — NAS, enterprise storage, general purpose</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--accent3)">RAID 6</strong></td>
+          <td>Double distributed parity</td>
+          <td><code>4</code></td>
+          <td>Like RAID 5 but stores two independent parity blocks (P and Q, using Reed-Solomon coding) per stripe. Can survive any two simultaneous drive failures.</td>
+          <td style="color:var(--accent2)">2 simultaneous drive failures</td>
+          <td style="color:var(--accent2)">Excellent (N parallel)</td>
+          <td style="color:var(--accent3)">Lower (6-write penalty)</td>
+          <td>(N−2)/N of all drives</td>
+          <td>High-capacity arrays (&gt;6 drives) where rebuild time creates risk; critical data</td>
+        </tr>
+      </table>
+      <div class="grid" style="margin-top:10px;gap:10px;">
+        <div class="tip"><div class="t-title">RAID 10</div><strong>RAID 1+0</strong>: Mirror pairs, then stripe across them. Requires 4+ drives (even number). Tolerates 1 failure per mirror set. Best IOPS for databases. Capacity = 50%. Most expensive.</div>
+        <div class="warn"><div class="w-title">RAID Rebuild Risk</div>During RAID 5 rebuild after a failure, all surviving drives are read in full. URE (Unrecoverable Read Error) rate on large drives makes a second failure during rebuild likely. RAID 6 mitigates this.</div>
+        <div class="note"><div class="n-title">Choosing RAID Level</div>RAID 0: max speed, no safety. RAID 1: max safety, 50% overhead. RAID 5: balanced (1 disk overhead). RAID 6: safe for large arrays. RAID 10: performance + safety, expensive.</div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid-2 s7 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 8 · CLOCKS & TIMERS
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card orange" id="s8-hardware-clock">
+    <div class="card-header"><div class="dot"></div><h3>Hardware Clock</h3></div>
+    <div class="card-body">
+      <p>The hardware clock (system timer) generates periodic interrupts that drive all time-related OS functions. Without a clock, the OS cannot implement scheduling, timeouts, or process accounting.</p>
+      <div class="label">Crystal Oscillator</div>
+      <p>A <strong style="color:var(--osg)">crystal oscillator</strong> generates a precise, stable frequency (e.g., 14.318 MHz on classic PC). The PIT (or HPET) divides this down to produce a programmable interrupt rate.</p>
+      <div class="label">Programmable Interval Timer (PIT / HPET)</div>
+      <table class="tbl">
+        <tr><th>Component</th><th>Description</th></tr>
+        <tr><td>Holding register</td><td>Loaded by OS with desired tick interval count</td></tr>
+        <tr><td>Decrementing counter</td><td>Counts down from holding register value at crystal frequency</td></tr>
+        <tr><td>IRQ generation</td><td>When counter hits zero: assert IRQ0, reload from holding register</td></tr>
+      </table>
+      <div class="label">Hardware Timer Devices (x86)</div>
+      <ul class="items">
+        <li><code>PIT 8253/8254</code> — legacy; 1.19 MHz base, 18.2 Hz or 1000 Hz tick</li>
+        <li><code>APIC Timer</code> — per-CPU local timer; used for scheduling quantum</li>
+        <li><code>HPET</code> — High Precision Event Timer; ≥10 MHz; 3+ comparators</li>
+        <li><code>TSC</code> — Time Stamp Counter; CPU cycle counter (<code>RDTSC</code>); nanosecond precision</li>
+        <li><code>RTC</code> — Real Time Clock; battery-backed; keeps wall time across reboots</li>
+      </ul>
+      <div class="formula">Tick frequency = crystal_freq / divisor    (Linux HZ = 100/250/1000)</div>
+      <div class="info"><div class="i-title">Tickless Kernel</div>Modern Linux uses <strong>CONFIG_NO_HZ</strong> (dynamic ticks) — the timer is stopped when the CPU is idle and reprogrammed for the next scheduled event, saving power on idle systems.</div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="s8-soft-timers">
+    <div class="card-header"><div class="dot"></div><h3>Soft Timers</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">Soft timers</strong> (virtual timers) avoid the overhead of hardware interrupts for high-frequency timer events. Instead of using hardware IRQs, the OS checks for timer expirations at natural kernel entry points.</p>
+      <div class="label">Motivation</div>
+      <div class="warn"><div class="w-title">Interrupt Overhead</div>Each hardware interrupt costs ~1–5 µs (context save/restore, cache invalidation). At 100K interrupts/sec, timer IRQs alone consume 10–50% of CPU time. Soft timers avoid this cost.</div>
+      <div class="label">How Soft Timers Work</div>
+      <ol class="steps">
+        <li>Application registers timer expiry callback and delay</li>
+        <li>Kernel records timer in sorted timer queue (min-heap by expiry)</li>
+        <li>On every kernel entry (syscall, page fault, interrupt), kernel checks timer queue head</li>
+        <li>If current time ≥ expiry time, run callback immediately (no interrupt needed)</li>
+        <li>If no kernel entry occurs: hardware timer fires as fallback</li>
+      </ol>
+      <div class="label">Linux Timer API</div>
+      <pre><code class="language-c">/* Kernel timer (struct timer_list) */
+struct timer_list my_timer;
+
+void my_callback(struct timer_list *t) {
+    /* timer expired — do work here */
+    mod_timer(t, jiffies + msecs_to_jiffies(100)); /* rearm */
+}
+
+void setup(void) {
+    timer_setup(&amp;my_timer, my_callback, 0);
+    mod_timer(&amp;my_timer, jiffies + HZ); /* fire in 1 second */
+}
+del_timer_sync(&amp;my_timer); /* cancel timer safely */</code></pre>
+      <div class="note"><div class="n-title">hrtimer</div>Linux <strong>high-resolution timers</strong> (<code>hrtimer</code>) use the HPET or APIC for nanosecond precision. Used by <code>nanosleep()</code>, <code>clock_nanosleep()</code>, and POSIX realtime timers.</div>
+    </div>
+  </div>
+
+  <div class="card green" id="s8-clock-uses">
+    <div class="card-header"><div class="dot"></div><h3>Clock Uses in the OS</h3></div>
+    <div class="card-body">
+      <div class="label">Core OS Functions Using Clock</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Time of Day</strong> — maintain wall-clock time; increment <code>jiffies</code> / <code>xtime</code> on each tick; serve <code>gettimeofday()</code></li>
+        <li><strong style="color:var(--osg)">CPU Accounting</strong> — charge time to current process on each tick; used by <code>getrusage()</code>, <code>times()</code>, <code>top</code>, scheduler statistics</li>
+        <li><strong style="color:var(--osg)">Scheduling Quantum</strong> — tick decrements remaining quantum; on expiry, <code>need_resched</code> flag set → context switch at next opportunity</li>
+        <li><strong style="color:var(--osg)">Alarm Signals</strong> — <code>alarm(n)</code> system call; OS delivers <code>SIGALRM</code> to process after n seconds using timer queue</li>
+        <li><strong style="color:var(--osg)">Watchdog Timers</strong> — detect hung kernel; if not reset within timeout, trigger panic or NMI handler</li>
+        <li><strong style="color:var(--osg)">Network Timeouts</strong> — TCP retransmit timer, TIME_WAIT expiry, keepalive intervals</li>
+        <li><strong style="color:var(--osg)">Profiling</strong> — statistical sampling of PC on each tick; <code>gprof</code> / <code>perf</code> use this to estimate hot code paths</li>
+        <li><strong style="color:var(--osg)">Power Management</strong> — track idle time; CPU frequency scaling; disk spindown timers</li>
+      </ul>
+      <hr class="divider">
+      <div class="label">Timer System Calls (POSIX)</div>
+      <table class="tbl">
+        <tr><th>Call</th><th>Signal</th><th>Use</th></tr>
+        <tr><td><code>alarm(n)</code></td><td><code>SIGALRM</code></td><td>Simple 1-shot timer; seconds resolution</td></tr>
+        <tr><td><code>setitimer()</code></td><td><code>SIGALRM/SIGVTALRM/SIGPROF</code></td><td>Interval timer; µs resolution; 3 clocks</td></tr>
+        <tr><td><code>timer_create()</code></td><td>configurable</td><td>POSIX; per-process; nanosecond resolution</td></tr>
+        <tr><td><code>timerfd_create()</code></td><td>file descriptor</td><td>Linux; timer fires = fd readable; integrates with <code>epoll</code></td></tr>
+        <tr><td><code>clock_gettime()</code></td><td>—</td><td>Read CLOCK_REALTIME, CLOCK_MONOTONIC, CLOCK_PROCESS_CPUTIME_ID</td></tr>
+      </table>
+      <div class="formula">SIGALRM example: alarm(5) → OS sets 5s timer → fires SIGALRM → signal handler runs</div>
+    </div>
+  </div>
+
+</div><!-- /grid s8 -->
+
+<!-- ═══════════════════════════════════════════════════
+     SECTION 9 · USER-SPACE I/O & SPOOLING & POWER
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card blue" id="s9-userspace-io">
+    <div class="card-header"><div class="dot"></div><h3>User-Space I/O Libraries</h3></div>
+    <div class="card-body">
+      <p>Most user programs never call the kernel directly for I/O — they use <strong style="color:var(--osg)">standard library wrappers</strong> that buffer, format, and eventually issue system calls on their behalf. This user-space layer is crucial for performance.</p>
+      <div class="label">stdio Library Functions vs System Calls</div>
+      <table class="tbl">
+        <tr><th>Library Function</th><th>System Call</th><th>Buffering</th></tr>
+        <tr><td><code>printf(fmt, ...)</code></td><td><code>write(fd, buf, n)</code></td><td>Line or full-block buffering</td></tr>
+        <tr><td><code>fprintf(fp, fmt)</code></td><td><code>write(fd, buf, n)</code></td><td>Per-FILE buffer (default 4 KB)</td></tr>
+        <tr><td><code>scanf(fmt, ...)</code></td><td><code>read(fd, buf, n)</code></td><td>Reads ahead into FILE buffer</td></tr>
+        <tr><td><code>fread(ptr, sz, n, fp)</code></td><td><code>read(fd, buf, n)</code></td><td>Block-level; reads entire buffer</td></tr>
+        <tr><td><code>fwrite(ptr, sz, n, fp)</code></td><td><code>write(fd, buf, n)</code></td><td>Deferred until buffer full or flush</td></tr>
+        <tr><td><code>fgets(s, n, fp)</code></td><td><code>read(fd, buf, n)</code></td><td>Reads from FILE buffer</td></tr>
+        <tr><td><code>fflush(fp)</code></td><td><code>write()</code> of pending data</td><td>Forces immediate write syscall</td></tr>
+        <tr><td><code>fclose(fp)</code></td><td><code>write()</code> + <code>close(fd)</code></td><td>Flushes buffer then closes fd</td></tr>
+      </table>
+      <div class="label">stdio Buffering Modes</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Fully buffered</strong> — flush when buffer full; default for files; controlled by <code>setvbuf(fp, NULL, _IOFBF, size)</code></li>
+        <li><strong style="color:var(--osg)">Line buffered</strong> — flush on newline or buffer full; default for terminals; <code>_IOLBF</code></li>
+        <li><strong style="color:var(--osg)">Unbuffered</strong> — every write is a syscall; default for <code>stderr</code>; <code>_IONBF</code>; use for error/debug output</li>
+      </ul>
+      <div class="formula">printf("hello\n") → libc buffer → [when flushed] → write(1, "hello\n", 6) → kernel</div>
+      <div class="tip"><div class="t-title">Performance Impact</div>The stdio buffer amortizes syscall overhead. Writing 1 byte at a time without buffering would call <code>write()</code> once per byte — buffering to 4 KB reduces syscall count by 4096×.</div>
+    </div>
+  </div>
+
+  <div class="card red" id="s9-spooling">
+    <div class="card-header"><div class="dot"></div><h3>Spooling</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">Spooling</strong> (Simultaneous Peripheral Operations On-Line) is a technique to handle <strong>dedicated I/O devices</strong> in a multiprogramming environment. A dedicated device (like a printer) can only be used by one process at a time, but multiple processes may want to print simultaneously.</p>
+      <div class="label">Spooling Mechanism</div>
+      <ol class="steps">
+        <li>Process wants to print file <code>report.pdf</code></li>
+        <li>Process copies file into <strong>spooling directory</strong> (e.g., <code>/var/spool/cups/</code>)</li>
+        <li>Process adds job entry to spool queue; continues running immediately</li>
+        <li><strong>Printer daemon</strong> (<code>cupsd</code>) is the only process holding printer open</li>
+        <li>Daemon takes next job from queue; sends data to printer sequentially</li>
+        <li>Daemon signals completion; cleans up spool file</li>
+      </ol>
+      <div class="label">Why Spooling Works</div>
+      <ul class="items">
+        <li>Disk is a <strong>sharable device</strong> (concurrent processes can write spool files simultaneously)</li>
+        <li>Printer is a <strong>dedicated device</strong> (only one process — the daemon — holds it open)</li>
+        <li>User processes never wait for the slow printer; they finish quickly after spooling</li>
+        <li>Daemon serializes access — prints one job at a time in order</li>
+      </ul>
+      <div class="label">Real-World Spooling Examples</div>
+      <table class="tbl">
+        <tr><th>System</th><th>Daemon</th><th>Spool Directory</th></tr>
+        <tr><td>Linux Printing</td><td><code>cupsd</code></td><td><code>/var/spool/cups/</code></td></tr>
+        <tr><td>Email (SMTP)</td><td><code>postfix</code>, <code>sendmail</code></td><td><code>/var/spool/mail/</code></td></tr>
+        <tr><td>Batch Jobs</td><td><code>crond</code>, <code>at</code></td><td><code>/var/spool/cron/</code></td></tr>
+        <tr><td>Fax</td><td><code>hylafax</code></td><td><code>/var/spool/hylafax/</code></td></tr>
+      </table>
+      <div class="warn"><div class="w-title">Spool Disk Usage</div>If spool disk fills up, the spooler rejects new jobs. Monitor <code>/var/spool</code> usage. A stuck daemon can cause spool queue to grow unboundedly — always set disk quotas on spool partitions.</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="s9-power-management">
+    <div class="card-header"><div class="dot"></div><h3>Power Management</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">ACPI</strong> (Advanced Configuration and Power Interface) is the industry standard for OS-controlled hardware power management. ACPI defines <em>global system states</em>, <em>device states</em>, and <em>processor states</em> that the OS manages to minimize power consumption.</p>
+      <div class="label">ACPI Global System Sleep States</div>
+      <table class="tbl">
+        <tr><th>State</th><th>Name</th><th>CPU</th><th>RAM</th><th>Resume Time</th><th>Power Draw</th></tr>
+        <tr><td><code>S0</code></td><td>Working (running)</td><td>Active</td><td>Active</td><td>0 ms (already on)</td><td>Full (20–300 W)</td></tr>
+        <tr><td><code>S1</code></td><td>Power-On Suspend</td><td>Clocks stopped</td><td>Self-refreshing</td><td>~1 ms</td><td>Low</td></tr>
+        <tr><td><code>S2</code></td><td>Standby</td><td>Powered off</td><td>Self-refreshing</td><td>~2 ms</td><td>Very low</td></tr>
+        <tr><td><code>S3</code></td><td>Suspend to RAM (Sleep)</td><td>Off</td><td>Powered (context preserved)</td><td>~1–2 s</td><td>~1–5 W</td></tr>
+        <tr><td><code>S4</code></td><td>Suspend to Disk (Hibernate)</td><td>Off</td><td>Off (saved to disk)</td><td>~15–30 s</td><td>0 W</td></tr>
+        <tr><td><code>S5</code></td><td>Soft Off</td><td>Off</td><td>Off</td><td>Full boot required</td><td>~0.5 W standby</td></tr>
+      </table>
+      <div class="label">CPU Power States (P-States &amp; C-States)</div>
+      <table class="tbl">
+        <tr><th>State Type</th><th>States</th><th>Effect</th></tr>
+        <tr><td><strong style="color:var(--osg)">C-States</strong> (idle)</td><td>C0, C1, C2, C3, C6, C7, C10</td><td>Deeper sleep = lower power + longer wakeup latency. C0 = active. C10 = full package off.</td></tr>
+        <tr><td><strong style="color:var(--osg)">P-States</strong> (active)</td><td>P0 (max freq) – Pn (min)</td><td>CPU frequency + voltage scaling (DVFS). OS selects via <code>cpufreq</code> governor.</td></tr>
+        <tr><td><strong style="color:var(--osg)">T-States</strong> (throttle)</td><td>T0–T7</td><td>Clock modulation; thermal protection; legacy</td></tr>
+      </table>
+      <div class="label">OS Power-Saving Techniques</div>
+      <ul class="items">
+        <li><strong>Display</strong> — <code>DPMS</code>: dim → blank → standby → off after idle timeout; OLED pixel shutdown</li>
+        <li><strong>CPU governor</strong> — <code>powersave</code> (min freq), <code>performance</code> (max), <code>ondemand</code> (dynamic), <code>schedutil</code> (scheduler-driven)</li>
+        <li><strong>Disk spindown</strong> — <code>hdparm -S n</code> spins disk down after n×5 seconds of idle</li>
+        <li><strong>PCIe ASPM</strong> — Active State Power Management; L0s/L1 link states reduce PCIe power</li>
+        <li><strong>USB autosuspend</strong> — idle USB devices suspended; <code>/sys/bus/usb/devices/*/power/autosuspend</code></li>
+        <li><strong>WiFi power save</strong> — NIC sleeps between beacons; wake on scheduled DTIM intervals</li>
+      </ul>
+      <div class="formula">Linux: /sys/bus/cpu/cpufreq/scaling_governor = "schedutil"</div>
+      <div class="tip"><div class="t-title">Hibernate vs Sleep</div>S3 (sleep) keeps RAM powered — fast resume but uses battery. S4 (hibernate) writes RAM to disk — zero battery drain, but slow resume. Modern laptops use <strong>Modern Standby</strong> (S0ix) — CPU in deep sleep but NIC active for push notifications.</div>
+    </div>
+  </div>
+
+</div><!-- /grid s9 -->
+
+<div class="footer">
+  <span>OSG202 — Operating Systems</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code=document.createElement('code');
+    code.className='language-c';
+    code.textContent=pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

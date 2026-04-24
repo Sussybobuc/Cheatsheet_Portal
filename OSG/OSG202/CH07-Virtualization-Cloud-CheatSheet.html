@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH07 – Virtualization &amp; Cloud | OSG202</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<div class="header">
+  <div class="header-left">
+    <h1>CH07 – Virtualization &amp; Cloud Computing</h1>
+    <h2>OSG202 · Operating Systems · Hypervisors · Cloud Models · Containers</h2>
+    <div style="margin-top:10px;" class="toc">
+      <span class="toc-item">History &amp; Motivation</span>
+      <span class="toc-item">Hypervisor Types</span>
+      <span class="toc-item">CPU Virtualization</span>
+      <span class="toc-item">Memory Virtualization</span>
+      <span class="toc-item">I/O Virtualization</span>
+      <span class="toc-item">Live Migration</span>
+      <span class="toc-item">Containers vs VMs</span>
+      <span class="toc-item">Cloud Models</span>
+      <span class="toc-item">VMware Architecture</span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+    <span class="badge">CH07</span>
+    <span class="badge" style="background:var(--surface);color:var(--osg);border:1px solid var(--osg);">VIRTUALIZATION</span>
+  </div>
+</div>
+
+<!-- ===== FIXED TOC SIDEBAR ===== -->
+<nav id="page-toc" class="toc-open">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<!-- ===== ROW 1: History + Hypervisor Types ===== -->
+<div class="grid section-gap">
+
+  <!-- History & Motivation -->
+  <div class="card blue" id="history">
+    <div class="card-header"><div class="dot"></div><h3>History &amp; Motivation</h3></div>
+    <div class="card-body">
+      <div class="label">Origins</div>
+      <p>In the <strong style="color:var(--osg)">1960s</strong>, IBM mainframes introduced virtual machines to allow multiple users to share a single expensive physical machine, each believing they had exclusive access to hardware.</p>
+
+      <div class="label">Popek &amp; Goldberg (1974)</div>
+      <p><strong style="color:var(--osg)">Popek &amp; Goldberg</strong> formally defined the requirements a computer architecture must satisfy to support efficient virtualization in their landmark 1974 paper.</p>
+
+      <div class="rule">Three Requirements: Compatibility · Performance · Isolation</div>
+
+      <ul class="items">
+        <li><strong>Compatibility:</strong> A VM must behave identically to real hardware — software cannot distinguish VM from real machine.</li>
+        <li><strong>Performance:</strong> The majority of guest instructions must execute directly on hardware without VMM intervention (efficiency).</li>
+        <li><strong>Isolation:</strong> The VMM must have full control of system resources; no guest program can access resources not explicitly granted.</li>
+      </ul>
+
+      <hr class="divider">
+      <div class="label">Modern Revival Drivers</div>
+      <ul class="items">
+        <li><strong>Server consolidation:</strong> Run many VMs on one server → reduce hardware and operational costs significantly.</li>
+        <li><strong>Isolation:</strong> Fault in one VM does not crash others; strong security boundary between tenants.</li>
+        <li><strong>Encapsulation:</strong> Entire OS state captured in a file → easy backup, cloning, and migration.</li>
+        <li><strong>Cloud computing:</strong> IaaS providers (AWS, Azure, GCP) rent virtualized hardware on demand.</li>
+        <li><strong>Development/testing:</strong> Spin up clean environments instantly, snapshot before risky changes.</li>
+      </ul>
+
+      <div class="info">
+        <div class="i-title">Key Term</div>
+        The <code>Virtual Machine Monitor (VMM)</code> — also called the <code>hypervisor</code> — is the software layer that creates and manages VMs. It controls access to all physical hardware resources.
+      </div>
+    </div>
+  </div>
+
+  <!-- Hypervisor Types (col-span-2) -->
+  <div class="card green col-span-2" id="hypervisor-types">
+    <div class="card-header"><div class="dot"></div><h3>Hypervisor Types</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Type 1 — Bare-Metal Hypervisor</div>
+          <p>Runs <strong style="color:var(--osg)">directly on physical hardware</strong>. No host OS layer between the hypervisor and hardware. The hypervisor itself is the privileged OS kernel. Offers best performance and isolation.</p>
+          <ul class="items">
+            <li><code>VMware ESX / ESXi</code> — enterprise datacenter standard</li>
+            <li><code>Xen</code> — open-source, used by AWS historically; supports paravirt</li>
+            <li><code>Microsoft Hyper-V</code> — integrated into Windows Server</li>
+            <li><code>KVM</code> (Kernel-based VM) — Linux kernel module, turns Linux into Type 1</li>
+          </ul>
+          <div class="rule">Type 1: Hypervisor → Hardware (no host OS)</div>
+
+          <div class="label">Paravirtualization</div>
+          <p><strong style="color:var(--osg)">Paravirtualization</strong> (Xen PV): guest OS is <em>modified</em> to replace non-virtualizable instructions with explicit hypercalls into the VMM. Avoids binary translation overhead at cost of guest OS changes.</p>
+          <div class="formula">Guest OS → hypercall(VMM) → VMM executes privileged op → returns result</div>
+        </div>
+        <div>
+          <div class="label">Type 2 — Hosted Hypervisor</div>
+          <p>Runs <strong style="color:var(--osg)">atop an existing host OS</strong>. The host OS manages hardware; the hypervisor runs as an application. Easier to install, more overhead than Type 1.</p>
+          <ul class="items">
+            <li><code>VirtualBox</code> — free, cross-platform, popular for development</li>
+            <li><code>VMware Workstation</code> — commercial, powerful snapshot/clone features</li>
+            <li><code>QEMU</code> — software emulator (can also pair with KVM for acceleration)</li>
+          </ul>
+          <div class="rule">Type 2: Application → Host OS → Hardware</div>
+
+          <div class="label">Comparison Table</div>
+          <table class="tbl">
+            <thead>
+              <tr><th>Attribute</th><th>Type 1</th><th>Type 2</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Runs on</td><td>Bare metal</td><td>Host OS</td></tr>
+              <tr><td>Performance</td><td>★★★ High</td><td>★★ Moderate</td></tr>
+              <tr><td>Isolation</td><td>★★★ Strong</td><td>★★ Medium</td></tr>
+              <tr><td>Ease of install</td><td>Complex</td><td>Simple</td></tr>
+              <tr><td>Use case</td><td>Datacenter / cloud</td><td>Dev / test / desktop</td></tr>
+              <tr><td>Examples</td><td>ESXi, Xen, Hyper-V, KVM</td><td>VirtualBox, Workstation</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="info">
+        <div class="i-title">Popek &amp; Goldberg Criteria (Formal)</div>
+        A VMM can be constructed if and only if the set of <strong>sensitive instructions</strong> is a <strong>subset of</strong> the set of <strong>privileged instructions</strong>. Sensitive instructions are those that behave differently in user mode vs kernel mode, or that reveal/modify the hardware state. Privileged instructions trap to the OS when executed in user mode.
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row 1 -->
+
+<!-- ===== ROW 2: CPU Virt + Memory Virt ===== -->
+<div class="grid-2 section-gap">
+
+  <!-- CPU Virtualization -->
+  <div class="card purple" id="cpu-virt">
+    <div class="card-header"><div class="dot"></div><h3>CPU Virtualization</h3></div>
+    <div class="card-body">
+      <div class="label">Three Core Approaches</div>
+      <div class="rule">1. Trap-and-Emulate &nbsp;|&nbsp; 2. Binary Translation &nbsp;|&nbsp; 3. Hardware-Assisted (VT-x / AMD-V)</div>
+
+      <div class="label">1 — Trap-and-Emulate</div>
+      <p>Guest executes most instructions natively. When a <strong style="color:var(--osg)">privileged instruction</strong> is encountered in user mode, the CPU traps to the VMM. The VMM inspects the instruction, emulates its effect on the virtual machine state, and returns control to the guest.</p>
+      <div class="formula">Guest instr → privileged? → CPU trap → VMM emulates → resume guest</div>
+
+      <div class="warn">
+        <div class="w-title">x86 Problem: 17 Sensitive Non-Privileged Instructions</div>
+        Classic x86 has <strong>17 instructions</strong> (e.g., <code>POPF</code>, <code>PUSHF</code>, <code>SGDT</code>, <code>SIDT</code>, <code>STR</code>) that are <em>sensitive</em> (reveal/modify privileged state) but do <em>not</em> trap in user mode — they silently misbehave or return host values. Pure trap-and-emulate <strong>cannot work</strong> on classic x86 without additional mechanisms.
+      </div>
+
+      <div class="label">2 — Binary Translation (VMware approach)</div>
+      <p>The VMM scans guest kernel code <strong style="color:var(--osg)">at runtime</strong>, detects problematic instructions, and replaces them with safe sequences that call back into the VMM. Translated code is cached in a <code>translation cache</code> for reuse.</p>
+      <ul class="items">
+        <li>Guest user-mode code: runs native (fast path)</li>
+        <li>Guest kernel-mode code: translated by VMM before execution</li>
+        <li><code>POPF</code> → replaced with VMM-safe flag manipulation stub</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Performance</div>
+        Binary translation adds overhead but modern caching makes it near-native for many workloads. VMware pioneered this for x86 before hardware support existed.
+      </div>
+
+      <div class="label">3 — Hardware-Assisted: Intel VT-x / AMD-V</div>
+      <p>Modern CPUs add a new <strong style="color:var(--osg)">VMX (Virtual Machine eXtension)</strong> mode with two privilege rings: <code>VMX root</code> (hypervisor) and <code>VMX non-root</code> (guest). Guest runs with apparent full hardware access; sensitive operations cause <strong>VM Exit</strong> to VMM automatically.</p>
+
+      <table class="tbl" style="margin-bottom:6px;">
+        <thead><tr><th>Instruction</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><code>VMXON</code></td><td>Enter VMX operation mode (hypervisor init)</td></tr>
+          <tr><td><code>VMXOFF</code></td><td>Exit VMX operation mode</td></tr>
+          <tr><td><code>VMLAUNCH</code></td><td>Launch a new VM (first time)</td></tr>
+          <tr><td><code>VMRESUME</code></td><td>Resume a VM after VM Exit</td></tr>
+          <tr><td><code>VMPTRLD</code></td><td>Load pointer to VMCS structure</td></tr>
+          <tr><td><code>VMREAD/VMWRITE</code></td><td>Read/write VM Control Structure fields</td></tr>
+        </tbody>
+      </table>
+
+      <div class="formula">Guest runs (VMX non-root) → sensitive instr / interrupt
+  → VM Exit (hardware saves guest state to VMCS)
+  → VMM handles event (VMX root mode)
+  → VMRESUME → Guest continues (VMX non-root)</div>
+
+      <div class="label">VT-x Operation Steps</div>
+      <ol class="steps">
+        <li>VMM executes <code>VMXON</code> to enable VMX operation; CPU enters VMX root mode.</li>
+        <li>VMM allocates a <strong style="color:var(--osg)">VMCS</strong> (VM Control Structure) per vCPU — stores guest/host state and exit controls.</li>
+        <li>VMM populates VMCS with guest initial register state, entry/exit controls, I/O bitmaps.</li>
+        <li><code>VMLAUNCH</code> transfers control; CPU enters VMX non-root mode, guest runs natively.</li>
+        <li>On sensitive event (privileged instr, interrupt, I/O, EPT fault): hardware VM Exit, saves guest state to VMCS, loads VMM host state.</li>
+        <li>VMM reads exit reason from VMCS, handles it (emulate device, inject interrupt, etc.).</li>
+        <li><code>VMRESUME</code> — CPU restores guest state from VMCS, continues guest execution.</li>
+      </ol>
+
+      <div class="note">
+        <div class="n-title">AMD-V (SVM)</div>
+        AMD's equivalent uses <code>VMRUN</code> / <code>VMEXIT</code> / <code>VMLOAD</code> / <code>VMSAVE</code> instructions. The control structure is the <strong>VMCB</strong> (VM Control Block). Functionally equivalent to Intel VT-x.
+      </div>
+    </div>
+  </div>
+
+  <!-- Memory Virtualization -->
+  <div class="card orange" id="mem-virt">
+    <div class="card-header"><div class="dot"></div><h3>Memory Virtualization</h3></div>
+    <div class="card-body">
+      <div class="label">Address Space Hierarchy</div>
+      <p>With virtualization there are <strong style="color:var(--osg)">three levels</strong> of addresses:</p>
+      <table class="tbl" style="margin-bottom:8px;">
+        <thead><tr><th>Abbreviation</th><th>Full Name</th><th>Meaning</th></tr></thead>
+        <tbody>
+          <tr><td><code>GVA</code></td><td>Guest Virtual Address</td><td>Virtual address used by guest processes</td></tr>
+          <tr><td><code>GPA</code></td><td>Guest Physical Address</td><td>What the guest thinks is physical RAM</td></tr>
+          <tr><td><code>HPA</code></td><td>Host Physical Address</td><td>Actual physical machine memory</td></tr>
+        </tbody>
+      </table>
+      <div class="formula">GVA ──(guest page table)──▶ GPA ──(shadow/EPT)──▶ HPA</div>
+
+      <hr class="divider">
+      <div class="label">Shadow Page Tables (Software)</div>
+      <p>The VMM maintains a <strong style="color:var(--osg)">shadow page table</strong> that directly maps GVA → HPA. The hardware MMU uses the shadow PT, not the guest's PT. The VMM intercepts all guest modifications to its page table.</p>
+
+      <div class="warn">
+        <div class="w-title">Shadow PT Overhead</div>
+        Every guest <code>CR3</code> load (page table switch = context switch) causes a VM Exit. Every guest page table modification must be intercepted. Write-protecting guest page tables causes frequent faults. This overhead can be <strong>significant</strong> for workloads with heavy memory management.
+      </div>
+
+      <ul class="items">
+        <li>VMM write-protects guest PTs → any write triggers fault → VMM updates shadow PT</li>
+        <li>On guest <code>CR3</code> load → VM Exit → VMM switches to corresponding shadow PT</li>
+        <li>Must maintain one shadow PT per guest address space (per process in guest)</li>
+      </ul>
+
+      <hr class="divider">
+      <div class="label">Extended Page Tables — EPT (Intel) / NPT (AMD)</div>
+      <p><strong style="color:var(--osg)">Hardware-assisted 2-level page walk</strong>: CPU MMU understands both levels. Guest manages GVA→GPA mappings normally; hardware automatically walks an additional EPT table for GPA→HPA. No VM Exit on CR3 load.</p>
+
+      <div class="tip">
+        <div class="t-title">EPT Advantage</div>
+        Eliminates most VM Exits due to memory management. Guest can modify its own page tables freely. VMM only needs to manage the EPT (GPA→HPA), which changes much less frequently. Dramatically reduces overhead vs shadow PTs.
+      </div>
+
+      <div class="formula">EPT page walk cost: up to 24 memory accesses (4-level×4-level)
+  vs native: 4 memory accesses
+  → EPT TLB (EPTTLB) caches GPA→HPA translations</div>
+
+      <hr class="divider">
+      <div class="label">TLB Management — VPID</div>
+      <p>Without tagging, every VM switch requires a full <code>TLB flush</code> to prevent one VM from using another VM's cached translations. <strong style="color:var(--osg)">VPID</strong> (Virtual Processor ID) tags TLB entries with a VM identifier, allowing TLB entries to persist across VM switches.</p>
+
+      <div class="rule">VPID = 0 → VMM entries | VPID = N → VM N entries (no flush needed on VM switch)</div>
+
+      <div class="info">
+        <div class="i-title">Memory Balloon Driver</div>
+        VMMs use a <code>balloon driver</code> inside the guest OS to reclaim physical memory. The balloon driver allocates memory inside the guest (inflates), causing the guest OS to swap out other pages. The VMM then reclaims that physical memory for other VMs.
+      </div>
+
+      <hr class="divider">
+      <div class="label">Memory Overcommit Techniques</div>
+      <ul class="items">
+        <li><strong>Transparent Page Sharing (TPS):</strong> VMM detects identical memory pages across VMs, maps them to single physical page (copy-on-write). Effective for VMs running same OS.</li>
+        <li><strong>Swapping:</strong> VMM swaps VM memory pages to disk when physical memory pressure is high.</li>
+        <li><strong>Ballooning:</strong> Balloon driver cooperates with VMM to gracefully reclaim memory.</li>
+        <li><strong>NUMA-aware:</strong> Modern VMMs place vCPU and memory on same NUMA node for optimal memory bandwidth.</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- end row 2 -->
+
+<!-- ===== ROW 3: I/O Virt + Live Migration + Containers ===== -->
+<div class="grid section-gap">
+
+  <!-- I/O Virtualization -->
+  <div class="card red" id="io-virt">
+    <div class="card-header"><div class="dot"></div><h3>I/O Virtualization</h3></div>
+    <div class="card-body">
+      <div class="label">Three Approaches</div>
+      <div class="rule">Device Emulation → Paravirtual (virtio) → Direct Assignment (passthrough)</div>
+
+      <div class="label">1 — Device Emulation</div>
+      <p>VMM software emulates a complete hardware device (e.g., <code>e1000</code> NIC, <code>IDE</code> disk). Guest uses standard unmodified drivers. VMM intercepts all I/O port accesses and MMIO reads/writes and translates to real device operations.</p>
+      <ul class="items">
+        <li>Highest compatibility — no guest OS changes required</li>
+        <li>Lowest performance — every I/O op causes VM Exit + VMM processing</li>
+        <li>Example: QEMU emulates <code>Intel e1000</code>, <code>RTL8139</code>, <code>IDE controller</code></li>
+      </ul>
+
+      <hr class="divider">
+      <div class="label">2 — Paravirtual I/O (virtio)</div>
+      <p><strong style="color:var(--osg)">virtio</strong> is a standardized paravirtual I/O framework. The guest OS runs a <code>virtio frontend driver</code>; the VMM implements a <code>virtio backend</code>. Communication via shared memory ring buffers eliminates many VM Exits.</p>
+
+      <div class="formula">Guest virtio-net driver → virtqueue (shared ring)
+  → VMM backend picks up descriptor → sends to real NIC
+  → interrupt back to guest (batched)</div>
+
+      <ul class="items">
+        <li><code>virtio-net</code> — paravirtual network card</li>
+        <li><code>virtio-blk</code> — paravirtual block (disk) device</li>
+        <li><code>virtio-scsi</code> — paravirtual SCSI controller</li>
+        <li><code>virtio-balloon</code> — memory balloon driver</li>
+        <li><code>vhost</code> — moves virtio backend into kernel for even higher throughput</li>
+      </ul>
+
+      <div class="tip">
+        <div class="t-title">Performance Comparison</div>
+        Emulated NIC: ~300 Mbps. virtio-net: ~8 Gbps+. Direct assignment: near line-rate (10/25/100 Gbps possible). Always use virtio drivers in production VMs.
+      </div>
+
+      <hr class="divider">
+      <div class="label">3 — Direct Assignment (Passthrough)</div>
+      <p>A physical device is assigned <strong style="color:var(--osg)">exclusively</strong> to a single VM using the <code>IOMMU</code> (I/O Memory Management Unit). The IOMMU provides DMA remapping so the device uses GPA addresses but the IOMMU translates to HPA transparently.</p>
+
+      <div class="tip">
+        <div class="t-title">SR-IOV — Single Root I/O Virtualization</div>
+        A PCIe device (e.g., a NIC) that supports <code>SR-IOV</code> exposes one <strong>Physical Function (PF)</strong> and up to hundreds of <strong>Virtual Functions (VFs)</strong>. Each VF appears as a separate PCIe device and can be assigned to a different VM — near-native performance with hardware-level isolation.
+      </div>
+
+      <ul class="items">
+        <li><code>Intel VT-d</code> / <code>AMD-Vi</code> — IOMMU implementations that enable passthrough</li>
+        <li>DMA remapping prevents device from accessing memory outside its VM's GPA range</li>
+        <li>Interrupt remapping routes device interrupts to the correct VM's vCPU</li>
+        <li>Limitation: device is dedicated to one VM — no sharing between VMs (except SR-IOV VFs)</li>
+      </ul>
+
+      <div class="warn">
+        <div class="w-title">Live Migration Limitation</div>
+        Direct passthrough devices generally <strong>cannot</strong> be live-migrated — the device state is hardware-specific and cannot easily be captured and transferred. Use virtio for migrateable VMs.
+      </div>
+    </div>
+  </div>
+
+  <!-- Live Migration -->
+  <div class="card yellow" id="live-migration">
+    <div class="card-header"><div class="dot"></div><h3>Live Migration</h3></div>
+    <div class="card-body">
+      <div class="label">Goal &amp; Challenge</div>
+      <p>Move a <strong style="color:var(--osg)">running VM</strong> from source host (A) to destination host (B) with <strong>minimal service disruption</strong>. Key challenge: VM continues executing and dirtying memory pages during the transfer.</p>
+
+      <div class="rule">Typical downtime target: &lt; 100ms for most production workloads</div>
+
+      <hr class="divider">
+      <div class="label">Pre-Copy Migration Algorithm</div>
+      <div class="formula">Phase 1 (Pre-copy): Copy all memory pages to destination
+  Phase 2 (Iterative): Resend pages dirtied during Phase 1
+  Phase 3 (Stop-and-copy): Pause VM, send remaining dirty pages + CPU state
+  Phase 4: Resume VM on destination, redirect network traffic</div>
+
+      <ol class="steps">
+        <li><strong>Setup:</strong> Establish connection between source VMM (A) and destination VMM (B). Allocate memory on B for the VM.</li>
+        <li><strong>Initial copy:</strong> Copy <em>all</em> VM memory pages from A to B over the network. VM continues running on A during this transfer.</li>
+        <li><strong>Iterative dirty page copy:</strong> Track pages written by VM since last transfer (dirty bitmap). Resend those dirty pages. Repeat until dirty set is small enough (convergence criterion met).</li>
+        <li><strong>Stop VM on source:</strong> Briefly pause VM on host A. Copy remaining dirty pages + full CPU register state (<code>vCPU context</code>) + device state to B.</li>
+        <li><strong>Resume on destination:</strong> Start VM on host B using transferred state. VM resumes exactly where it left off.</li>
+        <li><strong>Network cutover:</strong> Send a RARP/gratuitous ARP to update network switches — VM's MAC address now reachable via host B. Redirect storage I/O if using local storage.</li>
+        <li><strong>Cleanup:</strong> Release memory and VM resources on source host A.</li>
+      </ol>
+
+      <div class="note">
+        <div class="n-title">Convergence Problem</div>
+        If the VM writes memory faster than the network can transfer it (high write-rate workloads), the dirty set never shrinks. The VMM may fall back to a <strong>fixed iteration limit</strong> and then force stop-and-copy regardless of dirty set size — potentially causing longer downtime.
+      </div>
+
+      <hr class="divider">
+      <div class="label">Requirements for Live Migration</div>
+      <ul class="items">
+        <li>Shared storage (SAN/NFS) OR block-device replication — so disk data is identical on both hosts</li>
+        <li>Same (or compatible) CPU architecture between source and destination</li>
+        <li>Network connectivity between source VMM and destination VMM (typically on management VLAN)</li>
+        <li>VM's MAC address reachable from destination host after cutover (L2 adjacency or SDN)</li>
+      </ul>
+
+      <div class="info">
+        <div class="i-title">Post-Copy Migration (Alternative)</div>
+        <strong>Post-copy</strong> transfers only the CPU state first, then pages on demand as the VM faults on them. Eliminates multiple copy iterations — achieves very low initial pause time. Risk: if destination host fails mid-transfer, VM is lost. Pre-copy is generally preferred for reliability.
+      </div>
+
+      <div class="label">Use Cases</div>
+      <ul class="items">
+        <li><strong>Load balancing:</strong> Move VMs from overloaded hosts to underutilized ones automatically (VMware DRS)</li>
+        <li><strong>Hardware maintenance:</strong> Evacuate VMs before taking a server offline for maintenance</li>
+        <li><strong>Power management:</strong> Consolidate VMs onto fewer hosts during off-peak hours, power off idle servers</li>
+        <li><strong>Disaster avoidance:</strong> Move VMs away from failing hardware before actual failure</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Cloud Models -->
+  <div class="card green" id="cloud-models">
+    <div class="card-header"><div class="dot"></div><h3>Cloud Computing Models</h3></div>
+    <div class="card-body">
+      <div class="label">Essential Characteristics (NIST)</div>
+      <ul class="items">
+        <li><strong>On-demand self-service:</strong> Provision resources without human interaction with provider</li>
+        <li><strong>Broad network access:</strong> Available over network from diverse client platforms</li>
+        <li><strong>Resource pooling:</strong> Multi-tenant model with dynamic assignment per demand</li>
+        <li><strong>Rapid elasticity:</strong> Scale up or down quickly (often automatically)</li>
+        <li><strong>Measured service:</strong> Pay-per-use metering — CPU-hours, GB-transferred, etc.</li>
+      </ul>
+
+      <hr class="divider">
+      <div class="label">Service Models</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <thead>
+          <tr><th>Model</th><th>You Manage</th><th>Provider Manages</th><th>Examples</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><strong style="color:var(--osg)">IaaS</strong></td><td>OS, Runtime, App, Data</td><td>Hardware, Network, Storage, Hypervisor</td><td>AWS EC2, Azure VMs, GCP Compute Engine</td></tr>
+          <tr><td><strong style="color:var(--osg)">PaaS</strong></td><td>App code, Data</td><td>OS, Runtime, Middleware, Hardware</td><td>AWS Beanstalk, Google App Engine, Heroku</td></tr>
+          <tr><td><strong style="color:var(--osg)">SaaS</strong></td><td>Data &amp; configuration only</td><td>Everything (app + all infra)</td><td>Gmail, Office 365, Salesforce, Dropbox</td></tr>
+        </tbody>
+      </table>
+
+      <div class="formula">IaaS: Most control, most responsibility
+  PaaS: Less control, less management overhead
+  SaaS: Zero infra management, least flexibility</div>
+
+      <div class="label">Deployment Models</div>
+      <table class="tbl">
+        <thead><tr><th>Model</th><th>Description</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td><code>Public</code></td><td>Shared infrastructure, internet-accessible</td><td>AWS, Azure, GCP</td></tr>
+          <tr><td><code>Private</code></td><td>Dedicated infrastructure, on-premises or hosted</td><td>OpenStack, VMware vSphere</td></tr>
+          <tr><td><code>Hybrid</code></td><td>Mix of public + private, workloads span both</td><td>Azure Arc, AWS Outposts</td></tr>
+          <tr><td><code>Community</code></td><td>Shared by organizations with common concerns</td><td>Gov cloud, research networks</td></tr>
+        </tbody>
+      </table>
+
+      <div class="tip">
+        <div class="t-title">Elasticity vs Scalability</div>
+        <strong>Scalability</strong> = ability to handle growing load. <strong>Elasticity</strong> = ability to scale <em>automatically</em> up AND down to match current demand, releasing resources when not needed (key cloud differentiator).
+      </div>
+
+      <div class="label">Multi-Tenancy</div>
+      <p>Multiple customers share the same physical infrastructure, with <strong style="color:var(--osg)">logical isolation</strong> enforced by the hypervisor and cloud control plane. Critical security requirement: tenant A must never access tenant B's data, memory, or network traffic.</p>
+    </div>
+  </div>
+
+</div><!-- end row 3 -->
+
+<!-- ===== ROW 4: Containers vs VMs (full width) + VMware ===== -->
+<div class="grid section-gap">
+
+  <!-- Containers vs VMs (col-span-2) -->
+  <div class="card blue col-span-2" id="containers-vs-vms">
+    <div class="card-header"><div class="dot"></div><h3>Containers vs Virtual Machines</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+        <div>
+          <div class="label">Virtual Machines</div>
+          <p>Full hardware virtualization. Each VM has its <strong style="color:var(--osg)">own complete OS kernel</strong>, device drivers, and system libraries. Strong isolation boundary enforced in hardware.</p>
+          <ul class="items">
+            <li>Boot time: 30 seconds to several minutes</li>
+            <li>Image size: GBs (full OS disk image)</li>
+            <li>Isolation: hardware-enforced (VMM boundary)</li>
+            <li>Resource overhead: full OS memory footprint per VM</li>
+            <li>Portability: limited (architecture-specific images)</li>
+            <li>Use case: untrusted tenants, full OS freedom, legacy apps</li>
+          </ul>
+
+          <div class="label">Linux Kernel Isolation Mechanisms for Containers</div>
+          <table class="tbl">
+            <thead><tr><th>Namespace</th><th>Isolates</th></tr></thead>
+            <tbody>
+              <tr><td><code>pid</code></td><td>Process IDs (container sees its own PID tree starting at 1)</td></tr>
+              <tr><td><code>net</code></td><td>Network interfaces, routing tables, iptables rules</td></tr>
+              <tr><td><code>mnt</code></td><td>Mount points and filesystem hierarchy</td></tr>
+              <tr><td><code>uts</code></td><td>Hostname and domain name</td></tr>
+              <tr><td><code>ipc</code></td><td>IPC objects (SysV, POSIX message queues)</td></tr>
+              <tr><td><code>user</code></td><td>User and group IDs (UID mapping)</td></tr>
+              <tr><td><code>cgroup</code></td><td>cgroup root (Linux 4.6+)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="label">Containers</div>
+          <p><strong style="color:var(--osg)">OS-level virtualization</strong>: all containers share the host kernel. Isolation via Linux <code>namespaces</code> and resource limits via <code>cgroups</code>. Much lighter weight than VMs.</p>
+          <ul class="items">
+            <li>Boot time: milliseconds (no OS boot)</li>
+            <li>Image size: MBs (application layers only)</li>
+            <li>Isolation: kernel namespace + cgroup (software only)</li>
+            <li>Resource overhead: near-zero (no duplicate kernel)</li>
+            <li>Portability: high (OCI image standard)</li>
+            <li>Use case: microservices, CI/CD, cloud-native apps</li>
+          </ul>
+
+          <div class="label">cgroups (Control Groups)</div>
+          <p><strong style="color:var(--osg)">cgroups</strong> limit, account, and isolate resource usage of process groups:</p>
+          <ul class="items">
+            <li><code>cpu</code> — CPU time shares and quotas (CFS bandwidth control)</li>
+            <li><code>memory</code> — RAM and swap limits; OOM killer scope</li>
+            <li><code>blkio</code> — Block I/O bandwidth limits and scheduling</li>
+            <li><code>net_cls</code> / <code>net_prio</code> — Network traffic classification and priority</li>
+            <li><code>pids</code> — Limit number of processes in group (fork bomb protection)</li>
+          </ul>
+
+          <div class="label">Docker Layered Filesystem</div>
+          <p>Docker uses <strong style="color:var(--osg)">overlayfs</strong> (overlay filesystem) to stack read-only image layers with a single read-write container layer on top. Layers are content-addressed and shared across containers using the same base image.</p>
+          <div class="formula">Container RW layer (writable)
+  ─────────────────────────────
+  App layer       (read-only)
+  Runtime layer   (read-only)
+  Base OS layer   (read-only)
+  ─────────────────────────────
+  overlayfs merges into single unified view</div>
+        </div>
+      </div>
+
+      <div class="label" style="margin-top:10px;">Side-by-Side Comparison</div>
+      <table class="tbl">
+        <thead>
+          <tr><th>Property</th><th>VM</th><th>Container</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Kernel</td><td>Own kernel per VM</td><td>Shared host kernel</td><td>Containers cannot run different kernel versions</td></tr>
+          <tr><td>Startup</td><td>Minutes</td><td>Milliseconds</td><td>Container = just a process group</td></tr>
+          <tr><td>Size</td><td>GBs</td><td>MBs</td><td>Container shares host OS libraries via overlayfs</td></tr>
+          <tr><td>Isolation</td><td>Hardware (strong)</td><td>Namespace/cgroup (weaker)</td><td>Container escape vulnerabilities exist</td></tr>
+          <tr><td>Performance</td><td>Near-native (with VT-x)</td><td>Native</td><td>No translation overhead in containers</td></tr>
+          <tr><td>Live migration</td><td>Yes (pre-copy)</td><td>CRIU (checkpoint/restore)</td><td>Container migration via CRIU is less mature</td></tr>
+          <tr><td>Density</td><td>Tens/host</td><td>Hundreds–thousands/host</td><td>Kubernetes nodes typically run 100s of pods</td></tr>
+          <tr><td>Storage</td><td>Disk images (.vmdk, .qcow2)</td><td>OCI layers (overlayfs)</td><td>Docker Hub distributes OCI images</td></tr>
+        </tbody>
+      </table>
+
+      <div class="note">
+        <div class="n-title">Kata Containers / gVisor — Best of Both Worlds</div>
+        <strong>Kata Containers</strong> run each container inside a lightweight VM (micro-VM with dedicated kernel) for VM-level isolation with container-level convenience. <strong>gVisor</strong> intercepts container syscalls in a user-space kernel (sandbox) to limit attack surface without a full VM overhead.
+      </div>
+    </div>
+  </div>
+
+  <!-- VMware Architecture -->
+  <div class="card purple" id="vmware-arch">
+    <div class="card-header"><div class="dot"></div><h3>VMware Architecture</h3></div>
+    <div class="card-body">
+      <div class="label">Product Positioning</div>
+      <p><strong style="color:var(--osg)">VMware Workstation</strong> is a <strong>Type 2 hypervisor</strong> running atop a host OS (Windows or Linux). Despite running as an application, it achieves near-native performance via binary translation and later hardware assist (VT-x).</p>
+
+      <div class="rule">VMware = Type 2 | Runs on Host OS | Binary Translation + Shadow PTs</div>
+
+      <hr class="divider">
+      <div class="label">Three Main Components</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <thead><tr><th>Component</th><th>Mode</th><th>Responsibility</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:var(--osg)">VMX</strong></td><td>User-space</td><td>VM configuration UI, virtual device emulation (disk, NIC, USB), user-space I/O handling, snapshot management</td></tr>
+          <tr><td><strong style="color:var(--osg)">VMM Driver</strong></td><td>Host kernel module</td><td>Kernel-mode component of VMware, manages world switch, allocates host memory, interacts with host kernel</td></tr>
+          <tr><td><strong style="color:var(--osg)">VMM</strong></td><td>VMM world (own address space)</td><td>Runs in its own context with full hardware control, performs binary translation, manages shadow PTs, handles VM exits</td></tr>
+        </tbody>
+      </table>
+
+      <div class="label">World Switch</div>
+      <p>VMware uses a concept called a <strong style="color:var(--osg)">world switch</strong> to transition between the host OS world and the VMM world. A world switch is <em>more complete</em> than an OS context switch:</p>
+
+      <div class="formula">World Switch vs Context Switch:
+  Context switch: saves/restores registers, page table (CR3)
+  World switch:   saves/restores entire address space,
+                  exception handlers (IDT), segment descriptors (GDT),
+                  all debug registers, LDTR, TR — full machine state</div>
+
+      <ul class="items">
+        <li>The VMM runs in its own isolated address space — not in host OS address space</li>
+        <li>World switch is triggered by VMM driver via a special far jump</li>
+        <li>Host OS is completely suspended during VMM execution (appears as if time stopped)</li>
+        <li>On world switch back to host: host OS resumes exactly where it was interrupted</li>
+      </ul>
+
+      <div class="label">Binary Translation Details</div>
+      <p>VMware's binary translator operates at <strong style="color:var(--osg)">basic block</strong> granularity. It scans guest kernel code one basic block at a time, translates problematic instructions, and caches the result.</p>
+
+      <ul class="items">
+        <li><code>POPF</code> → stub that reads EFLAGS from virtual CPU state, sets safe bits</li>
+        <li><code>PUSHF</code> → stub that constructs EFLAGS from virtual CPU state</li>
+        <li><code>SGDT/SIDT</code> → stub returning virtual GDT/IDT address, not host values</li>
+        <li><code>MOV to CR0/CR3/CR4</code> → translated to world switch or shadow PT update</li>
+        <li>Guest user-mode code: never translated (runs natively, cannot execute privileged instructions)</li>
+      </ul>
+
+      <div class="info">
+        <div class="i-title">Translation Cache</div>
+        Translated basic blocks are stored in a <code>translation cache (TC)</code> indexed by guest code address. On repeated execution of the same code (loops, syscall handlers), the cache avoids re-translation — achieving near-native throughput for common code paths.
+      </div>
+
+      <div class="label">Shadow Page Tables in VMware</div>
+      <p>VMware maintains shadow page tables per guest process address space. The host hardware MMU walks the shadow PT (which maps GVA → HPA directly). The VMM intercepts all guest <code>CR3</code> loads and guest page table modifications.</p>
+
+      <div class="warn">
+        <div class="w-title">Consistency Problem</div>
+        When the guest modifies its page tables, VMware must update the corresponding shadow PT entry. VMware write-protects guest page tables. Any write fault triggers the VMM to update the shadow entry. This requires careful locking to maintain consistency across vCPUs in SMP VMs.
+      </div>
+
+      <hr class="divider">
+      <div class="label">VMware ESXi (Type 1) — Brief</div>
+      <p><strong style="color:var(--osg)">VMware ESXi</strong> is VMware's bare-metal hypervisor for production datacenters. A privileged VM called <strong>dom0</strong> (Service Console in older ESX) runs management agents. All other VMs share hardware resources managed by the hypervisor kernel.</p>
+      <ul class="items">
+        <li><code>vSphere</code> — management layer: vCenter Server orchestrates many ESXi hosts</li>
+        <li><code>DRS</code> (Distributed Resource Scheduler) — automatic load balancing via live migration</li>
+        <li><code>HA</code> (High Availability) — restart VMs automatically on host failure</li>
+        <li><code>vMotion</code> — VMware's branded live migration technology</li>
+        <li><code>VMFS</code> — VMware clustered filesystem for shared VM disk images</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- end row 4 -->
+
+<!-- ===== ROW 5: Additional deep content ===== -->
+<div class="grid-2 section-gap">
+
+  <!-- Virtualization Security -->
+  <div class="card red" id="virt-security">
+    <div class="card-header"><div class="dot"></div><h3>Virtualization Security</h3></div>
+    <div class="card-body">
+      <div class="label">Attack Surfaces</div>
+      <ul class="items">
+        <li><strong>VM escape:</strong> Guest exploits vulnerability in hypervisor/emulated device to gain host privileges. Historically in QEMU's Cirrus VGA, Virtio implementations.</li>
+        <li><strong>VM hopping:</strong> Attacker moves from one VM to another via shared resource (memory side-channel, network misconfiguration).</li>
+        <li><strong>Hyperjacking:</strong> Malicious hypervisor installed beneath legitimate OS (rootkit-level attack).</li>
+        <li><strong>Side-channel attacks:</strong> Spectre/Meltdown, Rowhammer — exploit shared CPU caches/DRAM between co-resident VMs.</li>
+      </ul>
+
+      <div class="warn">
+        <div class="w-title">Spectre / Meltdown in Virtualized Environments</div>
+        Co-resident VMs on the same physical CPU can potentially leak each other's data via CPU speculation side-channels. Mitigations (KPTI, Retpoline, microcode updates) impose significant performance overhead — up to 30% on I/O-intensive workloads.
+      </div>
+
+      <div class="label">Defense Mechanisms</div>
+      <ul class="items">
+        <li><code>IOMMU</code> — prevents DMA attacks from passthrough devices; device cannot access memory outside its allowed GPA range</li>
+        <li><code>Secure Boot</code> — ensures hypervisor binary is signed and unmodified before loading</li>
+        <li><code>vTPM</code> — virtual Trusted Platform Module provides key storage and attestation per VM</li>
+        <li><code>AMD SEV / Intel TDX</code> — hardware-encrypted VM memory so even the hypervisor cannot read guest RAM plaintext</li>
+        <li>Minimal hypervisor attack surface: VMware uses VMM Driver in kernel only for world switch; QEMU runs privileged emulation in separate process</li>
+      </ul>
+
+      <div class="tip">
+        <div class="t-title">AMD SEV / Intel TDX (Confidential Computing)</div>
+        <strong>SEV</strong> (Secure Encrypted Virtualization) encrypts guest memory with a per-VM AES key managed by the AMD Secure Processor. The hypervisor sees only ciphertext. <strong>TDX</strong> (Trust Domain Extensions) is Intel's equivalent, creating "Trust Domains" with hardware attestation.
+      </div>
+
+      <hr class="divider">
+      <div class="label">VM Isolation Properties</div>
+      <table class="tbl">
+        <thead><tr><th>Property</th><th>Mechanism</th></tr></thead>
+        <tbody>
+          <tr><td>Memory isolation</td><td>EPT/shadow PT — each VM has its own GPA→HPA mapping</td></tr>
+          <tr><td>CPU isolation</td><td>VMX non-root mode; VM Exits on privileged instructions</td></tr>
+          <tr><td>I/O isolation</td><td>IOMMU DMA remapping; virtio ring access control</td></tr>
+          <tr><td>Network isolation</td><td>Virtual switches (vSwitch/OVS) enforce L2 separation</td></tr>
+          <tr><td>Time isolation</td><td>Scheduling prevents one VM from starving others (credit scheduler)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Xen Architecture -->
+  <div class="card green" id="xen-arch">
+    <div class="card-header"><div class="dot"></div><h3>Xen &amp; KVM Architecture</h3></div>
+    <div class="card-body">
+      <div class="label">Xen Hypervisor</div>
+      <p><strong style="color:var(--osg)">Xen</strong> is a Type 1, open-source bare-metal hypervisor originally from Cambridge University (2003). Used historically by AWS EC2 (now transitioning to KVM).</p>
+
+      <div class="formula">Physical Hardware
+  ──── Xen Hypervisor (ring 0) ────
+  Dom0 (privileged)  | DomU (guest VMs)
+  - Device drivers   | - No direct HW access
+  - Toolstack        | - Communicates via Xen buses
+  - Management       | - PV or HVM mode</div>
+
+      <table class="tbl" style="margin-bottom:8px;">
+        <thead><tr><th>Domain</th><th>Role</th></tr></thead>
+        <tbody>
+          <tr><td><code>dom0</code></td><td>Privileged management domain; runs device drivers; controls DomU lifecycle via <code>xl</code>/<code>libxl</code> toolstack</td></tr>
+          <tr><td><code>domU</code></td><td>Unprivileged guest VMs; no direct hardware access; communicate with dom0 via split-driver model (Xen bus)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="label">Xen Virtualization Modes</div>
+      <ul class="items">
+        <li><strong>PV (Paravirtualization):</strong> Guest OS modified to use hypercalls instead of privileged instructions. Fast, but requires PV-aware OS (Linux, NetBSD). Runs all in ring 1 (not ring 0).</li>
+        <li><strong>HVM (Hardware Virtual Machine):</strong> Unmodified guest using Intel VT-x / AMD-V. Slower than PV historically, but now preferred with PVHVM drivers.</li>
+        <li><strong>PVH:</strong> Hybrid — minimal paravirt for boot, then hardware assist. Best of both worlds.</li>
+      </ul>
+
+      <div class="formula">Xen PV hypercall (like system call):
+  Guest (ring 1) → HYPERCALL → Xen (ring 0)
+  e.g.: HYPERVISOR_mmu_update(), HYPERVISOR_sched_op()</div>
+
+      <hr class="divider">
+      <div class="label">KVM (Kernel-based Virtual Machine)</div>
+      <p><strong style="color:var(--osg)">KVM</strong> is a Linux kernel module (<code>kvm.ko</code> + <code>kvm-intel.ko</code> or <code>kvm-amd.ko</code>) that turns the Linux kernel itself into a Type 1 hypervisor. Requires Intel VT-x or AMD-V.</p>
+
+      <ul class="items">
+        <li>Each VM appears as a regular Linux process (managed by <code>QEMU</code> process)</li>
+        <li>QEMU handles device emulation in user-space; KVM module handles VT-x VM entries/exits in kernel</li>
+        <li><code>/dev/kvm</code> — character device; QEMU uses ioctl() to create and manage VMs</li>
+        <li>Supports live migration, EPT, VPID, all modern CPU virtualization features</li>
+        <li>Now the dominant hypervisor for public cloud (AWS Nitro, GCP, Azure)</li>
+      </ul>
+
+      <div class="info">
+        <div class="i-title">AWS Nitro System</div>
+        AWS's custom KVM-based hypervisor offloads I/O (NVMe, VPC networking) to dedicated <strong>Nitro Cards</strong> (custom ASICs). The result: near bare-metal performance, hypervisor overhead &lt; 1% for most workloads. The Nitro hypervisor itself has minimal attack surface (purpose-built, not general-purpose Linux).
+      </div>
+
+      <div class="label">Scheduler: Xen Credit Scheduler</div>
+      <p>Xen's <strong style="color:var(--osg)">Credit Scheduler</strong> assigns credit points to vCPUs based on configured weights. A vCPU can run until it exhausts its credits (UNDER state), then other vCPUs with credits run. Credits are replenished periodically. Prevents any single VM from monopolizing CPU time.</p>
+
+      <div class="formula">Credit earned = weight / sum(all weights) × physical_CPU_capacity
+  vCPU states: OVER (negative credits) → UNDER → BOOST (high priority event)</div>
+    </div>
+  </div>
+
+</div><!-- end row 5 -->
+
+<!-- ===== ROW 6: Code examples row ===== -->
+<div class="grid section-gap">
+
+  <div class="card orange" id="code-examples">
+    <div class="card-header"><div class="dot"></div><h3>KVM / QEMU Usage</h3></div>
+    <div class="card-body">
+      <div class="label">Launch a VM with KVM</div>
+      <pre><code class="language-bash">
+# Start a VM with 2 vCPUs, 2GB RAM, virtio disk + net
+qemu-system-x86_64 \
+  -enable-kvm \
+  -cpu host \
+  -smp 2 \
+  -m 2048 \
+  -drive file=disk.qcow2,format=qcow2,if=virtio \
+  -netdev user,id=net0 \
+  -device virtio-net-pci,netdev=net0 \
+  -nographic
+
+# Check KVM support
+lsmod | grep kvm
+ls /dev/kvm
+</code></pre>
+
+      <div class="label">Container with Resource Limits</div>
+      <pre><code class="language-bash">
+# Run container with CPU + memory limits
+docker run -d \
+  --cpus="1.5" \
+  --memory="512m" \
+  --memory-swap="512m" \
+  --pids-limit 100 \
+  nginx:alpine
+
+# Inspect cgroup limits
+cat /sys/fs/cgroup/memory/docker/&lt;id&gt;/memory.limit_in_bytes
+</code></pre>
+
+      <div class="label">Namespace Inspection</div>
+      <pre><code class="language-bash">
+# List namespaces of a process
+ls -la /proc/&lt;pid&gt;/ns/
+
+# Create new network namespace
+ip netns add myns
+ip netns exec myns ip link list
+
+# Unshare: run process in new namespaces
+unshare --pid --fork --mount-proc bash
+</code></pre>
+    </div>
+  </div>
+
+  <div class="card purple" id="virt-concepts">
+    <div class="card-header"><div class="dot"></div><h3>Key Concepts &amp; Definitions</h3></div>
+    <div class="card-body">
+      <div class="label">Core Terminology</div>
+      <table class="tbl">
+        <thead><tr><th>Term</th><th>Definition</th></tr></thead>
+        <tbody>
+          <tr><td><code>VMM / Hypervisor</code></td><td>Software that creates &amp; manages VMs; multiplexes hardware</td></tr>
+          <tr><td><code>Guest OS</code></td><td>OS running inside a VM, unaware it's virtualized</td></tr>
+          <tr><td><code>Host OS</code></td><td>OS on which a Type 2 hypervisor runs</td></tr>
+          <tr><td><code>vCPU</code></td><td>Virtual CPU presented to the guest; scheduled onto physical CPUs</td></tr>
+          <tr><td><code>GPA</code></td><td>Guest Physical Address — what guest thinks is physical RAM</td></tr>
+          <tr><td><code>HPA</code></td><td>Host Physical Address — real machine memory</td></tr>
+          <tr><td><code>VMCS</code></td><td>VM Control Structure — per-vCPU data structure storing VM state (Intel VT-x)</td></tr>
+          <tr><td><code>VMCB</code></td><td>VM Control Block — AMD-V equivalent of VMCS</td></tr>
+          <tr><td><code>EPT</code></td><td>Extended Page Tables — Intel hardware GPA→HPA mapping</td></tr>
+          <tr><td><code>NPT</code></td><td>Nested Page Tables — AMD equivalent of EPT</td></tr>
+          <tr><td><code>VPID</code></td><td>Virtual Processor ID — tags TLB entries to avoid full flush</td></tr>
+          <tr><td><code>IOMMU</code></td><td>I/O Memory Management Unit — DMA remapping for passthrough</td></tr>
+          <tr><td><code>SR-IOV</code></td><td>Single Root I/O Virtualization — PCIe hardware multi-function</td></tr>
+          <tr><td><code>virtio</code></td><td>Paravirtual I/O framework (ring buffer based)</td></tr>
+        </tbody>
+      </table>
+
+      <div class="label">Performance Overheads (Typical)</div>
+      <table class="tbl">
+        <thead><tr><th>Workload</th><th>Type 1 + VT-x</th><th>Container</th></tr></thead>
+        <tbody>
+          <tr><td>CPU compute</td><td>&lt; 2%</td><td>&lt; 1%</td></tr>
+          <tr><td>Memory access</td><td>5–15% (EPT)</td><td>&lt; 1%</td></tr>
+          <tr><td>Network (virtio)</td><td>5–15%</td><td>&lt; 2%</td></tr>
+          <tr><td>Disk I/O (virtio)</td><td>5–20%</td><td>&lt; 2%</td></tr>
+          <tr><td>Startup time</td><td>30–120s</td><td>&lt; 1s</td></tr>
+        </tbody>
+      </table>
+
+      <div class="info">
+        <div class="i-title">Exam Focus Points</div>
+        Know: Popek &amp; Goldberg 3 requirements · Type 1 vs Type 2 differences · Why x86 was not virtualizable (17 instructions) · Binary translation approach · EPT vs shadow page tables · Pre-copy live migration algorithm · cgroups + namespaces for containers · IaaS/PaaS/SaaS responsibilities
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="quick-ref">
+    <div class="card-header"><div class="dot"></div><h3>Quick Reference &amp; Formulas</h3></div>
+    <div class="card-body">
+      <div class="label">Popek &amp; Goldberg (Must Know)</div>
+      <div class="rule">VMM exists IF: sensitive_instructions ⊆ privileged_instructions</div>
+      <div class="formula">Instruction taxonomy:
+  Privileged:  traps when executed in user mode
+  Sensitive:   reveals/modifies privileged machine state
+  Innocuous:   neither privileged nor sensitive
+
+  x86 problem: 17 instructions that are sensitive but NOT privileged
+  → cannot trap → trap-and-emulate fails for pure x86</div>
+
+      <div class="label">VM Exit Cycle (VT-x)</div>
+      <div class="formula">VMX root (VMM) → VMLAUNCH/VMRESUME
+        → VMX non-root (Guest runs natively)
+        → VM Exit (sensitive event occurs)
+        → hardware saves guest state to VMCS
+        → loads VMM host state from VMCS
+        → VMX root (VMM handles exit reason)
+        → VMRESUME → back to guest</div>
+
+      <div class="label">Address Translation Chain</div>
+      <div class="formula">With EPT:
+  GVA → [guest PML4→PDPT→PD→PT] → GPA
+      → [EPT PML4→PDPT→PD→PT]   → HPA
+  Total: up to 5×4 = 20+ memory accesses worst case
+  (EPTTLB caches GVA→HPA to avoid full walk)</div>
+
+      <div class="label">Pre-Copy Migration</div>
+      <div class="formula">Convergence: dirty_rate &lt; network_bandwidth
+  Downtime ≈ (remaining_dirty_pages × page_size) / bandwidth
+  Iteration i: dirty_pages(i) ≈ dirty_pages(i-1) × (dirty_rate / bw)</div>
+
+      <div class="label">Memory Rules</div>
+      <div class="rule">Shadow PT: VMM intercepts every CR3 load + PT write → overhead</div>
+      <div class="rule">EPT: hardware walks 2-level PT → no VM Exit on CR3 load → faster</div>
+      <div class="rule">VPID 0 = hypervisor | VPID n = VM n → tag TLB, avoid flush</div>
+
+      <div class="label">Container Isolation Stack</div>
+      <div class="formula">Application Process
+  ──── Linux Namespaces ──── (what it sees)
+  ──── cgroups ──── (resource limits)
+  ──── Host Linux Kernel ──── (shared!)
+  ──── Hardware ────</div>
+
+      <div class="label">Cloud Model Memory Hook</div>
+      <div class="rule">IaaS = Infra | PaaS = Platform | SaaS = Software</div>
+      <div class="formula">Pizza-as-a-Service analogy:
+  IaaS: raw ingredients (VMs, storage) — you cook
+  PaaS: semi-prepared (runtime, DB) — you write code
+  SaaS: delivered pizza — just eat (configure &amp; use)</div>
+    </div>
+  </div>
+
+</div><!-- end row 6 -->
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <span>OSG202 — Operating Systems</span>
+  <span style="color:var(--text-dim);">CH07 · Virtualization &amp; Cloud Computing · Hypervisors · Containers · Cloud Models</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<!-- ===== SCRIPTS ===== -->
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code=document.createElement('code');
+    code.className='language-c';
+    code.textContent=pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

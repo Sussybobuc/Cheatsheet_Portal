@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH01 – Internetworking | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Internetworking — Chapter 1</h1>
+    <h2>CCNA INTRO Study Guide · Lammle · NWC204 — Computer Networking</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">§OSI Model</span>
+      <span class="toc-item">§TCP</span>
+      <span class="toc-item">§UDP</span>
+      <span class="toc-item">§Port Numbers</span>
+      <span class="toc-item">§Network Devices</span>
+      <span class="toc-item">§Domains</span>
+      <span class="toc-item">§Ethernet</span>
+      <span class="toc-item">§MAC/Frames</span>
+      <span class="toc-item">§Cabling</span>
+      <span class="toc-item">§Encapsulation</span>
+      <span class="toc-item">§Cisco Hierarchy</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</div>
+
+<!-- ROW 1: OSI MODEL -->
+<div class="grid">
+  <div class="card col-span-3 blue" id="osi-model">
+    <div class="card-header"><span class="dot"></span><h3>OSI Reference Model — All 7 Layers</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th style="width:40px;">#</th>
+          <th>Layer Name</th>
+          <th>PDU</th>
+          <th>Key Protocols / Standards</th>
+          <th>Primary Functions</th>
+          <th>Devices</th>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:700;font-size:14px;">7</td>
+          <td><strong style="color:var(--accent3);">Application</strong></td>
+          <td><code>Data</code></td>
+          <td>HTTP, FTP, SMTP, Telnet, DNS, SNMP, TFTP, NFS, POP3, IMAP</td>
+          <td>User interface to network services; provides APIs for apps to use the network</td>
+          <td>Proxy, L7 Firewall</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent4);font-weight:700;font-size:14px;">6</td>
+          <td><strong style="color:var(--accent4);">Presentation</strong></td>
+          <td><code>Data</code></td>
+          <td>SSL/TLS, JPEG, MPEG, GIF, ASCII, EBCDIC, encryption, LZW</td>
+          <td>Data translation, encryption/decryption, compression, format conversion between systems</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td style="color:var(--yellow);font-weight:700;font-size:14px;">5</td>
+          <td><strong style="color:var(--yellow);">Session</strong></td>
+          <td><code>Data</code></td>
+          <td>NFS, SQL, NetBIOS, RPC, SIP, H.245</td>
+          <td>Dialog control (simplex/half/full-duplex), session establishment, maintenance, teardown, synchronization checkpoints</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:700;font-size:14px;">4</td>
+          <td><strong style="color:var(--accent2);">Transport</strong></td>
+          <td><code>Segment / Datagram</code></td>
+          <td>TCP (reliable), UDP (unreliable), port numbers (0–65535)</td>
+          <td>End-to-end delivery, segmentation/reassembly, flow control (windowing), error recovery, port multiplexing</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);font-weight:700;font-size:14px;">3</td>
+          <td><strong style="color:var(--accent);">Network</strong></td>
+          <td><code>Packet</code></td>
+          <td>IP, ICMP, ARP, RARP, OSPF, RIP, EIGRP, BGP, IPX</td>
+          <td>Logical addressing (IP), routing, path determination, packet forwarding, fragmentation</td>
+          <td>Router, L3 Switch</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent5);font-weight:700;font-size:14px;">2</td>
+          <td><strong style="color:var(--accent5);">Data Link</strong></td>
+          <td><code>Frame</code></td>
+          <td>Ethernet 802.3, 802.11 Wi-Fi, PPP, HDLC, Frame Relay, ATM, MAC, LLC 802.2</td>
+          <td>Physical (MAC) addressing, framing, error detection (CRC/FCS), media access control (CSMA/CD), LLC &amp; MAC sublayers</td>
+          <td>Switch, Bridge</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-weight:700;font-size:14px;">1</td>
+          <td><strong style="color:var(--text-muted);">Physical</strong></td>
+          <td><code>Bit</code></td>
+          <td>RJ-45, V.35, EIA/TIA-232, EIA/TIA-449, 802.3, SONET, DSL, fiber optic</td>
+          <td>Bit transmission over physical medium; defines voltage, cable specs, connector types, bit timing, encoding (NRZ, Manchester)</td>
+          <td>Hub, Repeater, Cable, NIC</td>
+        </tr>
+      </table>
+      <div style="display:flex;gap:12px;margin-top:8px;">
+        <div class="tip" style="flex:1;margin-bottom:0;">
+          <div class="t-title">Mnemonic 7→1</div>
+          <strong>"All People Seem To Need Data Processing"</strong>
+        </div>
+        <div class="tip" style="flex:1;margin-bottom:0;">
+          <div class="t-title">Mnemonic 1→7</div>
+          <strong>"Please Do Not Throw Sausage Pizza Away"</strong>
+        </div>
+        <div class="info" style="flex:1;margin-bottom:0;">
+          <div class="i-title">PDU Encapsulation</div>
+          Data → Segment → Packet → Frame → Bits (sender); reverse on receiver (de-encapsulation)
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: TCP + UDP + Ports -->
+<div class="grid section-gap">
+  <div class="card blue" id="tcp-protocol">
+    <div class="card-header"><span class="dot"></span><h3>TCP — Transmission Control Protocol</h3></div>
+    <div class="card-body">
+      <div class="label">Characteristics</div>
+      <ul class="items">
+        <li><strong>Connection-oriented</strong> — 3-way handshake before data transfer</li>
+        <li><strong>Reliable</strong> — acknowledgement (ACK) for every segment</li>
+        <li><strong>Sequenced</strong> — sequence numbers guarantee correct ordering</li>
+        <li><strong>Flow control</strong> — sliding window prevents buffer overflow</li>
+        <li><strong>Error recovery</strong> — lost/corrupt segments retransmitted</li>
+        <li><strong>Full-duplex</strong> — simultaneous bidirectional data flow</li>
+      </ul>
+      <div class="label">3-Way Handshake (Connection Establishment)</div>
+      <pre>Client ──── SYN ──────────────► Server   (seq=x)
+Client ◄─── SYN-ACK ─────────── Server   (seq=y, ack=x+1)
+Client ──── ACK ──────────────► Server   (ack=y+1)
+              [ Data Transfer Begins ]</pre>
+      <div class="label">4-Way Termination (Connection Teardown)</div>
+      <pre>Client ──── FIN ──────────────► Server
+Client ◄─── ACK ─────────────── Server
+Client ◄─── FIN ─────────────── Server
+Client ──── ACK ──────────────► Server   [ CLOSED ]</pre>
+      <div class="label">TCP Header Key Fields</div>
+      <table class="tbl">
+        <tr><th>Field</th><th>Size</th><th>Purpose</th></tr>
+        <tr><td>Source Port</td><td>16-bit</td><td>Sending application's port</td></tr>
+        <tr><td>Destination Port</td><td>16-bit</td><td>Receiving application's port</td></tr>
+        <tr><td>Sequence Number</td><td>32-bit</td><td>Byte position in stream</td></tr>
+        <tr><td>Acknowledgement</td><td>32-bit</td><td>Next expected byte from peer</td></tr>
+        <tr><td>Window Size</td><td>16-bit</td><td>Receive buffer size (flow control)</td></tr>
+        <tr><td>Checksum</td><td>16-bit</td><td>Error detection</td></tr>
+        <tr><td>Flags</td><td>6-bit</td><td>SYN, ACK, FIN, RST, PSH, URG</td></tr>
+        <tr><td>Header Length</td><td>4-bit</td><td>Min 20 bytes, max 60 bytes</td></tr>
+      </table>
+      <div class="label">Windowing &amp; Flow Control</div>
+      <div class="info">
+        <div class="i-title">Sliding Window</div>
+        Sender can transmit up to <em>window size</em> bytes before requiring an ACK. Window grows on success (slow start), shrinks on congestion/loss. Prevents fast sender from overwhelming slow receiver.
+      </div>
+      <div class="rule">Window=1 → send 1, wait for ACK → send 1, wait...
+Window=3 → send 3 segments, wait for ACK → send next 3</div>
+    </div>
+  </div>
+
+  <div class="card red" id="udp-protocol">
+    <div class="card-header"><span class="dot"></span><h3>UDP — User Datagram Protocol</h3></div>
+    <div class="card-body">
+      <div class="label">Characteristics</div>
+      <ul class="items">
+        <li><strong>Connectionless</strong> — no handshake; just send and forget</li>
+        <li><strong>Unreliable</strong> — no ACKs, no retransmission</li>
+        <li><strong>Unsequenced</strong> — no ordering guarantees</li>
+        <li><strong>Low overhead</strong> — 8-byte header (vs 20+ for TCP)</li>
+        <li><strong>Fast</strong> — no connection setup delay</li>
+        <li>Upper-layer protocols must handle reliability if needed</li>
+      </ul>
+      <div class="label">UDP Header (only 4 fields, 8 bytes total)</div>
+      <pre>┌──────────────┬──────────────┐
+│  Source Port │   Dest Port  │  (16-bit each)
+├──────────────┼──────────────┤
+│    Length    │   Checksum   │  (16-bit each)
+└──────────────┴──────────────┘</pre>
+      <div class="label">Protocols That Use UDP</div>
+      <ul class="items">
+        <li><strong>DNS</strong> (port 53) — fast name lookups</li>
+        <li><strong>TFTP</strong> (port 69) — simple file transfer</li>
+        <li><strong>SNMP</strong> (port 161/162) — network management</li>
+        <li><strong>DHCP</strong> (port 67/68) — uses broadcast addressing</li>
+        <li><strong>NTP</strong> (port 123) — time synchronization</li>
+        <li><strong>RIP</strong> (port 520) — routing updates</li>
+        <li><strong>VoIP / Video streaming</strong> — latency critical, loss tolerated</li>
+      </ul>
+      <div class="label">TCP vs UDP Comparison</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>TCP</th><th>UDP</th></tr>
+        <tr><td>Connection</td><td style="color:var(--accent2);">Oriented (handshake)</td><td style="color:var(--accent3);">Connectionless</td></tr>
+        <tr><td>Reliable</td><td style="color:var(--accent2);">Yes (ACKs)</td><td style="color:var(--accent3);">No</td></tr>
+        <tr><td>Sequenced</td><td style="color:var(--accent2);">Yes</td><td style="color:var(--accent3);">No</td></tr>
+        <tr><td>Flow Control</td><td style="color:var(--accent2);">Yes (windowing)</td><td style="color:var(--accent3);">No</td></tr>
+        <tr><td>Header Size</td><td>20–60 bytes</td><td>8 bytes</td></tr>
+        <tr><td>Speed</td><td style="color:var(--accent3);">Slower</td><td style="color:var(--accent2);">Faster</td></tr>
+        <tr><td>Use Case</td><td>Web, email, file transfer</td><td>Streaming, DNS, SNMP</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Key Exam Point</div>
+        TCP = "phone call" (connection established before talking). UDP = "postcard" (just sent, no confirmation received).
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="port-numbers">
+    <div class="card-header"><span class="dot"></span><h3>Well-Known Port Numbers</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Port</th><th>Protocol</th><th>Transport</th><th>Description</th></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">20</td><td>FTP-Data</td><td>TCP</td><td>FTP active mode data channel</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">21</td><td>FTP-Control</td><td>TCP</td><td>FTP command/control channel</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">22</td><td>SSH</td><td>TCP</td><td>Secure Shell — encrypted remote access</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">23</td><td>Telnet</td><td>TCP</td><td>Remote terminal — cleartext (insecure)</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">25</td><td>SMTP</td><td>TCP</td><td>Simple Mail Transfer (outbound email)</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">53</td><td>DNS</td><td>UDP/TCP</td><td>Domain Name System resolution</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">67</td><td>DHCP Server</td><td>UDP</td><td>DHCP server listens here</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">68</td><td>DHCP Client</td><td>UDP</td><td>DHCP client listens here</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">69</td><td>TFTP</td><td>UDP</td><td>Trivial File Transfer Protocol</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">80</td><td>HTTP</td><td>TCP</td><td>Web traffic — cleartext</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">110</td><td>POP3</td><td>TCP</td><td>Post Office Protocol (receive email)</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">143</td><td>IMAP</td><td>TCP</td><td>Internet Message Access Protocol</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">161</td><td>SNMP</td><td>UDP</td><td>SNMP polling (manager → agent)</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">162</td><td>SNMP Trap</td><td>UDP</td><td>SNMP trap (agent → manager)</td></tr>
+        <tr><td style="color:var(--accent2);font-weight:600;">443</td><td>HTTPS</td><td>TCP</td><td>HTTP over SSL/TLS (encrypted web)</td></tr>
+        <tr><td style="color:var(--accent3);font-weight:600;">520</td><td>RIP</td><td>UDP</td><td>Routing Information Protocol</td></tr>
+      </table>
+      <div class="label" style="margin-top:8px;">Port Ranges</div>
+      <div class="formula">0–1023      = Well-Known (privileged, assigned by IANA)
+1024–49151  = Registered ports
+49152–65535 = Dynamic / Ephemeral (client ports)</div>
+      <div class="warn">
+        <div class="w-title">DNS Uses Both TCP and UDP!</div>
+        UDP port 53 for normal queries (&lt;512 bytes). TCP port 53 for zone transfers or large responses (&gt;512 bytes).
+      </div>
+      <div class="tip">
+        <div class="t-title">Exam Tip — FTP Ports</div>
+        Port 21 = control (commands). Port 20 = data transfer (active mode only). Passive FTP uses ephemeral ports for data.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: Network Devices + Collision/Broadcast Domains + Cisco Hierarchy -->
+<div class="grid section-gap">
+  <div class="card orange col-span-2" id="network-devices">
+    <div class="card-header"><span class="dot"></span><h3>Network Devices — OSI Layer Summary</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>Device</th>
+          <th>OSI Layer</th>
+          <th>Collision Domains</th>
+          <th>Broadcast Domains</th>
+          <th>Intelligence</th>
+          <th>Key Notes</th>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);"><strong>Repeater</strong></td>
+          <td>Layer 1</td>
+          <td style="color:var(--accent3);">1 total (all ports)</td>
+          <td style="color:var(--accent3);">1 total</td>
+          <td>None</td>
+          <td>Amplifies/regenerates signal; extends cable distance; no filtering</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);"><strong>Hub</strong></td>
+          <td>Layer 1</td>
+          <td style="color:var(--accent3);">1 total (shared)</td>
+          <td style="color:var(--accent3);">1 total</td>
+          <td>None</td>
+          <td>Multi-port repeater; all ports share one collision domain; half-duplex; floods all ports</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent5);"><strong>Bridge</strong></td>
+          <td>Layer 2</td>
+          <td style="color:var(--accent2);">1 per port</td>
+          <td style="color:var(--accent3);">1 total</td>
+          <td>MAC address table</td>
+          <td>Software-based; segments collision domains; 2–16 ports; slower than switch</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);"><strong>Switch</strong></td>
+          <td>Layer 2</td>
+          <td style="color:var(--accent2);">1 per port</td>
+          <td style="color:var(--accent3);">1 total (per VLAN)</td>
+          <td>MAC address table (CAM)</td>
+          <td>ASIC hardware; each port = own collision domain; full-duplex capable; high port density</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);"><strong>Router</strong></td>
+          <td>Layer 3</td>
+          <td style="color:var(--accent2);">1 per interface</td>
+          <td style="color:var(--accent2);">1 per interface</td>
+          <td>Routing table (IP)</td>
+          <td>Breaks both domains; connects separate networks; routes using IP; does not forward broadcasts</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent4);"><strong>L3 Switch</strong></td>
+          <td>Layer 2/3</td>
+          <td style="color:var(--accent2);">1 per port</td>
+          <td style="color:var(--accent2);">1 per VLAN</td>
+          <td>MAC + IP routing</td>
+          <td>Switch with routing; inter-VLAN routing; hardware-based; replaces router-on-a-stick</td>
+        </tr>
+      </table>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <div class="formula" style="flex:1;">Routers → break BROADCAST domains (each interface = new broadcast domain)</div>
+        <div class="formula" style="flex:1;">Switches/Bridges → break COLLISION domains (each port = separate collision domain)</div>
+        <div class="formula" style="flex:1;">Hubs → EXTEND collision domains (all ports share one collision domain)</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple" id="cisco-hierarchy">
+    <div class="card-header"><span class="dot"></span><h3>Cisco 3-Layer Hierarchical Model</h3></div>
+    <div class="card-body">
+      <div class="label">Core Layer (Backbone)</div>
+      <ul class="items">
+        <li><strong>Purpose:</strong> High-speed packet switching — the backbone</li>
+        <li>No packet manipulation, no access lists, no QoS</li>
+        <li>Maximum speed and reliability; redundant paths</li>
+        <li>Devices: high-end routers, multilayer switches (Cat 6500)</li>
+      </ul>
+      <div class="label">Distribution Layer (Workgroup)</div>
+      <ul class="items">
+        <li><strong>Purpose:</strong> Policy-based connectivity and routing</li>
+        <li>Implements access lists, route filtering, summarization</li>
+        <li>VLAN routing, QoS, inter-VLAN communication</li>
+        <li>Boundary between core and access layers</li>
+        <li>Devices: routers, Layer 3 switches (Cat 3750)</li>
+      </ul>
+      <div class="label">Access Layer (Desktop)</div>
+      <ul class="items">
+        <li><strong>Purpose:</strong> End-user device connectivity</li>
+        <li>Connects PCs, printers, IP phones, wireless APs</li>
+        <li>Port security, VLANs, PoE (Power over Ethernet)</li>
+        <li>Devices: Layer 2 switches (Cat 2960), hubs (legacy)</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Design Rule</div>
+        <strong>Core</strong> = speed only &nbsp;|&nbsp; <strong>Distribution</strong> = policy &nbsp;|&nbsp; <strong>Access</strong> = end users
+      </div>
+      <div class="info">
+        <div class="i-title">Collapsed Core</div>
+        Small networks merge Core + Distribution into one layer (collapsed core). One powerful switch handles both functions.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4: Collision Domains + Ethernet + MAC -->
+<div class="grid section-gap">
+  <div class="card green" id="collision-broadcast">
+    <div class="card-header"><span class="dot"></span><h3>Collision &amp; Broadcast Domains</h3></div>
+    <div class="card-body">
+      <div class="label">Collision Domain</div>
+      <p>A segment where simultaneous transmissions cause a <span class="tt" data-t="When 2 devices transmit at the same time on the same wire, signals collide and are destroyed. Both must retransmit after a random backoff period.">collision</span>. Devices must use CSMA/CD. Reducing collision domains improves performance.</p>
+      <ul class="items">
+        <li>Hub: ALL ports = 1 collision domain</li>
+        <li>Switch: each port = separate collision domain</li>
+        <li>Router: each interface = separate collision domain</li>
+      </ul>
+      <div class="label">Broadcast Domain</div>
+      <p>All devices that receive a <span class="tt" data-t="A frame with destination MAC FF:FF:FF:FF:FF:FF, sent to all devices on the local network segment.">broadcast frame</span>. Routers separate broadcast domains (do not forward broadcasts).</p>
+      <ul class="items">
+        <li>Hub/Switch (no VLANs): all ports = 1 broadcast domain</li>
+        <li>Router: each interface = separate broadcast domain</li>
+        <li>VLANs: each VLAN = separate broadcast domain</li>
+      </ul>
+      <div class="label">Worked Example</div>
+      <div class="rule">Topology: 1 Router, 2 interfaces
+Each interface → 1 switch, each switch → 12 hosts
+
+Collision domains:
+  Router: 2 (one per interface)
+  Switches: 24 (one per host port)
+  Total: 26 collision domains
+
+Broadcast domains:
+  Total: 2 (one per router interface)</div>
+      <div class="warn">
+        <div class="w-title">Switches Don't Break Broadcast Domains</div>
+        A switch by default forwards broadcasts to ALL ports. Only VLANs or routers separate broadcast domains.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="ethernet-standards">
+    <div class="card-header"><span class="dot"></span><h3>Ethernet Standards &amp; CSMA/CD</h3></div>
+    <div class="card-body">
+      <div class="label">IEEE 802.3 Ethernet Specifications</div>
+      <table class="tbl">
+        <tr><th>Standard</th><th>Speed</th><th>Cable Type</th><th>Max Dist</th><th>Duplex</th></tr>
+        <tr><td>10Base-T</td><td>10 Mbps</td><td>Cat 3 UTP</td><td>100 m</td><td>Half/Full</td></tr>
+        <tr><td>10Base-2 (Thinnet)</td><td>10 Mbps</td><td>Coax RG-58</td><td>185 m</td><td>Half</td></tr>
+        <tr><td>10Base-5 (Thicknet)</td><td>10 Mbps</td><td>Coax RG-8</td><td>500 m</td><td>Half</td></tr>
+        <tr><td>100Base-TX (Fast)</td><td>100 Mbps</td><td>Cat 5 UTP</td><td>100 m</td><td>Half/Full</td></tr>
+        <tr><td>100Base-FX</td><td>100 Mbps</td><td>Multi-mode fiber</td><td>412 m</td><td>Half/Full</td></tr>
+        <tr><td>1000Base-T (GigE)</td><td>1 Gbps</td><td>Cat 5e UTP</td><td>100 m</td><td>Full</td></tr>
+        <tr><td>1000Base-SX</td><td>1 Gbps</td><td>Multi-mode fiber</td><td>550 m</td><td>Full</td></tr>
+        <tr><td>1000Base-LX</td><td>1 Gbps</td><td>Single-mode fiber</td><td>5 km</td><td>Full</td></tr>
+      </table>
+      <div class="label">CSMA/CD Process</div>
+      <ol class="steps">
+        <li>Device listens to check if the wire is idle (Carrier Sense)</li>
+        <li>If idle, device begins transmitting frame (Multiple Access)</li>
+        <li>Device continues listening while transmitting</li>
+        <li>If collision detected: transmit 32-bit jam signal</li>
+        <li>All devices in domain run random backoff timer</li>
+        <li>After timer expires, attempt retransmission</li>
+      </ol>
+      <div class="label">Half-Duplex vs Full-Duplex</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>Half-Duplex</th><th>Full-Duplex</th></tr>
+        <tr><td>Collisions</td><td style="color:var(--accent3);">Possible</td><td style="color:var(--accent2);">Impossible</td></tr>
+        <tr><td>CSMA/CD</td><td style="color:var(--accent3);">Required</td><td style="color:var(--accent2);">Not used</td></tr>
+        <tr><td>TX &amp; RX simultaneously</td><td style="color:var(--accent3);">No</td><td style="color:var(--accent2);">Yes</td></tr>
+        <tr><td>Bandwidth</td><td>Shared medium</td><td>Dedicated each direction</td></tr>
+        <tr><td>Typical device</td><td>Hub connections</td><td>Switch port to host</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card orange" id="mac-frames">
+    <div class="card-header"><span class="dot"></span><h3>MAC Addressing &amp; Ethernet Frames</h3></div>
+    <div class="card-body">
+      <div class="label">MAC Address Structure (48-bit / 6 bytes)</div>
+      <div class="formula">AA:BB:CC : DD:EE:FF
+├── OUI ──┤├── Device ID ──┤
+Organizationally   Manufacturer-assigned
+Unique Identifier  (unique per NIC)</div>
+      <ul class="items">
+        <li>Written as 12 hexadecimal digits (e.g., <code>00:1A:2B:3C:4D:5E</code>)</li>
+        <li>OUI (first 3 bytes) = assigned to manufacturer by IEEE</li>
+        <li>Burned-In Address (BIA) — stored in ROM on NIC</li>
+        <li>Can be overridden in software (MAC spoofing)</li>
+        <li>Broadcast: <code>FF:FF:FF:FF:FF:FF</code> (all ones)</li>
+        <li>Multicast: first byte LSB = 1 (e.g., <code>01:00:5E:xx:xx:xx</code>)</li>
+      </ul>
+      <div class="label">Ethernet II Frame Format</div>
+      <pre>┌──────┬──────┬────┬──────────────┬────┐
+│DMAC  │SMAC  │TYPE│     DATA     │FCS │
+│ 6B   │ 6B   │ 2B │  46–1500 B   │ 4B │
+└──────┴──────┴────┴──────────────┴────┘
+Preamble (7B) + SFD (1B) precede frame</pre>
+      <div class="label">IEEE 802.3 Frame (with 802.2 LLC)</div>
+      <pre>┌──────┬──────┬────┬────┬────┬──────┬────┐
+│DMAC  │SMAC  │LEN │DSAP│SSAP│DATA  │FCS │
+│ 6B   │ 6B   │ 2B │ 1B │ 1B │46–B  │ 4B │
+└──────┴──────┴────┴────┴────┴──────┴────┘</pre>
+      <table class="tbl">
+        <tr><th>Field</th><th>Size</th><th>Description</th></tr>
+        <tr><td>Preamble</td><td>7 B</td><td>Alternating 1010... for sync</td></tr>
+        <tr><td>SFD</td><td>1 B</td><td>Start Frame Delimiter (10101011)</td></tr>
+        <tr><td>Dest MAC</td><td>6 B</td><td>Target device hardware address</td></tr>
+        <tr><td>Source MAC</td><td>6 B</td><td>Sending device hardware address</td></tr>
+        <tr><td>Type/Length</td><td>2 B</td><td>&gt;1500=EtherType; ≤1500=Length</td></tr>
+        <tr><td>Data/Payload</td><td>46–1500 B</td><td>Encapsulated IP packet (MTU=1500)</td></tr>
+        <tr><td>FCS</td><td>4 B</td><td>CRC-32 error detection trailer</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Data Link Sublayers</div>
+        <strong>LLC (802.2):</strong> Flow control, identifies upper protocol (DSAP/SSAP)<br>
+        <strong>MAC (802.3):</strong> MAC addressing, CSMA/CD, frame format, CRC
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5: Cabling + Encapsulation -->
+<div class="grid-2 section-gap">
+  <div class="card red" id="cabling-types">
+    <div class="card-header"><span class="dot"></span><h3>Cabling Types &amp; Usage</h3></div>
+    <div class="card-body">
+      <div class="label">Twisted-Pair Cable Selection</div>
+      <table class="tbl">
+        <tr><th>Cable Type</th><th>Connects</th><th>Pin Assignment</th></tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">Straight-Through</td>
+          <td>Switch ↔ Router<br>Switch ↔ Host (PC)<br>Hub ↔ Router<br>Hub ↔ Host</td>
+          <td>Same pinout both ends<br>1→1, 2→2, 3→3, 6→6</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">Crossover</td>
+          <td>Switch ↔ Switch<br>Switch ↔ Hub<br>Hub ↔ Hub<br>Router ↔ Router<br>Host ↔ Host (direct)</td>
+          <td>TX/RX swapped<br>1↔3, 2↔6</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent4);font-weight:600;">Rolled / Rollover</td>
+          <td>PC serial/COM ↔ Cisco console port</td>
+          <td>Each pin reversed<br>1↔8, 2↔7, 3↔6, 4↔5</td>
+        </tr>
+      </table>
+      <div class="tip">
+        <div class="t-title">Memory Aid</div>
+        <strong>Straight-through:</strong> Different device types (unlike layers)<br>
+        <strong>Crossover:</strong> Same device type (like devices)<br>
+        <strong>Rolled:</strong> Console access only (management)
+      </div>
+      <div class="label">UTP Categories</div>
+      <table class="tbl">
+        <tr><th>Category</th><th>Max Speed</th><th>Use Case</th></tr>
+        <tr><td>Cat 3</td><td>10 Mbps</td><td>10Base-T, analog voice</td></tr>
+        <tr><td>Cat 5</td><td>100 Mbps</td><td>100Base-TX Fast Ethernet</td></tr>
+        <tr><td>Cat 5e</td><td>1 Gbps</td><td>1000Base-T Gigabit Ethernet</td></tr>
+        <tr><td>Cat 6</td><td>1/10 Gbps</td><td>10GBase-T (up to 55m)</td></tr>
+        <tr><td>Cat 6a</td><td>10 Gbps</td><td>10GBase-T (up to 100m)</td></tr>
+      </table>
+      <div class="label">Fiber Optic</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Light Source</th><th>Distance</th><th>Cost</th></tr>
+        <tr><td>Multi-mode (MMF)</td><td>LED (850/1300nm)</td><td>Up to 550m</td><td>Lower</td></tr>
+        <tr><td>Single-mode (SMF)</td><td>Laser (1310/1550nm)</td><td>Up to 40km+</td><td>Higher</td></tr>
+      </table>
+      <div class="info">
+        <div class="i-title">Auto-MDIX</div>
+        Modern switches automatically detect cable type and adjust TX/RX pairs. Eliminates need for crossover cables in many environments.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple" id="data-encapsulation">
+    <div class="card-header"><span class="dot"></span><h3>Data Encapsulation &amp; De-encapsulation</h3></div>
+    <div class="card-body">
+      <div class="label">Sender — Encapsulation (Application → Physical)</div>
+      <ol class="steps">
+        <li><strong>Application (L7–L5):</strong> User creates data → <em>Data</em></li>
+        <li><strong>Transport (L4):</strong> TCP/UDP header added with port numbers → <em>Segment (TCP) / Datagram (UDP)</em></li>
+        <li><strong>Network (L3):</strong> IP header added with source &amp; destination IP → <em>Packet</em></li>
+        <li><strong>Data Link (L2):</strong> MAC header (src/dst MAC) + FCS trailer → <em>Frame</em></li>
+        <li><strong>Physical (L1):</strong> Frame converted to electrical/optical/radio signals → <em>Bits</em></li>
+      </ol>
+      <div class="label">Receiver — De-encapsulation (Physical → Application)</div>
+      <ol class="steps">
+        <li><strong>Physical:</strong> Signals received, converted back to bits → frame</li>
+        <li><strong>Data Link:</strong> FCS checked (CRC), MAC header examined/stripped</li>
+        <li><strong>Network:</strong> IP header checked, routing decisions, header stripped</li>
+        <li><strong>Transport:</strong> TCP/UDP header processed, segments reassembled</li>
+        <li><strong>Application:</strong> Data delivered to requesting application</li>
+      </ol>
+      <div class="label">PDU Summary by Layer</div>
+      <pre>L7-5  Application/Presentation/Session  → DATA
+L4    Transport                          → SEGMENT (TCP) / DATAGRAM (UDP)
+L3    Network                            → PACKET
+L2    Data Link                          → FRAME
+L1    Physical                           → BIT</pre>
+      <div class="label">What Each Header Contains</div>
+      <table class="tbl">
+        <tr><th>Layer</th><th>PDU</th><th>Header Adds</th></tr>
+        <tr><td>Transport (L4)</td><td>Segment</td><td>Src Port, Dst Port, Seq#, Ack#, Flags, Window</td></tr>
+        <tr><td>Network (L3)</td><td>Packet</td><td>Src IP, Dst IP, TTL, Protocol, Checksum</td></tr>
+        <tr><td>Data Link (L2)</td><td>Frame</td><td>Src MAC, Dst MAC, Type/Length, FCS (trailer)</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Important Distinction</div>
+        IP addresses (L3) remain the same source-to-destination. MAC addresses (L2) change at every router hop — the router rewrites the frame with new MACs for the next segment.
+      </div>
+      <div class="info">
+        <div class="i-title">TTL Field</div>
+        Time-To-Live in IP header: each router decrements TTL by 1. When TTL=0, packet is discarded and ICMP "Time Exceeded" is sent to sender. Prevents infinite routing loops.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="../NWC204.html">← NWC204 Index</a>
+  <span>CCNA INTRO · Lammle · Ch1</span>
+  <span>NWC204 — Computer Networking</span>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

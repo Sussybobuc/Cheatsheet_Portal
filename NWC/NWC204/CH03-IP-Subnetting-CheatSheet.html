@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH03 – IP Subnetting | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>IP Subnetting &amp; VLSMs — Chapter 3</h1>
+    <h2>CCNA INTRO Study Guide · Lammle · NWC204 — Computer Networking</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">§Why Subnet</span>
+      <span class="toc-item">§Key Formulas</span>
+      <span class="toc-item">§Class C Subnetting</span>
+      <span class="toc-item">§Class B Subnetting</span>
+      <span class="toc-item">§Class A Subnetting</span>
+      <span class="toc-item">§Fast Method</span>
+      <span class="toc-item">§VLSM</span>
+      <span class="toc-item">§CIDR</span>
+      <span class="toc-item">§Troubleshooting</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</div>
+
+<!-- ROW 1: Why Subnet + Formulas + Mask Basics -->
+<div class="grid">
+  <div class="card green" id="why-subnet">
+    <div class="card-header"><span class="dot"></span><h3>Why Subnet? — Concepts &amp; Benefits</h3></div>
+    <div class="card-body">
+      <div class="label">Reasons to Subnet</div>
+      <ul class="items">
+        <li><strong>Reduce broadcast domains</strong> — fewer hosts hear each broadcast; better performance</li>
+        <li><strong>Efficient address utilization</strong> — allocate only what's needed per segment</li>
+        <li><strong>Improved security</strong> — routers between subnets apply ACLs to control traffic</li>
+        <li><strong>Easier management</strong> — logical grouping by department, floor, function</li>
+        <li><strong>Fault isolation</strong> — problems contained to one subnet</li>
+        <li><strong>Support for VLANs</strong> — each VLAN needs its own subnet</li>
+      </ul>
+      <div class="label">Subnet Mask Basics</div>
+      <p>A subnet mask is a <strong>32-bit value</strong> with consecutive 1s on the left (network) and 0s on the right (host). Written in dotted decimal or CIDR prefix notation.</p>
+      <div class="formula">IP Address:   192.168.1.130  = 11000000.10101000.00000001.10000010
+Subnet Mask:  255.255.255.128 = 11111111.11111111.11111111.10000000
+Network:      192.168.1.128  (AND result)
+Host portion: .00000010      = host 2 in this subnet</div>
+      <div class="label">Default Masks by Class</div>
+      <table class="tbl">
+        <tr><th>Class</th><th>Default Mask</th><th>CIDR</th><th>Network Bits</th><th>Host Bits</th></tr>
+        <tr><td style="color:var(--accent3);">A</td><td>255.0.0.0</td><td>/8</td><td>8</td><td>24</td></tr>
+        <tr><td style="color:var(--accent2);">B</td><td>255.255.0.0</td><td>/16</td><td>16</td><td>16</td></tr>
+        <tr><td style="color:var(--accent);">C</td><td>255.255.255.0</td><td>/24</td><td>24</td><td>8</td></tr>
+      </table>
+      <div class="label">How Subnetting Works</div>
+      <p>Borrow bits from the <strong>host portion</strong> and add them to the <strong>network portion</strong>. Each borrowed bit doubles the number of subnets but halves the hosts per subnet.</p>
+      <pre>Class C /24:  NNNNNNNN.NNNNNNNN.NNNNNNNN.HHHHHHHH
+Borrow 2:     NNNNNNNN.NNNNNNNN.NNNNNNNN.NNHHHHHH  (/26)
+              n=2 borrowed → 2^2=4 subnets, 2^6-2=62 hosts</pre>
+    </div>
+  </div>
+
+  <div class="card orange" id="key-formulas">
+    <div class="card-header"><span class="dot"></span><h3>Key Subnetting Formulas</h3></div>
+    <div class="card-body">
+      <div class="label">Core Formulas</div>
+      <div class="formula">Number of Subnets   = 2^n
+  n = number of BORROWED bits (subnet bits)
+
+Hosts per Subnet    = 2^h - 2
+  h = number of HOST bits remaining
+  (-2 for network address and broadcast address)
+
+Block Size (Increment) = 256 - interesting octet value
+  e.g., mask=255.255.255.192 → 256-192=64 block size</div>
+      <div class="label">CIDR Notation to Mask Conversion</div>
+      <table class="tbl">
+        <tr><th>CIDR</th><th>Subnet Mask</th><th>Host Bits</th></tr>
+        <tr><td>/8</td><td>255.0.0.0</td><td>24</td></tr>
+        <tr><td>/16</td><td>255.255.0.0</td><td>16</td></tr>
+        <tr><td>/24</td><td>255.255.255.0</td><td>8</td></tr>
+        <tr><td>/25</td><td>255.255.255.128</td><td>7</td></tr>
+        <tr><td>/26</td><td>255.255.255.192</td><td>6</td></tr>
+        <tr><td>/27</td><td>255.255.255.224</td><td>5</td></tr>
+        <tr><td>/28</td><td>255.255.255.240</td><td>4</td></tr>
+        <tr><td>/29</td><td>255.255.255.248</td><td>3</td></tr>
+        <tr><td>/30</td><td>255.255.255.252</td><td>2</td></tr>
+      </table>
+      <div class="label">Binary Reference — Powers of 2</div>
+      <table class="tbl">
+        <tr><th>2^n</th><th>Value</th><th>Used For</th></tr>
+        <tr><td>2^1</td><td>2</td><td>2 subnets / 0 usable hosts</td></tr>
+        <tr><td>2^2</td><td>4</td><td>4 subnets / 2 hosts</td></tr>
+        <tr><td>2^3</td><td>8</td><td>8 subnets / 6 hosts</td></tr>
+        <tr><td>2^4</td><td>16</td><td>16 subnets / 14 hosts</td></tr>
+        <tr><td>2^5</td><td>32</td><td>32 subnets / 30 hosts</td></tr>
+        <tr><td>2^6</td><td>64</td><td>64 subnets / 62 hosts</td></tr>
+        <tr><td>2^7</td><td>128</td><td>128 subnets / 126 hosts</td></tr>
+        <tr><td>2^8</td><td>256</td><td>256 subnets / 254 hosts</td></tr>
+      </table>
+      <div class="tip">
+        <div class="t-title">Subnet Address Rule</div>
+        First address in a subnet = <strong>Network Address</strong> (unusable)<br>
+        Last address in a subnet = <strong>Broadcast Address</strong> (unusable)<br>
+        All addresses between = <strong>Valid host range</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="card blue" id="fast-method">
+    <div class="card-header"><span class="dot"></span><h3>Fast Subnetting Method (Block Size)</h3></div>
+    <div class="card-body">
+      <div class="label">The Block Size Trick</div>
+      <p>The <span class="tt" data-t="Block Size = 256 minus the value of the interesting octet in the subnet mask. This tells you how far apart each subnet is.">block size</span> is the increment between subnets. Find it with: <strong>256 − mask_value</strong></p>
+      <div class="formula">Mask = 255.255.255.192
+Block Size = 256 - 192 = 64
+
+Subnets start at: 0, 64, 128, 192
+(next subnet starts at previous + block size)</div>
+      <div class="label">Step-by-Step Fast Method</div>
+      <ol class="steps">
+        <li>Identify the mask and find the <strong>interesting octet</strong> (the non-255, non-0 octet)</li>
+        <li>Compute block size: <strong>256 - interesting_octet</strong></li>
+        <li>List subnets: start at 0, keep adding block size until you exceed 255</li>
+        <li>For each subnet: Network=first address, Broadcast=next_subnet-1, Hosts=between</li>
+      </ol>
+      <div class="label">Example: 192.168.10.0 with /27 (mask=.224)</div>
+      <div class="rule">Block size = 256 - 224 = 32
+
+Subnet 0:  Network=192.168.10.0,   Hosts=.1-.30,   BC=.31
+Subnet 1:  Network=192.168.10.32,  Hosts=.33-.62,  BC=.63
+Subnet 2:  Network=192.168.10.64,  Hosts=.65-.94,  BC=.95
+Subnet 3:  Network=192.168.10.96,  Hosts=.97-.126, BC=.127
+Subnet 4:  Network=192.168.10.128, Hosts=.129-.158,BC=.159
+Subnet 5:  Network=192.168.10.160, Hosts=.161-.190,BC=.191
+Subnet 6:  Network=192.168.10.192, Hosts=.193-.222,BC=.223
+Subnet 7:  Network=192.168.10.224, Hosts=.225-.254,BC=.255</div>
+      <div class="label">Find Which Subnet an IP Belongs To</div>
+      <ol class="steps">
+        <li>Find block size (256 - mask)</li>
+        <li>Divide host octet by block size (integer division)</li>
+        <li>Multiply result by block size = subnet network address</li>
+      </ol>
+      <div class="formula">IP: 192.168.10.73  Mask: /27 (block=32)
+73 / 32 = 2 (integer)
+2 x 32 = 64 → Subnet = 192.168.10.64
+Broadcast = 192.168.10.95 (64+32-1)</div>
+      <div class="tip">
+        <div class="t-title">Quick IP Address Check</div>
+        To determine if two IPs are on the same subnet: AND both IPs with the subnet mask. If results match, they are on the same subnet.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: Class C Subnetting Table -->
+<div class="grid section-gap">
+  <div class="card purple col-span-3" id="class-c-subnetting">
+    <div class="card-header"><span class="dot"></span><h3>Class C Subnetting — Complete Reference Table (192.168.X.0/24)</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>CIDR</th>
+          <th>Subnet Mask</th>
+          <th>Interesting Octet</th>
+          <th>Block Size</th>
+          <th>Borrowed Bits (n)</th>
+          <th>Subnets (2^n)</th>
+          <th>Host Bits (h)</th>
+          <th>Hosts/Subnet (2^h-2)</th>
+          <th>Example Subnets (from .0)</th>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">/25</td>
+          <td>255.255.255.<strong style="color:var(--nwc);">128</strong></td>
+          <td>128</td>
+          <td style="color:var(--accent);">128</td>
+          <td>1</td>
+          <td style="color:var(--accent2);">2</td>
+          <td>7</td>
+          <td style="color:var(--accent2);">126</td>
+          <td>0–127, 128–255</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">/26</td>
+          <td>255.255.255.<strong style="color:var(--nwc);">192</strong></td>
+          <td>192</td>
+          <td style="color:var(--accent);">64</td>
+          <td>2</td>
+          <td style="color:var(--accent2);">4</td>
+          <td>6</td>
+          <td style="color:var(--accent2);">62</td>
+          <td>0–63, 64–127, 128–191, 192–255</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">/27</td>
+          <td>255.255.255.<strong style="color:var(--nwc);">224</strong></td>
+          <td>224</td>
+          <td style="color:var(--accent);">32</td>
+          <td>3</td>
+          <td style="color:var(--accent2);">8</td>
+          <td>5</td>
+          <td style="color:var(--accent2);">30</td>
+          <td>0, 32, 64, 96, 128, 160, 192, 224</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">/28</td>
+          <td>255.255.255.<strong style="color:var(--nwc);">240</strong></td>
+          <td>240</td>
+          <td style="color:var(--accent);">16</td>
+          <td>4</td>
+          <td style="color:var(--accent2);">16</td>
+          <td>4</td>
+          <td style="color:var(--accent2);">14</td>
+          <td>0, 16, 32, 48, 64, 80, 96, 112, 128, 144, 160, 176, 192, 208, 224, 240</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">/29</td>
+          <td>255.255.255.<strong style="color:var(--nwc);">248</strong></td>
+          <td>248</td>
+          <td style="color:var(--accent);">8</td>
+          <td>5</td>
+          <td style="color:var(--accent2);">32</td>
+          <td>3</td>
+          <td style="color:var(--accent2);">6</td>
+          <td>0, 8, 16, 24, 32, 40 ... 240, 248</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">/30</td>
+          <td>255.255.255.<strong style="color:var(--nwc);">252</strong></td>
+          <td>252</td>
+          <td style="color:var(--accent);">4</td>
+          <td>6</td>
+          <td style="color:var(--accent2);">64</td>
+          <td>2</td>
+          <td style="color:var(--accent2);">2</td>
+          <td>0, 4, 8, 12 ... 248, 252 (WAN links)</td>
+        </tr>
+      </table>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:10px;">
+        <div class="note">
+          <div class="n-title">Worked Example — /26</div>
+          Network: <code>192.168.1.0/26</code><br>
+          Block size: 256-192=<strong>64</strong><br>
+          <strong>Subnet 0:</strong> Net=.0, Hosts=.1-.62, BC=.63<br>
+          <strong>Subnet 1:</strong> Net=.64, Hosts=.65-.126, BC=.127<br>
+          <strong>Subnet 2:</strong> Net=.128, Hosts=.129-.190, BC=.191<br>
+          <strong>Subnet 3:</strong> Net=.192, Hosts=.193-.254, BC=.255
+        </div>
+        <div class="note">
+          <div class="n-title">Worked Example — /28</div>
+          Network: <code>192.168.5.0/28</code><br>
+          Block size: 256-240=<strong>16</strong><br>
+          <strong>Subnet 0:</strong> .0, Hosts=.1-.14, BC=.15<br>
+          <strong>Subnet 1:</strong> .16, Hosts=.17-.30, BC=.31<br>
+          <strong>Subnet 2:</strong> .32, Hosts=.33-.46, BC=.47<br>
+          <strong>...</strong> 16 subnets total
+        </div>
+        <div class="info">
+          <div class="i-title">/30 for WAN Links</div>
+          /30 = only 2 usable hosts per subnet.<br>
+          <strong>Perfect for point-to-point WAN links</strong> (router serial interfaces).<br>
+          One IP each end, no wasted addresses.<br>
+          64 point-to-point links from one /24!
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: Class B + Class A -->
+<div class="grid-2 section-gap">
+  <div class="card blue" id="class-b-subnetting">
+    <div class="card-header"><span class="dot"></span><h3>Class B Subnetting — /17 through /30</h3></div>
+    <div class="card-body">
+      <p>Class B starts as <code>/16</code> (255.255.0.0). Borrow bits from 3rd and 4th octets. Interesting octet shifts as prefix increases past /24.</p>
+      <table class="tbl">
+        <tr>
+          <th>CIDR</th>
+          <th>Mask</th>
+          <th>Block</th>
+          <th>Subnets</th>
+          <th>Hosts/Subnet</th>
+          <th>Interesting Octet</th>
+        </tr>
+        <tr><td style="color:var(--accent2);">/17</td><td>255.255.128.0</td><td>128 (3rd)</td><td>2</td><td>32,766</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent2);">/18</td><td>255.255.192.0</td><td>64 (3rd)</td><td>4</td><td>16,382</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent2);">/19</td><td>255.255.224.0</td><td>32 (3rd)</td><td>8</td><td>8,190</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent2);">/20</td><td>255.255.240.0</td><td>16 (3rd)</td><td>16</td><td>4,094</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent2);">/21</td><td>255.255.248.0</td><td>8 (3rd)</td><td>32</td><td>2,046</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent2);">/22</td><td>255.255.252.0</td><td>4 (3rd)</td><td>64</td><td>1,022</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent2);">/23</td><td>255.255.254.0</td><td>2 (3rd)</td><td>128</td><td>510</td><td>3rd</td></tr>
+        <tr><td style="color:var(--accent3);">/24</td><td>255.255.255.0</td><td>1 (3rd)</td><td>256</td><td>254</td><td>3rd→4th</td></tr>
+        <tr><td style="color:var(--accent3);">/25</td><td>255.255.255.128</td><td>128 (4th)</td><td>512</td><td>126</td><td>4th</td></tr>
+        <tr><td style="color:var(--accent3);">/26</td><td>255.255.255.192</td><td>64 (4th)</td><td>1,024</td><td>62</td><td>4th</td></tr>
+        <tr><td style="color:var(--accent3);">/27</td><td>255.255.255.224</td><td>32 (4th)</td><td>2,048</td><td>30</td><td>4th</td></tr>
+        <tr><td style="color:var(--accent3);">/28</td><td>255.255.255.240</td><td>16 (4th)</td><td>4,096</td><td>14</td><td>4th</td></tr>
+        <tr><td style="color:var(--accent3);">/29</td><td>255.255.255.248</td><td>8 (4th)</td><td>8,192</td><td>6</td><td>4th</td></tr>
+        <tr><td style="color:var(--accent3);">/30</td><td>255.255.255.252</td><td>4 (4th)</td><td>16,384</td><td>2</td><td>4th</td></tr>
+      </table>
+      <div class="label">Class B Example — 172.16.0.0/20</div>
+      <div class="rule">Mask: 255.255.240.0  Block size (3rd octet): 16
+
+Subnet 1:  172.16.0.0  – 172.16.15.255   (hosts .0.1 to .15.254)
+Subnet 2:  172.16.16.0 – 172.16.31.255   (hosts .16.1 to .31.254)
+Subnet 3:  172.16.32.0 – 172.16.47.255   (hosts .32.1 to .47.254)
+...
+Subnet 16: 172.16.240.0 – 172.16.255.255</div>
+      <div class="tip">
+        <div class="t-title">Class B Trick</div>
+        For /17–/23: interesting octet is the 3rd. For /24–/30: interesting octet is the 4th (same as Class C subnetting). Once past /24, treat like Class C.
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="class-a-subnetting">
+    <div class="card-header"><span class="dot"></span><h3>Class A Subnetting &amp; Large Networks</h3></div>
+    <div class="card-body">
+      <p>Class A starts as <code>/8</code> (255.0.0.0). Huge host space. Borrow from 2nd, 3rd, and 4th octets.</p>
+      <table class="tbl">
+        <tr><th>CIDR</th><th>Mask</th><th>Subnets</th><th>Hosts/Subnet</th><th>Interesting Octet</th></tr>
+        <tr><td style="color:var(--accent2);">/9</td><td>255.128.0.0</td><td>2</td><td>8,388,606</td><td>2nd (128)</td></tr>
+        <tr><td style="color:var(--accent2);">/10</td><td>255.192.0.0</td><td>4</td><td>4,194,302</td><td>2nd (192)</td></tr>
+        <tr><td style="color:var(--accent2);">/11</td><td>255.224.0.0</td><td>8</td><td>2,097,150</td><td>2nd (224)</td></tr>
+        <tr><td style="color:var(--accent2);">/12</td><td>255.240.0.0</td><td>16</td><td>1,048,574</td><td>2nd (240)</td></tr>
+        <tr><td style="color:var(--accent2);">/13</td><td>255.248.0.0</td><td>32</td><td>524,286</td><td>2nd (248)</td></tr>
+        <tr><td style="color:var(--accent2);">/14</td><td>255.252.0.0</td><td>64</td><td>262,142</td><td>2nd (252)</td></tr>
+        <tr><td style="color:var(--accent2);">/15</td><td>255.254.0.0</td><td>128</td><td>131,070</td><td>2nd (254)</td></tr>
+        <tr><td style="color:var(--accent3);">/16</td><td>255.255.0.0</td><td>256</td><td>65,534</td><td>→3rd octet</td></tr>
+        <tr><td style="color:var(--accent3);">/24</td><td>255.255.255.0</td><td>65,536</td><td>254</td><td>→4th octet</td></tr>
+      </table>
+      <div class="label">Class A Example — 10.0.0.0/11</div>
+      <div class="rule">Mask: 255.224.0.0  Block size (2nd octet): 32
+
+Subnet 1:  10.0.0.0   – 10.31.255.255
+Subnet 2:  10.32.0.0  – 10.63.255.255
+Subnet 3:  10.64.0.0  – 10.95.255.255
+...
+Subnet 8:  10.224.0.0 – 10.255.255.255</div>
+      <div class="label">Subnetting Summary by Class</div>
+      <table class="tbl">
+        <tr><th>Class</th><th>Default /</th><th>Max Borrowed</th><th>Interesting Octets</th></tr>
+        <tr><td style="color:var(--accent3);">A</td><td>/8</td><td>22 bits (→/30)</td><td>2nd, 3rd, 4th</td></tr>
+        <tr><td style="color:var(--accent2);">B</td><td>/16</td><td>14 bits (→/30)</td><td>3rd, 4th</td></tr>
+        <tr><td style="color:var(--accent);">C</td><td>/24</td><td>6 bits (→/30)</td><td>4th only</td></tr>
+      </table>
+      <div class="info">
+        <div class="i-title">Why /30 is the Smallest Usable</div>
+        /30 = 2 host bits → 2^2-2 = 2 usable hosts. One for each router interface on a P2P link. /31 and /32 have 0 usable hosts (2^1-2=0, 2^0-2=-1). RFC 3021 allows /31 for P2P but rarely used on CCNA.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4: VLSM + CIDR -->
+<div class="grid section-gap">
+  <div class="card yellow col-span-2" id="vlsm">
+    <div class="card-header"><span class="dot"></span><h3>VLSM — Variable Length Subnet Masks</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="VLSM allows different subnets within the same network to use different-length subnet masks. Requires a classless routing protocol (OSPF, EIGRP, RIPv2, BGP) that carries the mask in routing updates.">VLSM</span> allows allocating subnets of different sizes from the same address space. Maximizes address efficiency. Requires classless routing protocol (OSPF, EIGRP, RIPv2, BGP — NOT RIPv1 or IGRP).</p>
+      <div class="label">VLSM Design Rule</div>
+      <div class="formula">Assign largest subnets FIRST, then progressively smaller ones.
+Work from largest requirement down to smallest.
+Ensure no subnet ranges overlap!</div>
+      <div class="label">Worked Example — 192.168.10.0/24 — Requirements: 60, 30, 12, 2 hosts</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <div class="label">Step 1 — Allocate 60-host subnet</div>
+          <div class="rule">Need 60 hosts → 2^h - 2 ≥ 60
+h=6 → 2^6-2=62 hosts ✓  → /26
+Subnet: 192.168.10.0/26
+Network:   192.168.10.0
+Hosts:     192.168.10.1 – .62
+Broadcast: 192.168.10.63</div>
+          <div class="label">Step 2 — Allocate 30-host subnet</div>
+          <div class="rule">Need 30 hosts → 2^h - 2 ≥ 30
+h=5 → 2^5-2=30 hosts ✓  → /27
+Start after previous: .64
+Subnet: 192.168.10.64/27
+Network:   192.168.10.64
+Hosts:     192.168.10.65 – .94
+Broadcast: 192.168.10.95</div>
+        </div>
+        <div>
+          <div class="label">Step 3 — Allocate 12-host subnet</div>
+          <div class="rule">Need 12 hosts → 2^h - 2 ≥ 12
+h=4 → 2^4-2=14 hosts ✓  → /28
+Start after previous: .96
+Subnet: 192.168.10.96/28
+Network:   192.168.10.96
+Hosts:     192.168.10.97 – .110
+Broadcast: 192.168.10.111</div>
+          <div class="label">Step 4 — Allocate 2-host WAN link</div>
+          <div class="rule">Need 2 hosts → 2^h - 2 ≥ 2
+h=2 → 2^2-2=2 hosts ✓  → /30
+Start after previous: .112
+Subnet: 192.168.10.112/30
+Network:   192.168.10.112
+Hosts:     192.168.10.113 – .114
+Broadcast: 192.168.10.115</div>
+        </div>
+      </div>
+      <div class="label">VLSM Allocation Summary</div>
+      <table class="tbl">
+        <tr><th>Subnet</th><th>CIDR</th><th>Network Address</th><th>Host Range</th><th>Broadcast</th><th>Usable Hosts</th><th>Purpose</th></tr>
+        <tr><td>1</td><td>/26</td><td>192.168.10.0</td><td>.1 – .62</td><td>.63</td><td>62</td><td>LAN 60 hosts</td></tr>
+        <tr><td>2</td><td>/27</td><td>192.168.10.64</td><td>.65 – .94</td><td>.95</td><td>30</td><td>LAN 30 hosts</td></tr>
+        <tr><td>3</td><td>/28</td><td>192.168.10.96</td><td>.97 – .110</td><td>.111</td><td>14</td><td>LAN 12 hosts</td></tr>
+        <tr><td>4</td><td>/30</td><td>192.168.10.112</td><td>.113 – .114</td><td>.115</td><td>2</td><td>WAN P2P link</td></tr>
+        <tr><td colspan="7" style="color:var(--text-muted);">Remaining: 192.168.10.116 – 192.168.10.255 (140 addresses available for future)</td></tr>
+      </table>
+      <div class="warn">
+        <div class="w-title">No Overlapping Subnets!</div>
+        Each IP address must belong to exactly one subnet. Overlapping subnets cause routing failures. Always verify ranges don't intersect when designing VLSM.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="cidr-summarization">
+    <div class="card-header"><span class="dot"></span><h3>CIDR &amp; Route Summarization</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="Classless Inter-Domain Routing: ignores traditional class boundaries. Allows aggregating multiple networks into one summary route. Also called supernetting.">CIDR</span> (Classless Inter-Domain Routing) allows route <strong>summarization</strong> (aggregation): combining multiple contiguous networks into one summary route entry to reduce routing table size.</p>
+      <div class="label">Supernetting / Route Aggregation</div>
+      <p>Combine multiple subnets into one summary route. The summary covers the entire range — routers only need ONE entry instead of many.</p>
+      <div class="label">Example — Summarize 4 Class C networks</div>
+      <div class="rule">Networks to summarize:
+  192.168.0.0/24
+  192.168.1.0/24
+  192.168.2.0/24
+  192.168.3.0/24
+
+In binary (3rd octet):
+  0 = 00000000
+  1 = 00000001
+  2 = 00000010
+  3 = 00000011
+
+Common prefix in 3rd octet: 000000xx (22 bits match)
+Summary route: 192.168.0.0/22
+  Covers: 192.168.0.0 – 192.168.3.255</div>
+      <div class="label">Finding the Summary Route — Steps</div>
+      <ol class="steps">
+        <li>Write all network addresses in binary</li>
+        <li>Find the common bit prefix (where they first differ)</li>
+        <li>Count matching bits from left = new prefix length</li>
+        <li>Zero out non-matching bits = summary network address</li>
+      </ol>
+      <div class="label">Route Summarization Benefits</div>
+      <ul class="items">
+        <li>Smaller routing tables → faster lookups</li>
+        <li>Less routing protocol traffic (fewer updates)</li>
+        <li>Hides topology changes behind the summary</li>
+        <li>Masks internal subnet failures from upstream routers</li>
+      </ul>
+      <div class="label">CIDR vs Classful Routing</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>Classful</th><th>CIDR / Classless</th></tr>
+        <tr><td>Mask in updates</td><td style="color:var(--accent3);">No (implied)</td><td style="color:var(--accent2);">Yes (carried in update)</td></tr>
+        <tr><td>VLSM support</td><td style="color:var(--accent3);">No</td><td style="color:var(--accent2);">Yes</td></tr>
+        <tr><td>Summarization</td><td style="color:var(--accent3);">Class boundary only</td><td style="color:var(--accent2);">Any boundary</td></tr>
+        <tr><td>Protocols</td><td>RIPv1, IGRP</td><td>RIPv2, OSPF, EIGRP, BGP</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5: Troubleshooting -->
+<div class="grid section-gap">
+  <div class="card red" id="troubleshooting">
+    <div class="card-header"><span class="dot"></span><h3>Troubleshooting IP Addressing</h3></div>
+    <div class="card-body">
+      <div class="label">Common IP Configuration Problems</div>
+      <table class="tbl">
+        <tr><th>Problem</th><th>Symptom</th><th>How to Identify</th><th>Fix</th></tr>
+        <tr>
+          <td style="color:var(--accent3);">Wrong subnet mask</td>
+          <td>Cannot reach some hosts; reaches others incorrectly</td>
+          <td>ipconfig/ifconfig; compare mask to others on segment</td>
+          <td>Correct the subnet mask to match the network design</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);">Wrong default gateway</td>
+          <td>Local hosts reachable; remote networks unreachable</td>
+          <td>ping gateway; tracert shows failure at first hop</td>
+          <td>Set gateway to router interface IP on same subnet</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);">Duplicate IP address</td>
+          <td>Intermittent connectivity; ARP conflicts</td>
+          <td>ARP cache shows same IP twice; OS warns of duplicate</td>
+          <td>Identify conflicting host; change one IP to unique</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);">IP in wrong subnet</td>
+          <td>Cannot communicate with any local hosts</td>
+          <td>Network address doesn't match after ANDing with mask</td>
+          <td>Assign IP from correct subnet range</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);">Overlapping subnets</td>
+          <td>Routing loops; intermittent packet loss</td>
+          <td>Check routing table for overlapping prefixes</td>
+          <td>Redesign addressing plan; ensure no overlap</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);">DHCP exhausted pool</td>
+          <td>New devices get 169.254.x.x (APIPA)</td>
+          <td>DHCP server logs; ipconfig shows APIPA address</td>
+          <td>Expand DHCP pool or reduce lease time</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);">Host using broadcast/network addr</td>
+          <td>Host unreachable; may cause issues for whole subnet</td>
+          <td>Check if IP ends in .0 or .255 (or subnet boundary)</td>
+          <td>Assign valid host IP (not first or last in range)</td>
+        </tr>
+      </table>
+      <div class="label">Troubleshooting Process</div>
+      <ol class="steps">
+        <li><strong>ping 127.0.0.1</strong> — tests local TCP/IP stack (if fails: reinstall/repair TCP/IP)</li>
+        <li><strong>ping own IP</strong> — tests NIC and basic configuration</li>
+        <li><strong>ping default gateway</strong> — tests local subnet connectivity</li>
+        <li><strong>ping remote IP</strong> — tests routing; if fails check routing table and gateway</li>
+        <li><strong>ping by hostname</strong> — tests DNS resolution (if fails, check DNS server setting)</li>
+      </ol>
+      <div class="label">Cisco IOS Verification Commands</div>
+      <pre>show ip interface brief        ! Summary of all interfaces (IP + status)
+show ip route                  ! Routing table
+show interfaces                ! Detailed interface stats
+show arp                       ! ARP cache (IP to MAC mappings)
+ping 192.168.1.1               ! Test reachability
+traceroute 192.168.1.1         ! Trace hop-by-hop path
+debug ip packet                ! Packet-level debugging (use carefully!)</pre>
+    </div>
+  </div>
+
+  <div class="card blue" id="subnet-practice">
+    <div class="card-header"><span class="dot"></span><h3>Subnet Practice Problems &amp; Quick Reference</h3></div>
+    <div class="card-body">
+      <div class="label">Practice Problem 1</div>
+      <div class="rule">Q: Host 172.16.35.200/20 — find network, broadcast, range
+
+Mask: 255.255.240.0  Block (3rd octet): 16
+3rd octet = 35 → 35/16 = 2 → 2x16 = 32
+
+Network:   172.16.32.0
+Broadcast: 172.16.47.255   (32+16-1=47)
+Host range: 172.16.32.1 – 172.16.47.254</div>
+      <div class="label">Practice Problem 2</div>
+      <div class="rule">Q: Host 192.168.100.180/27 — find network, broadcast, range
+
+Block: 256-224=32
+180/32 = 5 → 5x32 = 160
+
+Network:   192.168.100.160
+Broadcast: 192.168.100.191  (160+32-1=191)
+Host range: .161 – .190</div>
+      <div class="label">Practice Problem 3</div>
+      <div class="rule">Q: Are 10.1.1.100/25 and 10.1.1.200/25 on same subnet?
+
+Block: 256-128=128
+100/128=0 → subnet .0 (range .0-.127)
+200/128=1 → subnet .128 (range .128-.255)
+
+Answer: NO — different subnets!</div>
+      <div class="label">Subnet Mask Binary Breakdown</div>
+      <table class="tbl">
+        <tr><th>Bit Value</th><th>128</th><th>64</th><th>32</th><th>16</th><th>8</th><th>4</th><th>2</th><th>1</th></tr>
+        <tr><td>/25 (128)</td><td style="color:var(--accent2);">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>/26 (192)</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>/27 (224)</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td>0</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>/28 (240)</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td>0</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>/29 (248)</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td>0</td><td>0</td><td>0</td></tr>
+        <tr><td>/30 (252)</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td style="color:var(--accent2);">1</td><td>0</td><td>0</td></tr>
+      </table>
+      <div class="label">Decision Chart — How Many Bits to Borrow?</div>
+      <div class="formula">Need X subnets? → borrow n bits where 2^n >= X
+Need Y hosts?  → keep h bits where 2^h - 2 >= Y
+Prefix = class_default + n
+Verify: n + h = remaining host bits in class
+(Class C: n+h=8; Class B: n+h=16; Class A: n+h=24)</div>
+    </div>
+  </div>
+
+  <div class="card orange" id="addressing-design">
+    <div class="card-header"><span class="dot"></span><h3>IP Addressing Design Tips &amp; Exam Review</h3></div>
+    <div class="card-body">
+      <div class="label">Key Exam Rules to Remember</div>
+      <ul class="items">
+        <li>First address in subnet = <strong>Network address</strong> (all host bits = 0) — NOT assignable</li>
+        <li>Last address in subnet = <strong>Broadcast address</strong> (all host bits = 1) — NOT assignable</li>
+        <li>Valid host range is everything between these two</li>
+        <li><strong>2^h - 2</strong> usable hosts (subtract 2 always for network + broadcast)</li>
+        <li><strong>2^n</strong> subnets (n = borrowed bits, no subtraction needed in modern Cisco)</li>
+        <li>Smallest subnet for WAN = /30 (2 hosts per subnet)</li>
+      </ul>
+      <div class="label">Exam Shortcut — Memorize These Block Sizes</div>
+      <table class="tbl">
+        <tr><th>Mask Octet</th><th>Block Size</th><th>CIDR (C)</th><th>Hosts (C)</th></tr>
+        <tr><td>128</td><td>128</td><td>/25</td><td>126</td></tr>
+        <tr><td>192</td><td>64</td><td>/26</td><td>62</td></tr>
+        <tr><td>224</td><td>32</td><td>/27</td><td>30</td></tr>
+        <tr><td>240</td><td>16</td><td>/28</td><td>14</td></tr>
+        <tr><td>248</td><td>8</td><td>/29</td><td>6</td></tr>
+        <tr><td>252</td><td>4</td><td>/30</td><td>2</td></tr>
+      </table>
+      <div class="label">VLSM vs Fixed-Length Subnetting</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>Fixed-Length (FLSM)</th><th>Variable (VLSM)</th></tr>
+        <tr><td>All subnets same size</td><td style="color:var(--accent2);">Yes</td><td style="color:var(--accent3);">No</td></tr>
+        <tr><td>Address efficiency</td><td style="color:var(--accent3);">Lower (wasteful)</td><td style="color:var(--accent2);">Higher</td></tr>
+        <tr><td>Complexity</td><td style="color:var(--accent2);">Lower</td><td style="color:var(--accent3);">Higher</td></tr>
+        <tr><td>Routing protocol</td><td>Classful OK</td><td>Classless required</td></tr>
+        <tr><td>Used for</td><td>Simple networks</td><td>Production networks</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Magic Number Summary</div>
+        Block sizes to memorize: <strong>128, 64, 32, 16, 8, 4</strong> (each half the previous)<br>
+        Hosts per subnet: <strong>126, 62, 30, 14, 6, 2</strong> (block size minus 2)<br>
+        These pairs always go together!
+      </div>
+      <div class="tip">
+        <div class="t-title">Exam Strategy</div>
+        On the exam: find the block size first, list subnet boundaries, then quickly identify network/broadcast/range. Practice until you can do this in under 30 seconds per question.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="../NWC204.html">← NWC204 Index</a>
+  <span>CCNA INTRO · Lammle · Ch3</span>
+  <span>NWC204 — Computer Networking</span>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

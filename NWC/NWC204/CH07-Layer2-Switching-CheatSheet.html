@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH07 - Layer 2 Switching | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">&#9662;</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+<header class="header">
+  <div class="header-left">
+    <h1>CH07 &#8211; Layer 2 Switching</h1>
+    <h2>NWC204 &middot; CCNA Intro &#8212; Todd Lammle, Sybex 2006 &middot; pp. 289&#8211;314</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">Hub Problems</span>
+      <span class="toc-item">Switch Functions</span>
+      <span class="toc-item">Bridges vs Switches</span>
+      <span class="toc-item">MAC Table</span>
+      <span class="toc-item">STP 802.1D</span>
+      <span class="toc-item">Port States</span>
+      <span class="toc-item">Switch Types</span>
+      <span class="toc-item">RSTP 802.1w</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</header>
+
+<div class="grid">
+  <div class="card red" id="hub-problems">
+    <div class="card-header"><span class="dot"></span><h3>Hub Era Problems</h3></div>
+    <div class="card-body">
+      <div class="warn">
+        <div class="w-title">Single Collision Domain</div>
+        All devices share the same physical medium. Only one can transmit at a time; all others must wait (CSMA/CD). Any collision affects every device.
+      </div>
+      <div class="label">Problems with Hubs</div>
+      <ul class="items">
+        <li><strong>Shared bandwidth:</strong> all ports compete for the same total throughput</li>
+        <li><strong>Half-duplex only:</strong> cannot send and receive simultaneously</li>
+        <li><strong>No intelligence:</strong> floods every frame out all ports &#8212; always</li>
+        <li><strong>One broadcast domain:</strong> every host receives every broadcast</li>
+        <li><strong>Scalability:</strong> more hosts = more collisions = worse performance</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Switching Solution</div>
+        Each switch port = its own collision domain. Full-duplex capable. Frames forwarded only to the correct port. Bandwidth per port, not shared.
+      </div>
+    </div>
+  </div>
+
+  <div class="card blue" id="switch-functions">
+    <div class="card-header"><span class="dot"></span><h3>Three Switching Functions</h3></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><strong>Address Learning</strong> &#8212; reads the <em>source</em> MAC of every incoming frame; maps it to the ingress port; stores the pair in the CAM table dynamically</li>
+        <li><strong>Forward / Filter Decisions</strong> &#8212; if destination MAC is known &rarr; forward only to that port (filtering); if unknown &rarr; flood all ports except source; if source port = dest port &rarr; filter (drop)</li>
+        <li><strong>Loop Avoidance</strong> &#8212; runs STP (IEEE 802.1D) to detect redundant paths and block ports that would cause switching loops; prevents broadcast storms and MAC table instability</li>
+      </ol>
+      <hr class="divider">
+      <div class="note">
+        <div class="n-title">Key Distinction</div>
+        Layer 2 switches forward based on <strong>MAC addresses</strong>. Routers forward based on <strong>IP addresses</strong> (Layer 3). Switches do NOT break up broadcast domains without VLANs.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="bridge-vs-switch">
+    <div class="card-header"><span class="dot"></span><h3>Bridging vs LAN Switching</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Feature</th><th>Bridge</th><th>LAN Switch</th></tr>
+        <tr><td>Processing</td><td>Software-based</td><td>Hardware ASICs</td></tr>
+        <tr><td>Typical ports</td><td>2</td><td>24&#8211;48+</td></tr>
+        <tr><td>Speed</td><td>Slower</td><td>Wire-speed</td></tr>
+        <tr><td>Forwarding</td><td>One frame at a time</td><td>Simultaneous per port</td></tr>
+        <tr><td>Collision domains</td><td>1 per port</td><td>1 per port</td></tr>
+        <tr><td>Broadcast domains</td><td>1 (without VLANs)</td><td>1 (without VLANs)</td></tr>
+        <tr><td>STP support</td><td>Yes (802.1D)</td><td>Yes (802.1D / 802.1w)</td></tr>
+        <tr><td>Standard</td><td>IEEE 802.1D</td><td>IEEE 802.1D</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">Bottom Line</div>
+        Bridges and switches use identical logic (MAC learning + STP). Switches are simply faster, hardware-accelerated multi-port bridges.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2 section-gap">
+  <div class="card purple" id="mac-table">
+    <div class="card-header"><span class="dot"></span><h3>MAC Address Table (CAM Table)</h3></div>
+    <div class="card-body">
+      <div class="label">How the CAM Table Is Built</div>
+      <ol class="steps">
+        <li>Frame arrives on Port Fa0/1</li>
+        <li>Switch reads <em>source MAC</em> from frame header</li>
+        <li>Stores <code>AA:BB:CC:DD:EE:FF &rarr; Fa0/1</code> in CAM table</li>
+        <li>Looks up <em>destination MAC</em> in CAM table</li>
+        <li>Known dest &rarr; forward to that port only; Unknown &rarr; flood all except source</li>
+      </ol>
+      <div class="label">Key Facts</div>
+      <ul class="items">
+        <li><strong>CAM</strong> = Content Addressable Memory &#8212; hardware hash table for fast lookup</li>
+        <li><strong>Age-out timer:</strong> 300 seconds &#8212; unused entries are removed</li>
+        <li><strong>Unknown unicast:</strong> destination not in table &rarr; flooded (until learned)</li>
+        <li><strong>Broadcasts &amp; multicasts:</strong> always flooded to all ports in VLAN</li>
+        <li><strong>Filtering:</strong> known destination on same port as source &rarr; frame dropped</li>
+      </ul>
+      <div class="label">Verification</div>
+      <pre>show mac-address-table
+show mac address-table dynamic</pre>
+    </div>
+  </div>
+
+  <div class="card blue" id="stp-terminology">
+    <div class="card-header"><span class="dot"></span><h3>STP Terminology</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Term</th><th>Definition</th></tr>
+        <tr><td><strong>Root Bridge</strong></td><td>Switch with lowest Bridge ID; all its ports are Designated (Forwarding)</td></tr>
+        <tr><td><strong>Non-Root Bridge</strong></td><td>Every other switch; must elect root port and designated ports</td></tr>
+        <tr><td><strong>Bridge ID</strong></td><td>Priority (2 bytes, default 32768) + MAC address (6 bytes)</td></tr>
+        <tr><td><strong>Root Port</strong></td><td>Best (lowest cost) path to root bridge; one per non-root switch; always forwarding</td></tr>
+        <tr><td><strong>Designated Port</strong></td><td>Forwarding port per network segment; root bridge has all designated ports</td></tr>
+        <tr><td><strong>Non-Designated</strong></td><td>Blocked port; discards frames to eliminate loops; still receives BPDUs</td></tr>
+        <tr><td><strong>BPDU</strong></td><td>Bridge Protocol Data Unit &#8212; STP control message; sent every 2 seconds by root</td></tr>
+        <tr><td><strong>Path Cost</strong></td><td>10 Mbps=100, 100 Mbps=19, 1 Gbps=4, 10 Gbps=2</td></tr>
+      </table>
+      <div class="label">Commands</div>
+      <pre>show spanning-tree
+show spanning-tree vlan 1
+spanning-tree vlan 1 priority 4096</pre>
+    </div>
+  </div>
+</div>
+
+<div class="card orange section-gap" id="stp-overview">
+  <div class="card-header"><span class="dot"></span><h3>STP Overview (IEEE 802.1D)</h3></div>
+  <div class="card-body" style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div>
+      <div class="warn">
+        <div class="w-title">Problem: Switching Loops</div>
+        Redundant physical links without STP cause: <strong>broadcast storms</strong> (frames loop endlessly), <strong>MAC table instability</strong> (same MAC seen on multiple ports), and <strong>multiple frame delivery</strong>. The network melts down in seconds.
+      </div>
+      <div class="label">STP Solution</div>
+      <p>Logically <strong>blocks</strong> redundant ports to create a loop-free Layer 2 topology while keeping physical redundancy for failover.</p>
+      <div class="formula">Bridge ID = 2-byte Priority + 6-byte MAC Address (8 bytes total)</div>
+    </div>
+    <div>
+      <div class="label">STP Election Steps</div>
+      <ol class="steps">
+        <li>Elect a <strong>Root Bridge</strong> &#8212; switch with lowest Bridge ID</li>
+        <li>Each non-root switch selects a <strong>Root Port</strong> &#8212; lowest-cost path to root</li>
+        <li>Each segment selects a <strong>Designated Port</strong> &#8212; one forwarding port per link</li>
+        <li>All remaining ports become <strong>Non-Designated (Blocked)</strong></li>
+      </ol>
+      <div class="info">
+        <div class="i-title">Root Bridge Election</div>
+        Lowest Bridge ID wins. Default priority = 32768. Lower priority number = preferred root. Tie-break: lowest MAC address. To force root: lower the priority (<code>spanning-tree vlan 1 priority 4096</code>).
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid section-gap">
+  <div class="card yellow col-span-2" id="stp-port-states">
+    <div class="card-header"><span class="dot"></span><h3>STP Port States (802.1D)</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>State</th><th>Duration</th><th>Fwd Frames</th><th>Learn MAC</th><th>Recv BPDUs</th><th>Description</th></tr>
+        <tr><td><strong>Blocking</strong></td><td>20 sec</td><td>No</td><td>No</td><td>Yes</td><td>Initial state on non-designated ports. Discards all user frames. Listens to BPDUs only.</td></tr>
+        <tr><td><strong>Listening</strong></td><td>15 sec</td><td>No</td><td>No</td><td>Yes</td><td>Participates in STP election. Sends/receives BPDUs. No user data forwarded or learned.</td></tr>
+        <tr><td><strong>Learning</strong></td><td>15 sec</td><td>No</td><td>Yes</td><td>Yes</td><td>Populates MAC address table. Still does not forward user frames. Reduces flooding when port goes forwarding.</td></tr>
+        <tr><td><strong>Forwarding</strong></td><td>&#8734;</td><td>Yes</td><td>Yes</td><td>Yes</td><td>Normal operation. Forwards user frames and continues learning MAC addresses.</td></tr>
+        <tr><td><strong>Disabled</strong></td><td>&#8212;</td><td>No</td><td>No</td><td>No</td><td>Port is administratively shut down. Not part of active STP topology.</td></tr>
+      </table>
+      <hr class="divider">
+      <div class="formula">Total STP Convergence = 20s (Max Age / Blocking) + 15s (Listening) + 15s (Learning) = ~50 seconds</div>
+      <div class="label">STP Timers (set on Root Bridge, propagated via BPDUs)</div>
+      <ul class="items">
+        <li><strong>Hello Timer:</strong> 2 sec &#8212; frequency of BPDU transmission by root bridge</li>
+        <li><strong>Max Age:</strong> 20 sec &#8212; time a non-root switch waits in Blocking before assuming root failure</li>
+        <li><strong>Forward Delay:</strong> 15 sec &#8212; time spent in each of the Listening and Learning states</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card purple" id="rstp">
+    <div class="card-header"><span class="dot"></span><h3>RSTP (IEEE 802.1w)</h3></div>
+    <div class="card-body">
+      <div class="tip">
+        <div class="t-title">Rapid Spanning Tree Protocol</div>
+        Reduces convergence from ~50 seconds to <strong>1&#8211;2 seconds</strong>. Backward compatible with 802.1D.
+      </div>
+      <div class="label">Comparison</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>STP 802.1D</th><th>RSTP 802.1w</th></tr>
+        <tr><td>Convergence</td><td>~50 seconds</td><td>1&#8211;2 seconds</td></tr>
+        <tr><td>Port States</td><td>5</td><td>3</td></tr>
+        <tr><td>Port Roles</td><td>3</td><td>4</td></tr>
+      </table>
+      <div class="label">RSTP Port States</div>
+      <ul class="items">
+        <li><strong>Discarding</strong> &#8212; replaces Blocking + Listening + Disabled</li>
+        <li><strong>Learning</strong> &#8212; same as 802.1D</li>
+        <li><strong>Forwarding</strong> &#8212; same as 802.1D</li>
+      </ul>
+      <div class="label">RSTP Port Roles</div>
+      <ul class="items">
+        <li><strong>Root:</strong> best path to root bridge</li>
+        <li><strong>Designated:</strong> forwarding port on each segment</li>
+        <li><strong>Alternate:</strong> backup path to root (was blocked non-designated)</li>
+        <li><strong>Backup:</strong> redundant designated port on same segment</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="grid section-gap">
+  <div class="card green col-span-2" id="switch-types">
+    <div class="card-header"><span class="dot"></span><h3>LAN Switch Forwarding Methods</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Method</th><th>What It Reads</th><th>Latency</th><th>Error Checking</th><th>Notes</th></tr>
+        <tr><td><strong>Cut-Through (Real-Time)</strong></td><td>Destination MAC only (first 6 bytes)</td><td>Lowest</td><td>None &#8212; no CRC check</td><td>Fastest possible; forwards corrupt frames; good for low-latency fabrics</td></tr>
+        <tr><td><strong>Fragment-Free (Modified Cut-Through)</strong></td><td>First 64 bytes of frame</td><td>Medium</td><td>Catches collision fragments (runts &lt; 64 bytes)</td><td>64-byte threshold = Ethernet slot time / collision window; filters runts before forwarding</td></tr>
+        <tr><td><strong>Store-and-Forward</strong></td><td>Entire frame including FCS/CRC</td><td>Highest</td><td>Full CRC check &#8212; bad frames dropped</td><td>Best reliability; required for speed-mismatched ports; standard in modern enterprise switches</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">Exam Tip</div>
+        <strong>Cut-Through</strong> = lowest latency, no error checking. <strong>Store-and-Forward</strong> = highest latency, full CRC verification. <strong>Fragment-Free</strong> = middle ground; 64 bytes = collision slot time; filters runts only. Modern Cisco Catalyst switches use Store-and-Forward by default.
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="l2-limitations">
+    <div class="card-header"><span class="dot"></span><h3>L2 Limits &amp; Exam Rules</h3></div>
+    <div class="card-body">
+      <div class="warn">
+        <div class="w-title">Layer 2 Cannot Route</div>
+        Switches have no concept of IP subnets. They cannot forward traffic between different networks without a router or Layer 3 switch.
+      </div>
+      <div class="label">Layer 2 Limitations</div>
+      <ul class="items">
+        <li>Cannot break broadcast domains (need VLANs or router)</li>
+        <li>Broadcasts flood entire VLAN &#8212; all hosts receive them</li>
+        <li>No routing between subnets without Layer 3</li>
+        <li>MAC table full &rarr; switch degrades to hub behavior (floods)</li>
+      </ul>
+      <hr class="divider">
+      <div class="rule">Lowest Bridge ID = Root Bridge</div>
+      <div class="rule">Default Priority = 32768</div>
+      <div class="rule">STP Convergence = 20+15+15 = ~50 sec</div>
+      <div class="rule">MAC age-out = 300 seconds</div>
+      <div class="rule">Each port = 1 collision domain</div>
+      <div class="rule">All ports (no VLAN) = 1 broadcast domain</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span>NWC204 &middot; CH07 &middot; Layer 2 Switching &middot; pp. 289&#8211;314</span>
+  <span>CCNA Intro &#8212; Todd Lammle, Sybex 2006</span>
+</footer>
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH01 – An Introduction to Java | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr">On This Page <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>An Introduction to Java — Chapter 1</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">§Java Platform</span>
+      <span class="toc-item">§Buzzwords</span>
+      <span class="toc-item">§JVM/JRE/JDK</span>
+      <span class="toc-item">§History</span>
+      <span class="toc-item">§Misconceptions</span>
+      <span class="toc-item">§OOP Overview</span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+    <span class="badge">PRO192</span>
+    <span class="badge">CH01</span>
+  </div>
+</div>
+
+<!-- ROW 1: 3 cols -->
+<div class="grid">
+
+  <!-- Card 1: Java Platform Overview -->
+  <div class="card blue" id="java-platform">
+    <div class="card-header"><div class="dot"></div><h3>Java Platform Overview</h3></div>
+    <div class="card-body">
+      <p>Java = <strong>language</strong> + <strong>JVM</strong> + <strong>standard library</strong>. Write code once, run on any platform with a JVM installed.</p>
+      <div class="label">Three Editions</div>
+      <ul class="items">
+        <li><strong>Java SE</strong> — Standard Edition; core language, collections, I/O, networking</li>
+        <li><strong>Jakarta EE</strong> (formerly Java EE) — Enterprise Edition; servlets, JPA, CDI, web services</li>
+        <li><strong>Java ME</strong> — Micro Edition; embedded and mobile-constrained devices</li>
+      </ul>
+      <div class="label">Key Features</div>
+      <ul class="items">
+        <li>Write Once Run Anywhere: <code>.java</code> → <code>.class</code> (bytecode) → runs on any JVM</li>
+        <li>Automatic garbage collection — no manual memory management</li>
+        <li>Strong static type safety — errors caught at compile time</li>
+        <li>Security sandbox — bytecode verified before execution</li>
+      </ul>
+      <div class="label">Core Terminology</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>Description</th></tr>
+        <tr><td><code>JVM</code></td><td>Java Virtual Machine — executes bytecode</td></tr>
+        <tr><td><code>JRE</code></td><td>Java Runtime Env — JVM + class libraries</td></tr>
+        <tr><td><code>JDK</code></td><td>Java Dev Kit — JRE + compiler + tools</td></tr>
+        <tr><td><code>bytecode</code></td><td>Platform-neutral compiled output (.class)</td></tr>
+        <tr><td><code>javac</code></td><td>Java compiler: .java → .class</td></tr>
+        <tr><td><code>java</code></td><td>Java runtime: loads and runs .class files</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 2: The 11 Buzzwords -->
+  <div class="card yellow" id="buzzwords">
+    <div class="card-header"><div class="dot"></div><h3>The 11 Buzzwords</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Buzzword</th><th>Meaning</th></tr>
+        <tr><td><strong>Simple</strong></td><td>Removes C++ complexity — no pointers, no multiple inheritance, no header files</td></tr>
+        <tr><td><strong>Object-Oriented</strong></td><td>Everything is an object; rich class library</td></tr>
+        <tr><td><strong>Distributed</strong></td><td>Handles TCP/IP networking natively; RMI support</td></tr>
+        <tr><td><strong>Robust</strong></td><td>Strong type checking, no pointer arithmetic, array bounds checking</td></tr>
+        <tr><td><strong>Secure</strong></td><td>Sandbox model, bytecode verification before execution</td></tr>
+        <tr><td><strong>Architecture-Neutral</strong></td><td>Bytecode runs on any platform with a JVM</td></tr>
+        <tr><td><strong>Portable</strong></td><td>Primitive types have fixed sizes (<code>int</code> always 32-bit)</td></tr>
+        <tr><td><strong>Interpreted</strong></td><td>JIT compiles bytecode at runtime</td></tr>
+        <tr><td><strong>High-Performance</strong></td><td>JIT optimization; modern JVMs approach native speed</td></tr>
+        <tr><td><strong>Multithreaded</strong></td><td>Thread class, synchronized, built-in concurrency</td></tr>
+        <tr><td><strong>Dynamic</strong></td><td>Runtime linking; classes loaded on demand</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">💡 Memory Aid</div>
+        Mnemonic: <strong>S·O·D·R·S·A·P·I·H·M·D</strong> — or just remember: Java is <em>simple, safe, and portable</em>.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 3: JVM Architecture -->
+  <div class="card green" id="jvm-arch">
+    <div class="card-header"><div class="dot"></div><h3>JVM Architecture</h3></div>
+    <div class="card-body">
+      <div class="label">Compilation Pipeline</div>
+      <div class="formula">Source.java → [javac] → Source.class (bytecode) → [JVM/JIT] → Machine code</div>
+      <div class="label">JVM Components</div>
+      <ul class="items">
+        <li><strong>Class Loader</strong> — loads .class files into memory</li>
+        <li><strong>Bytecode Verifier</strong> — checks code safety before execution</li>
+        <li><strong>Interpreter / JIT</strong> — executes or compiles bytecode to native code</li>
+        <li><strong>Garbage Collector</strong> — automatically frees unreferenced heap objects</li>
+        <li><strong>Runtime</strong> — provides libraries, threading, I/O</li>
+      </ul>
+      <div class="label">JDK / JRE / JVM</div>
+      <table class="tbl">
+        <tr><th>Tool</th><th>Meaning</th></tr>
+        <tr><td><code>JDK</code></td><td>Java Dev Kit = JRE + compiler + debugger + javadoc + tools</td></tr>
+        <tr><td><code>JRE</code></td><td>Java Runtime Env = JVM + standard class libraries</td></tr>
+        <tr><td><code>JVM</code></td><td>Java Virtual Machine — executes bytecode only</td></tr>
+      </table>
+      <div class="label">Memory Areas</div>
+      <ul class="items">
+        <li><strong>Heap</strong> — objects and arrays live here (GC manages)</li>
+        <li><strong>Stack</strong> — method frames, local variables, return addresses</li>
+        <li><strong>Metaspace</strong> (formerly PermGen) — class metadata, method bytecode</li>
+        <li><strong>Program Counter</strong> — tracks current instruction per thread</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /grid row 1 -->
+
+<!-- ROW 2: 3 cols -->
+<div class="grid section-gap">
+
+  <!-- Card 4: Java History -->
+  <div class="card purple" id="java-history">
+    <div class="card-header"><div class="dot"></div><h3>A Short History of Java</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Year</th><th>Event</th></tr>
+        <tr><td>1991</td><td>James Gosling creates <strong>Oak</strong> language (Green Project) at Sun Microsystems</td></tr>
+        <tr><td>1995</td><td>Renamed <strong>Java</strong>; publicly released at SunWorld</td></tr>
+        <tr><td>1996</td><td>Java 1.0 released — first official version</td></tr>
+        <tr><td>1998</td><td>Java 2 (J2SE 1.2) — major redesign; Swing UI toolkit</td></tr>
+        <tr><td>2004</td><td>Java 5 — <strong>generics, enums, autoboxing, for-each, varargs, annotations</strong></td></tr>
+        <tr><td>2006</td><td>Java 6; OpenJDK open-sourced by Sun</td></tr>
+        <tr><td>2011</td><td>Java 7 — Oracle acquires Sun; try-with-resources, diamond operator <code>&lt;&gt;</code></td></tr>
+        <tr><td>2014</td><td>Java 8 <span class="badge" style="font-size:9px;">LTS</span> — <strong>lambdas, streams, Optional, new Date/Time API</strong></td></tr>
+        <tr><td>2017</td><td>Java 9 — modules (Project Jigsaw), JShell REPL</td></tr>
+        <tr><td>2018</td><td>Java 10 (<code>var</code> inference); Java 11 <span class="badge" style="font-size:9px;">LTS</span> — new HTTP client</td></tr>
+        <tr><td>2021</td><td>Java 17 <span class="badge" style="font-size:9px;">LTS</span> — sealed classes, pattern matching for instanceof</td></tr>
+        <tr><td>2023</td><td>Java 21 <span class="badge" style="font-size:9px;">LTS</span> — <strong>virtual threads</strong> (Project Loom), record patterns</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 5: Common Misconceptions -->
+  <div class="card red" id="misconceptions">
+    <div class="card-header"><div class="dot"></div><h3>Common Misconceptions</h3></div>
+    <div class="card-body">
+      <div class="warn">
+        <div class="w-title">❌ "Java is just JavaScript"</div>
+        Completely different languages. JavaScript is a browser scripting language; Java compiles to bytecode and runs on the JVM.
+      </div>
+      <div class="warn">
+        <div class="w-title">❌ "Java is slow"</div>
+        JIT (Just-In-Time) compilation makes modern Java approach native C++ speed for most workloads.
+      </div>
+      <div class="warn">
+        <div class="w-title">❌ "Java has pointers"</div>
+        Java has no raw pointers. Object references are type-safe and cannot be manually dereferenced or manipulated arithmetically.
+      </div>
+      <div class="warn">
+        <div class="w-title">❌ "Java replaces C++"</div>
+        Different use cases — Java prioritizes safety and portability; C++ prioritizes low-level control and maximum performance.
+      </div>
+      <div class="warn">
+        <div class="w-title">❌ "Java is always free"</div>
+        OpenJDK is free. Oracle JDK has commercial licensing requirements for production use after Java 11.
+      </div>
+      <div class="warn">
+        <div class="w-title">❌ "Java is only for enterprise"</div>
+        Used in Android (historically Dalvik/ART), backend APIs, desktop apps, embedded systems, and scientific computing.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 6: OOP Overview -->
+  <div class="card blue" id="oop-overview">
+    <div class="card-header"><div class="dot"></div><h3>OOP Principles Overview</h3></div>
+    <div class="card-body">
+      <div class="label">The 4 Pillars of OOP</div>
+      <table class="tbl">
+        <tr><th>Pillar</th><th>Description</th></tr>
+        <tr>
+          <td><strong>Encapsulation</strong></td>
+          <td>Bundle data + behavior; hide implementation details; expose state only via methods (getters/setters)</td>
+        </tr>
+        <tr>
+          <td><strong>Inheritance</strong></td>
+          <td>Subclass inherits superclass fields and methods; use <code>extends</code> keyword; promotes code reuse</td>
+        </tr>
+        <tr>
+          <td><strong>Polymorphism</strong></td>
+          <td>Same method name, different behavior; runtime dispatch; achieved through method overriding</td>
+        </tr>
+        <tr>
+          <td><strong>Abstraction</strong></td>
+          <td>Hide complexity; expose clean interface; implemented via abstract classes and interfaces</td>
+        </tr>
+      </table>
+      <div class="tip" style="margin-top:10px;">
+        <div class="t-title">💡 Car Analogy</div>
+        <strong>Encapsulation</strong> = internals hidden under the hood<br>
+        <strong>Inheritance</strong> = ElectricCar extends Car<br>
+        <strong>Polymorphism</strong> = drive() behaves differently for each car type<br>
+        <strong>Abstraction</strong> = you press the gas pedal, not the engine internals
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 2 -->
+
+<!-- ROW 3: 2 cols -->
+<div class="grid-2 section-gap">
+
+  <!-- Card 7: Java vs Other Languages -->
+  <div class="card orange" id="java-vs">
+    <div class="card-header"><div class="dot"></div><h3>Java vs Other Languages</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Feature</th><th>Java</th><th>C++</th><th>Python</th></tr>
+        <tr><td><strong>Memory Mgmt</strong></td><td>GC automatic</td><td>Manual (new/delete)</td><td>GC automatic</td></tr>
+        <tr><td><strong>Typing</strong></td><td>Static, strong</td><td>Static, weak</td><td>Dynamic</td></tr>
+        <tr><td><strong>Speed</strong></td><td>Fast (JIT)</td><td>Fastest (native)</td><td>Slower</td></tr>
+        <tr><td><strong>Pointers</strong></td><td>No (references)</td><td>Yes (raw)</td><td>No</td></tr>
+        <tr><td><strong>Platform</strong></td><td>Cross-platform (JVM)</td><td>Native compile</td><td>Cross-platform</td></tr>
+        <tr><td><strong>OOP</strong></td><td>Pure OOP (mostly)</td><td>Multi-paradigm</td><td>Multi-paradigm</td></tr>
+        <tr><td><strong>Learning Curve</strong></td><td>Moderate</td><td>Steep</td><td>Easy</td></tr>
+        <tr><td><strong>Concurrency</strong></td><td>Built-in (Thread, virtual threads)</td><td>Manual (pthreads)</td><td>GIL limited</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 8: Hello World Quick Start -->
+  <div class="card yellow" id="hello-world">
+    <div class="card-header"><div class="dot"></div><h3>Quick Start: Hello World</h3></div>
+    <div class="card-body">
+      <pre>// HelloWorld.java
+public class HelloWorld {
+    public static void main(String[] args) {
+        System.out.println("Hello, World!");
+    }
+}</pre>
+      <div class="label">Compile &amp; Run</div>
+      <pre>javac HelloWorld.java   // creates HelloWorld.class
+java HelloWorld         // runs the program</pre>
+      <div class="note">
+        <div class="n-title">⚠ File Naming Rule</div>
+        Class name <strong>MUST</strong> match filename exactly (case-sensitive). <code>HelloWorld</code> → <code>HelloWorld.java</code>
+      </div>
+      <div class="label">Key Rules</div>
+      <ul class="items">
+        <li>Every Java program starts at <code>main(String[] args)</code></li>
+        <li>The class containing main must be <code>public</code></li>
+        <li>Only <strong>one public class</strong> per file (filename matches that class)</li>
+        <li>Package name maps to directory structure</li>
+        <li><code>System.out.println</code> prints to standard output with a newline</li>
+        <li>Statements end with <code>;</code> — blocks use <code>{ }</code></li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /grid row 3 -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <a href="../PRO192.html">← PRO192 Index</a>
+  <span>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell</span>
+  <span>CH01 / 09</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  function toggleTOC(){open=!open;toc.className=open?'toc-open':'toc-collapsed';}
+  document.querySelector('.toc-hdr').addEventListener('click',toggleTOC);
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

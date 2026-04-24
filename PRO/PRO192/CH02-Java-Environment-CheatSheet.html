@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH02 – The Java Programming Environment | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr">On This Page <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>The Java Programming Environment — Chapter 2</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">§JDK Setup</span>
+      <span class="toc-item">§javac/java</span>
+      <span class="toc-item">§Classpath</span>
+      <span class="toc-item">§IDE</span>
+      <span class="toc-item">§JShell</span>
+      <span class="toc-item">§Build Tools</span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+    <span class="badge">PRO192</span>
+    <span class="badge">CH02</span>
+  </div>
+</div>
+
+<!-- ROW 1: 3 cols -->
+<div class="grid">
+
+  <!-- Card 1: JDK Installation & Setup -->
+  <div class="card yellow" id="jdk-setup">
+    <div class="card-header"><div class="dot"></div><h3>JDK Installation &amp; Setup</h3></div>
+    <div class="card-body">
+      <p>Download <strong>OpenJDK</strong> or Oracle JDK. Recommended: <strong>Eclipse Temurin / Adoptium</strong> (free, open-source, LTS builds).</p>
+      <div class="label">Environment Variables</div>
+      <table class="tbl">
+        <tr><th>Variable</th><th>Value</th><th>Purpose</th></tr>
+        <tr><td><code>JAVA_HOME</code></td><td>/path/to/jdk</td><td>Base JDK directory</td></tr>
+        <tr><td><code>PATH</code></td><td>$JAVA_HOME/bin:$PATH</td><td>Gives access to javac, java, jar, etc.</td></tr>
+      </table>
+      <div class="label">Verify Installation</div>
+      <pre>java --version
+javac --version</pre>
+      <div class="label">JDK vs JRE vs JVM</div>
+      <table class="tbl">
+        <tr><th>Tool</th><th>Contains</th><th>Use For</th></tr>
+        <tr><td><code>JVM</code></td><td>Bytecode interpreter + JIT compiler</td><td>Running bytecode</td></tr>
+        <tr><td><code>JRE</code></td><td>JVM + standard class libraries</td><td>Running Java apps</td></tr>
+        <tr><td><code>JDK</code></td><td>JRE + compiler + debugger + tools</td><td>Developing Java apps</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">📦 Recommended Distributions</div>
+        Eclipse Temurin, Amazon Corretto, Microsoft Build of OpenJDK — all free, production-ready LTS builds.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Command-Line Tools -->
+  <div class="card blue" id="cli-tools">
+    <div class="card-header"><div class="dot"></div><h3>Command-Line Tools</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Command</th><th>Purpose</th><th>Example</th></tr>
+        <tr><td><code>javac</code></td><td>Compile .java → .class</td><td><code>javac Hello.java</code></td></tr>
+        <tr><td><code>java</code></td><td>Run .class file / JAR</td><td><code>java Hello</code></td></tr>
+        <tr><td><code>jar</code></td><td>Create/manage .jar archives</td><td><code>jar cf app.jar *.class</code></td></tr>
+        <tr><td><code>javadoc</code></td><td>Generate HTML docs from /** */ comments</td><td><code>javadoc *.java</code></td></tr>
+        <tr><td><code>jshell</code></td><td>Interactive REPL shell</td><td><code>jshell</code></td></tr>
+        <tr><td><code>jps</code></td><td>List running JVM processes</td><td><code>jps -l</code></td></tr>
+        <tr><td><code>jmap</code></td><td>Memory map of JVM heap</td><td><code>jmap -heap &lt;pid&gt;</code></td></tr>
+        <tr><td><code>jconsole</code></td><td>GUI JVM monitoring tool</td><td><code>jconsole</code></td></tr>
+      </table>
+      <div class="label">Useful javac Flags</div>
+      <table class="tbl">
+        <tr><th>Flag</th><th>Purpose</th></tr>
+        <tr><td><code>-d dir</code></td><td>Output .class files to specified directory</td></tr>
+        <tr><td><code>-cp / -classpath</code></td><td>Set classpath for compilation</td></tr>
+        <tr><td><code>-source N</code></td><td>Source compatibility version</td></tr>
+        <tr><td><code>-target N</code></td><td>Target JVM bytecode version</td></tr>
+        <tr><td><code>--release N</code></td><td>Set source + target together (preferred)</td></tr>
+        <tr><td><code>-verbose</code></td><td>Show class loading details</td></tr>
+        <tr><td><code>-Xlint:all</code></td><td>Enable all recommended warnings</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 3: Classpath & Packages -->
+  <div class="card green" id="classpath">
+    <div class="card-header"><div class="dot"></div><h3>Classpath &amp; Packages</h3></div>
+    <div class="card-body">
+      <div class="formula">CLASSPATH = list of directories and JARs where the JVM looks for classes</div>
+      <div class="label">Setting Classpath</div>
+      <pre># Compile with classpath
+javac -cp lib/mylib.jar src/Main.java
+
+# Run with classpath (. = current dir)
+java -cp .:lib/mylib.jar Main
+
+# Windows uses ; separator
+java -cp .;lib\mylib.jar Main</pre>
+      <div class="label">Package Naming</div>
+      <pre>// File: src/com/company/Hello.java
+package com.company;
+
+public class Hello { ... }</pre>
+      <div class="tip">
+        <div class="t-title">💡 Convention</div>
+        Package name = reverse domain (<code>com.company.project</code>). Maps directly to directory structure.
+      </div>
+      <div class="label">Import Statements</div>
+      <pre>import java.util.ArrayList;     // single class import
+import java.util.*;             // entire package (avoid in large projects)
+import static java.lang.Math.*; // static import (use Math methods unqualified)</pre>
+      <div class="info">
+        <div class="i-title">ℹ Java.lang</div>
+        <code>java.lang</code> is auto-imported — no import needed for <code>String</code>, <code>Math</code>, <code>System</code>, <code>Object</code>, etc.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 1 -->
+
+<!-- ROW 2: 3 cols -->
+<div class="grid section-gap">
+
+  <!-- Card 4: IntelliJ IDEA -->
+  <div class="card purple" id="intellij">
+    <div class="card-header"><div class="dot"></div><h3>IntelliJ IDEA (Recommended IDE)</h3></div>
+    <div class="card-body">
+      <p>Most popular Java IDE. <strong>Community Edition</strong> is free and fully featured for learning and most development tasks.</p>
+      <div class="label">Key Shortcuts (IntelliJ)</div>
+      <table class="tbl">
+        <tr><th>Action</th><th>Shortcut</th></tr>
+        <tr><td>Run program</td><td><code>Shift+F10</code></td></tr>
+        <tr><td>Debug program</td><td><code>Shift+F9</code></td></tr>
+        <tr><td>Build project</td><td><code>Ctrl+F9</code></td></tr>
+        <tr><td>Refactor Rename</td><td><code>Shift+F6</code></td></tr>
+        <tr><td>Find Usage</td><td><code>Alt+F7</code></td></tr>
+        <tr><td>Auto-import / Quick fix</td><td><code>Alt+Enter</code></td></tr>
+        <tr><td>Reformat Code</td><td><code>Ctrl+Alt+L</code></td></tr>
+        <tr><td>Navigate to Class</td><td><code>Ctrl+N</code></td></tr>
+        <tr><td>Search Everywhere</td><td><code>Double Shift</code></td></tr>
+        <tr><td>Go to Declaration</td><td><code>Ctrl+B</code></td></tr>
+        <tr><td>Comment Line</td><td><code>Ctrl+/</code></td></tr>
+      </table>
+      <div class="label">Typical Project Structure</div>
+      <ul class="items">
+        <li><code>src/</code> — Java source files (.java)</li>
+        <li><code>out/</code> — Compiled .class files (auto-generated)</li>
+        <li><code>lib/</code> — External JARs / dependencies</li>
+        <li><code>.idea/</code> — IntelliJ project configuration (don't edit manually)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 5: Eclipse IDE -->
+  <div class="card orange" id="eclipse">
+    <div class="card-header"><div class="dot"></div><h3>Eclipse IDE</h3></div>
+    <div class="card-body">
+      <p>Free, open-source IDE. Widely used in enterprise environments. Download <strong>Eclipse IDE for Java Developers</strong>.</p>
+      <div class="label">Key Shortcuts (Eclipse)</div>
+      <table class="tbl">
+        <tr><th>Action</th><th>Shortcut</th></tr>
+        <tr><td>Run program</td><td><code>Ctrl+F11</code></td></tr>
+        <tr><td>Debug program</td><td><code>F11</code></td></tr>
+        <tr><td>Build workspace</td><td><code>Ctrl+B</code></td></tr>
+        <tr><td>Organize imports</td><td><code>Ctrl+Shift+O</code></td></tr>
+        <tr><td>Rename refactor</td><td><code>Alt+Shift+R</code></td></tr>
+        <tr><td>Format code</td><td><code>Ctrl+Shift+F</code></td></tr>
+        <tr><td>Open type dialog</td><td><code>Ctrl+T</code></td></tr>
+        <tr><td>Quick fix</td><td><code>Ctrl+1</code></td></tr>
+        <tr><td>Content Assist</td><td><code>Ctrl+Space</code></td></tr>
+        <tr><td>Toggle comment</td><td><code>Ctrl+/</code></td></tr>
+      </table>
+      <div class="label">Workspace vs Project</div>
+      <ul class="items">
+        <li><strong>Workspace</strong> — Eclipse top-level container (folder on disk)</li>
+        <li><strong>Project</strong> — individual Java application folder within workspace</li>
+        <li><strong>Build path</strong> — classpath configuration per project</li>
+        <li><code>.classpath</code> and <code>.project</code> — Eclipse project config files</li>
+        <li><code>src/</code> and <code>bin/</code> — source and output directories</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 6: JShell -->
+  <div class="card yellow" id="jshell">
+    <div class="card-header"><div class="dot"></div><h3>JShell — Interactive REPL</h3></div>
+    <div class="card-body">
+      <p>Introduced in <strong>Java 9</strong>. Test code snippets without writing a full class or main method.</p>
+      <pre>$ jshell
+|  Welcome to JShell -- Version 17
+jshell&gt; 2 + 3
+$1 ==&gt; 5
+jshell&gt; String s = "Hello"
+s ==&gt; "Hello"
+jshell&gt; s.toUpperCase()
+$3 ==&gt; "HELLO"
+jshell&gt; int[] arr = {1, 2, 3}
+arr ==&gt; int[3] { 1, 2, 3 }
+jshell&gt; for (int x : arr) System.out.println(x)
+1
+2
+3
+jshell&gt; /exit</pre>
+      <div class="label">JShell Commands</div>
+      <table class="tbl">
+        <tr><th>Command</th><th>Purpose</th></tr>
+        <tr><td><code>/list</code></td><td>Show all entered snippets</td></tr>
+        <tr><td><code>/vars</code></td><td>List declared variables</td></tr>
+        <tr><td><code>/methods</code></td><td>List defined methods</td></tr>
+        <tr><td><code>/imports</code></td><td>Show active imports</td></tr>
+        <tr><td><code>/edit &lt;id&gt;</code></td><td>Open snippet in editor</td></tr>
+        <tr><td><code>/reset</code></td><td>Reset session (clear all)</td></tr>
+        <tr><td><code>/exit</code></td><td>Quit JShell</td></tr>
+        <tr><td><code>/help</code></td><td>Show all commands</td></tr>
+      </table>
+      <div class="tip">
+        <div class="t-title">💡 Best Use Cases</div>
+        Testing expressions · exploring APIs · learning syntax · quick calculations · prototyping algorithms
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 2 -->
+
+<!-- ROW 3: 2 cols -->
+<div class="grid-2 section-gap">
+
+  <!-- Card 7: Build Tools -->
+  <div class="card green" id="build-tools">
+    <div class="card-header"><div class="dot"></div><h3>Build Tools Overview</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Tool</th><th>Config File</th><th>Key Feature</th></tr>
+        <tr><td><strong>Maven</strong></td><td><code>pom.xml</code></td><td>Convention over config; Central Repository; standardized lifecycle phases</td></tr>
+        <tr><td><strong>Gradle</strong></td><td><code>build.gradle</code></td><td>Flexible DSL (Groovy/Kotlin); incremental builds; Android default</td></tr>
+        <tr><td><strong>Ant</strong></td><td><code>build.xml</code></td><td>Legacy; fully manual config; still seen in older enterprise projects</td></tr>
+      </table>
+      <div class="label">Maven Lifecycle Phases (in order)</div>
+      <ol class="steps">
+        <li><strong>validate</strong> — validate project structure is correct</li>
+        <li><strong>compile</strong> — compile source code</li>
+        <li><strong>test</strong> — run unit tests</li>
+        <li><strong>package</strong> — create JAR/WAR artifact</li>
+        <li><strong>verify</strong> — run integration tests</li>
+        <li><strong>install</strong> — install to local repository (~/.m2)</li>
+        <li><strong>deploy</strong> — publish to remote repository</li>
+      </ol>
+      <div class="label">Maven pom.xml — Dependency Skeleton</div>
+      <pre>&lt;dependencies&gt;
+  &lt;dependency&gt;
+    &lt;groupId&gt;junit&lt;/groupId&gt;
+    &lt;artifactId&gt;junit&lt;/artifactId&gt;
+    &lt;version&gt;4.13&lt;/version&gt;
+    &lt;scope&gt;test&lt;/scope&gt;
+  &lt;/dependency&gt;
+&lt;/dependencies&gt;</pre>
+      <div class="tip">
+        <div class="t-title">💡 Run Maven</div>
+        <code>mvn compile</code> · <code>mvn test</code> · <code>mvn package</code> · <code>mvn clean install</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 8: Java Program Structure -->
+  <div class="card blue" id="program-structure">
+    <div class="card-header"><div class="dot"></div><h3>Java Program Structure</h3></div>
+    <div class="card-body">
+      <pre>// 1. Package declaration (optional, must be first)
+package com.example;
+
+// 2. Import statements
+import java.util.Scanner;
+
+// 3. Class declaration (matches filename)
+public class MyProgram {
+
+    // 4. Class fields (instance or static)
+    private String name;
+
+    // 5. Constructor
+    public MyProgram(String name) {
+        this.name = name;
+    }
+
+    // 6. Methods
+    public void greet() {
+        System.out.println("Hello, " + name);
+    }
+
+    // 7. Main entry point (static)
+    public static void main(String[] args) {
+        MyProgram p = new MyProgram("World");
+        p.greet();
+    }
+}</pre>
+      <ul class="items">
+        <li>One <strong>public class</strong> per file; filename must match public class name</li>
+        <li><code>main</code> must be <code>public static void main(String[] args)</code></li>
+        <li><code>args</code> array receives command-line arguments (index 0 = first arg)</li>
+        <li>Package declaration must be the very first non-comment line</li>
+        <li>Imports come after package, before class declaration</li>
+      </ul>
+    </div>
+  </div>
+
+</div><!-- /grid row 3 -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <a href="../PRO192.html">← PRO192 Index</a>
+  <span>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell</span>
+  <span>CH02 / 09</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  function toggleTOC(){open=!open;toc.className=open?'toc-open':'toc-collapsed';}
+  document.querySelector('.toc-hdr').addEventListener('click',toggleTOC);
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH08 – Multiple Processor Systems | OSG202</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<!-- Fixed TOC Sidebar -->
+<nav id="page-toc" class="toc-open">
+  <div class="toc-hdr" onclick="toggleTOC()">
+    <span>Contents</span><span class="toc-chevron">▾</span>
+  </div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>CH08 — Multiple Processor Systems</h1>
+    <h2>OSG202 · Operating Systems · Multiprocessor Architecture, Cache Coherence, Scheduling &amp; Message Passing</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">UMA / NUMA / Multicomputer</span>
+      <span class="toc-item">Cache Coherence</span>
+      <span class="toc-item">MESI Protocol</span>
+      <span class="toc-item">Memory Consistency</span>
+      <span class="toc-item">Interconnects</span>
+      <span class="toc-item">MP Scheduling</span>
+      <span class="toc-item">NUMA-Aware Sched</span>
+      <span class="toc-item">Multicomputer</span>
+      <span class="toc-item">RPC</span>
+      <span class="toc-item">MPI Basics</span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+    <span class="badge">Chapter 08</span>
+    <span class="badge" style="background:var(--surface2);color:var(--osg);border:1px solid var(--osg);">OSG202</span>
+  </div>
+</div>
+
+<!-- Row 1: Multiprocessor Types (full width) -->
+<div class="grid">
+
+  <div class="card blue col-span-3" id="mp-types">
+    <div class="card-header"><div class="dot"></div><h3>Multiprocessor Types — UMA vs NUMA vs Multicomputer</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <table class="tbl" style="margin-bottom:8px;">
+            <thead>
+              <tr><th>Type</th><th>Memory Model</th><th>Communication</th><th>Latency</th><th>Example</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong style="color:var(--osg)">UMA</strong> (Uniform Memory Access)</td>
+                <td>Shared, single bus or crossbar</td>
+                <td>Shared memory (load/store)</td>
+                <td>Equal for all CPUs</td>
+                <td>SMP desktop, single-socket server</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--osg)">NUMA</strong> (Non-Uniform Memory Access)</td>
+                <td>Shared, physically distributed per socket</td>
+                <td>Shared memory (load/store)</td>
+                <td>Local fast, remote 2–3× slower</td>
+                <td>Multi-socket Xeon / EPYC server</td>
+              </tr>
+              <tr>
+                <td><strong style="color:var(--osg)">Multicomputer</strong></td>
+                <td>Separate per node — no shared memory</td>
+                <td>Message passing (send/receive)</td>
+                <td>Network RTT (µs–ms range)</td>
+                <td>HPC cluster, Beowulf, MPI programs</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="rule">UMA → shared bus or crossbar switch. All CPUs see identical latency for all memory addresses.</div>
+          <div class="rule">NUMA → memory latency depends on which socket "owns" the physical memory pages. Remote access crosses the interconnect (HyperTransport / QPI / AMD Infinity Fabric).</div>
+        </div>
+        <div>
+          <div class="label">UMA (SMP) Architecture</div>
+          <div class="formula">CPU₀ ──┐
+CPU₁ ──┤── Shared Bus ──── Shared RAM
+CPU₂ ──┤              └─── I/O
+CPU₃ ──┘
+All CPUs: latency(addr) = constant</div>
+          <div class="label">NUMA Architecture</div>
+          <div class="formula">┌── Socket 0 ──────────────┐   ┌── Socket 1 ──────────────┐
+│  CPU0  CPU1  Local RAM  │──│  CPU2  CPU3  Local RAM  │
+└──────────────────────────┘   └──────────────────────────┘
+   local: ~4 ns                    remote: ~10–12 ns
+      (crosses interconnect via QPI / Infinity Fabric)</div>
+          <div class="label">Multicomputer (Cluster)</div>
+          <div class="formula">Node0[CPU+RAM] ── Network ── Node1[CPU+RAM]
+  send(dest, buf, len)   /   recv(src, buf, &len)
+No shared address space — all comms explicit</div>
+          <div class="info"><div class="i-title">Key Distinction</div>UMA and NUMA both expose a <em>single shared address space</em> (any CPU can load/store any address). Multicomputers do <strong>not</strong> — each node has a private address space; data moves only via explicit messages.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row 1 -->
+
+<!-- Row 2: Cache Coherence + MESI -->
+<div class="grid section-gap">
+
+  <!-- Cache Coherence - red -->
+  <div class="card red" id="cache-coherence">
+    <div class="card-header"><div class="dot"></div><h3>Cache Coherence Problem</h3></div>
+    <div class="card-body">
+      <p>Each CPU has its own private L1/L2 cache. When multiple CPUs cache the same memory location and one writes to it, the others may read <strong style="color:var(--accent3)">stale (old) data</strong>.</p>
+
+      <div class="label">The Problem Scenario</div>
+      <pre><code class="language-c">// Shared variable X = 5 in RAM
+// CPU0 reads X → cache0: X=5  (cache hit next time)
+// CPU1 writes X = 10 → RAM: X=10
+// CPU0 reads X → cache0: X=5  ← STALE! Wrong value</code></pre>
+
+      <div class="label">Solution 1 — Write-Invalidate</div>
+      <ul class="items">
+        <li>When a CPU writes to a cache line, broadcast an <strong style="color:var(--osg)">invalidation</strong> message to all other caches</li>
+        <li>Other caches mark their copy as <strong style="color:var(--osg)">INVALID</strong></li>
+        <li>On next read, those CPUs get a cache miss → fetch updated value from RAM or the writing cache</li>
+        <li>Only <em>one</em> invalidation message per write event (efficient for write-once, read-many)</li>
+      </ul>
+
+      <div class="label">Solution 2 — Write-Update (Broadcast)</div>
+      <ul class="items">
+        <li>When a CPU writes, broadcast the <strong style="color:var(--osg)">new value</strong> to all caches that hold a copy</li>
+        <li>All caches immediately update to the new value — no cache miss on next read</li>
+        <li>Generates much more bus traffic (value sent on every write, not just invalidation signal)</li>
+        <li>Worse for write-many workloads</li>
+      </ul>
+
+      <div class="warn">
+        <div class="w-title">⚠ Dominant Approach</div>
+        Write-invalidate dominates all modern hardware. Protocols: <code>MSI</code>, <code>MESI</code>, <code>MOESI</code>, <code>MESIF</code>. Write-update is largely abandoned due to excessive bus traffic.
+      </div>
+
+      <div class="label">Snooping vs Directory-Based</div>
+      <table class="tbl">
+        <thead><tr><th>Method</th><th>Mechanism</th><th>Scale</th></tr></thead>
+        <tbody>
+          <tr><td><strong style="color:var(--osg)">Snooping</strong></td><td>All caches watch (snoop) shared bus for coherence messages</td><td>Small N (≤ ~16 CPUs). Bus is bottleneck.</td></tr>
+          <tr><td><strong style="color:var(--osg)">Directory</strong></td><td>Central or distributed directory tracks which caches hold each line</td><td>Large N (many sockets, NUMA). Scales to 1000s of nodes.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- MESI Protocol - green, col-span-2 -->
+  <div class="card green col-span-2" id="mesi-protocol">
+    <div class="card-header"><div class="dot"></div><h3>MESI Protocol — Cache Coherence State Machine</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="label">The Four States</div>
+          <table class="tbl" style="margin-bottom:8px;">
+            <thead><tr><th>State</th><th>Meaning</th><th>Copies in other caches?</th><th>Matches RAM?</th></tr></thead>
+            <tbody>
+              <tr><td><strong style="color:var(--accent3)">M</strong> — Modified</td><td>Only this cache has it; dirty (written)</td><td>No</td><td>No — cache has newer value</td></tr>
+              <tr><td><strong style="color:var(--osg)">E</strong> — Exclusive</td><td>Only this cache has it; clean (unmodified)</td><td>No</td><td>Yes</td></tr>
+              <tr><td><strong style="color:var(--accent4)">S</strong> — Shared</td><td>Multiple caches hold copies; all clean</td><td>Yes</td><td>Yes</td></tr>
+              <tr><td><strong style="color:var(--text-dim)">I</strong> — Invalid</td><td>Data is not valid in this cache</td><td>Maybe</td><td>N/A</td></tr>
+            </tbody>
+          </table>
+
+          <div class="label">Key State Transitions</div>
+          <table class="tbl" style="margin-bottom:8px;">
+            <thead><tr><th>From</th><th>Event</th><th>To</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td>I</td><td>Local read, no other copy</td><td>E</td><td>Fetch from RAM</td></tr>
+              <tr><td>I</td><td>Local read, others have copy</td><td>S</td><td>Fetch from RAM or other cache</td></tr>
+              <tr><td>E</td><td>Local write</td><td>M</td><td>Modify; no bus traffic needed</td></tr>
+              <tr><td>S</td><td>Local write</td><td>M</td><td>Broadcast invalidate; others → I</td></tr>
+              <tr><td>M</td><td>Another CPU reads</td><td>S</td><td>Write back to RAM first; share</td></tr>
+              <tr><td>M</td><td>Another CPU writes</td><td>I</td><td>Write back; new writer gets M</td></tr>
+              <tr><td>S</td><td>Another CPU writes</td><td>I</td><td>Receive invalidate → evict</td></tr>
+              <tr><td>E</td><td>Another CPU reads</td><td>S</td><td>Both share clean copy</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div>
+          <div class="label">MESI State Diagram (simplified)</div>
+          <div class="formula">          ┌──────────────────────────────────┐
+          │           MESI FSM               │
+          │                                  │
+     local rd  ┌─── E ───local write──► M   │
+   (no share)  │    │                   │   │
+        ↑      │  other rd           other  │
+     I ─┤      │    ↓               rd/wr   │
+        │      └──► S ◄──local rd     ↓    │
+     local rd       │  (others exist)  I    │
+   (others exist)   │                       │
+                other wr → I               │
+          └──────────────────────────────────┘</div>
+
+          <div class="label">Extended Protocols</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">MSI</strong> — Simpler 3-state: no Exclusive state. Every clean line is Shared, even if only one cache holds it. More bus traffic (S→M requires broadcast even with sole owner).</li>
+            <li><strong style="color:var(--osg)">MOESI</strong> — Adds <strong>O (Owned)</strong>: a modified line can be shared in dirty state. Saves write-back to RAM before sharing — the Owned cache supplies data to others directly. Used in AMD processors.</li>
+            <li><strong style="color:var(--osg)">MESIF</strong> — Adds <strong>F (Forward)</strong>: one Shared copy is designated as the responder to peer requests. Used in Intel processors.</li>
+          </ul>
+
+          <div class="tip">
+            <div class="t-title">💡 E State Optimization</div>
+            The Exclusive state is key: if CPU has sole ownership (E), a write upgrades to Modified (M) silently — <em>no bus broadcast needed</em>. This avoids unnecessary bus traffic for loads followed by stores.
+          </div>
+
+          <div class="note">
+            <div class="n-title">False Sharing Problem</div>
+            Two CPUs write to <em>different variables that share the same cache line</em>. The coherence protocol sees it as a conflict and continuously invalidates the line → severe performance degradation. Fix: pad structs so hot variables are on separate cache lines (<code>alignas(64)</code>).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row 2 -->
+
+<!-- Row 3: Memory Consistency + Interconnects + Scheduling -->
+<div class="grid section-gap">
+
+  <!-- Memory Consistency - purple -->
+  <div class="card purple" id="memory-consistency">
+    <div class="card-header"><div class="dot"></div><h3>Memory Consistency Models</h3></div>
+    <div class="card-body">
+      <p>Defines what value a read is allowed to return — determines visible ordering of memory ops across CPUs.</p>
+
+      <div class="label">Sequential Consistency (SC)</div>
+      <ul class="items">
+        <li>All memory operations appear to execute in <strong style="color:var(--osg)">some global total order</strong></li>
+        <li>All CPUs observe the <strong>same order</strong> of operations</li>
+        <li>Each CPU's operations appear in program order within that global order</li>
+        <li>Simple to reason about; very expensive to implement in hardware</li>
+      </ul>
+
+      <div class="label">Total Store Order (TSO) — x86</div>
+      <ul class="items">
+        <li>Stores can be buffered in a <strong style="color:var(--osg)">store buffer</strong> before becoming visible to other CPUs</li>
+        <li>A CPU sees its own stores immediately (local forwarding)</li>
+        <li>Other CPUs may see stores <em>delayed</em> — load can overtake an earlier store</li>
+        <li>Write-to-Read reordering allowed; all other orders preserved</li>
+      </ul>
+
+      <div class="label">Weak / Release Consistency</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Weak Consistency</strong>: only synchronization ops must be sequentially consistent; regular reads/writes freely reordered by hardware</li>
+        <li><strong style="color:var(--osg)">Release Consistency</strong>: distinguish <em>acquire</em> (before critical section) and <em>release</em> (after). Release ensures all prior writes are visible before unlock. Used in ARM, RISC-V.</li>
+        <li><strong style="color:var(--osg)">Acquire</strong>: no load/store after acquire can move before it</li>
+        <li><strong style="color:var(--osg)">Release</strong>: no load/store before release can move after it</li>
+      </ul>
+
+      <div class="info">
+        <div class="i-title">Memory Barriers Required</div>
+        Modern CPUs use relaxed consistency for performance. Programmers must insert explicit barriers: <code>mfence</code> (full fence, x86), <code>sfence</code> (store fence), <code>lfence</code> (load fence), <code>DMB</code>/<code>DSB</code> (ARM).
+      </div>
+
+      <div class="label">Memory Barrier Example</div>
+      <pre><code class="language-c">// Thread 1                 // Thread 2
+flag = 1;                   while (!flag);
+__asm__ volatile(           __asm__ volatile(
+  "mfence" ::: "memory");     "lfence" ::: "memory");
+data = 42;                  use(data); // must see 42</code></pre>
+
+      <div class="label">Consistency Model Comparison</div>
+      <table class="tbl">
+        <thead><tr><th>Model</th><th>Reordering Allowed</th><th>HW Example</th></tr></thead>
+        <tbody>
+          <tr><td>Sequential Consistency</td><td>None</td><td>Theoretical ideal</td></tr>
+          <tr><td>TSO</td><td>Store→Load only</td><td>x86 / x86-64</td></tr>
+          <tr><td>Partial Store Order (PSO)</td><td>Store→Load, Store→Store</td><td>Old SPARC</td></tr>
+          <tr><td>Weak / Release</td><td>Most reorderings</td><td>ARM, RISC-V, PowerPC</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Interconnects - orange -->
+  <div class="card orange" id="interconnects">
+    <div class="card-header"><div class="dot"></div><h3>Interconnect Topologies</h3></div>
+    <div class="card-body">
+      <p>The network connecting CPUs, memory modules, and I/O determines scalability, bandwidth, and latency of the system.</p>
+
+      <div class="label">Bus (Shared Medium)</div>
+      <ul class="items">
+        <li>All CPUs share a single electrical bus. Simple and cheap.</li>
+        <li>Only one transfer at a time → <strong style="color:var(--accent3)">bottleneck</strong> at high CPU counts</li>
+        <li>Snooping-based coherence works naturally (all CPUs hear every transaction)</li>
+        <li>Practical limit: ~4–16 CPUs before saturation</li>
+      </ul>
+
+      <div class="label">Crossbar Switch</div>
+      <ul class="items">
+        <li>Dedicated wire between every CPU–memory pair: <strong style="color:var(--osg)">O(N²) switches</strong></li>
+        <li>Non-blocking: any CPU can access any memory simultaneously</li>
+        <li>Expensive for large N; excellent for small N (e.g., 4×4, 8×8)</li>
+      </ul>
+
+      <div class="label">Omega / Butterfly Network</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">O(N log N)</strong> switching elements; multiple paths available</li>
+        <li>Blocking network: two messages may conflict on same switch</li>
+        <li>Used in older mainframes and research parallel computers</li>
+      </ul>
+
+      <div class="label">Fat Tree (Hierarchical)</div>
+      <ul class="items">
+        <li>Tree topology with <strong style="color:var(--osg)">increasing bandwidth</strong> toward the root</li>
+        <li>Eliminates root bottleneck: higher-level switches have more ports/bandwidth</li>
+        <li>Used in InfiniBand-based HPC clusters and modern datacenter fabrics</li>
+        <li>Bisection bandwidth scales well with N</li>
+      </ul>
+
+      <div class="label">Hypercube</div>
+      <ul class="items">
+        <li>n-dimensional binary cube: <strong style="color:var(--osg)">N = 2ⁿ</strong> nodes, diameter = n = log₂N</li>
+        <li>Each node has exactly n neighbors (degree = n)</li>
+        <li>Good for nearest-neighbor algorithms; used in 1980s–1990s supercomputers (nCUBE, Intel iPSC)</li>
+      </ul>
+
+      <div class="label">Topology Comparison</div>
+      <table class="tbl">
+        <thead><tr><th>Topology</th><th>Cost</th><th>Diameter</th><th>Bisection BW</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Bus</td><td>O(N)</td><td>1</td><td>1 link</td><td>Bottleneck, snooping</td></tr>
+          <tr><td>Ring</td><td>O(N)</td><td>N/2</td><td>2 links</td><td>Simple, poor diameter</td></tr>
+          <tr><td>Crossbar</td><td>O(N²)</td><td>1</td><td>N/2 links</td><td>Non-blocking, expensive</td></tr>
+          <tr><td>Omega/Butterfly</td><td>O(N log N)</td><td>log₂N</td><td>N/2 links</td><td>Blocking</td></tr>
+          <tr><td>Fat Tree</td><td>O(N log N)</td><td>2 log N</td><td>O(N)</td><td>HPC standard</td></tr>
+          <tr><td>Hypercube</td><td>O(N log N)</td><td>log₂N</td><td>N/2 links</td><td>Good locality</td></tr>
+        </tbody>
+      </table>
+
+      <div class="rule">Bisection bandwidth = bandwidth across the cut that divides the network into two equal halves. Higher = better collective communication.</div>
+    </div>
+  </div>
+
+  <!-- MP Scheduling - yellow -->
+  <div class="card yellow" id="mp-scheduling">
+    <div class="card-header"><div class="dot"></div><h3>Multiprocessor Scheduling</h3></div>
+    <div class="card-body">
+      <p>Unlike uniprocessors, the OS must assign processes/threads to <em>which</em> CPU in addition to <em>when</em> to run them.</p>
+
+      <div class="label">Time Sharing (Multiprogramming on SMP)</div>
+      <ul class="items">
+        <li>OS maintains a <strong style="color:var(--osg)">global run queue</strong>; any idle CPU picks the next ready thread</li>
+        <li>Simple extension of uniprocessor scheduling — threads migrate across CPUs freely</li>
+        <li>Problem: migration causes cache warming cost (cold cache on new CPU)</li>
+        <li>Linux CFS uses per-CPU run queues with load balancing to reduce migration</li>
+      </ul>
+
+      <div class="label">Space Sharing (Partition Scheduling)</div>
+      <ul class="items">
+        <li>Divide CPUs into <strong style="color:var(--osg)">partitions</strong> — each job gets dedicated CPUs for its lifetime</li>
+        <li>No preemption within a partition; job runs until completion</li>
+        <li>Eliminates context-switch overhead; poor CPU utilization if jobs are uneven</li>
+        <li>Used in batch HPC environments (PBS, SLURM job scheduling)</li>
+      </ul>
+
+      <div class="label">Gang Scheduling (Co-scheduling)</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">All threads of a job</strong> are scheduled simultaneously across N CPUs</li>
+        <li>Each time slice: a job's threads run together; then another job's threads run together</li>
+        <li>Critical for <strong>tightly coupled parallel programs</strong> where threads communicate via shared memory barriers or spin-locks</li>
+        <li>A blocked thread on one CPU wastes the spin-wait of all peer threads if not co-scheduled</li>
+      </ul>
+
+      <div class="tip">
+        <div class="t-title">💡 Why Gang Scheduling Matters for MPI</div>
+        MPI processes communicate via message passing. If Process 0 sends to Process 1 but Process 1 is de-scheduled, Process 0 blocks waiting for an ACK. Gang scheduling ensures all N processes run simultaneously, preventing convoy delays.
+      </div>
+
+      <div class="label">Scheduling Metric: Spin vs Block</div>
+      <ul class="items">
+        <li>If a lock wait is expected to be <em>short</em> → <strong style="color:var(--osg)">spin</strong> (busy-wait, avoid context switch)</li>
+        <li>If wait is expected to be <em>long</em> → <strong style="color:var(--osg)">block</strong> (yield CPU, allow other work)</li>
+        <li>Adaptive mutexes: spin briefly, then block (Linux futex, pthreads)</li>
+      </ul>
+
+      <div class="rule">Gang scheduling requires time-slice synchronization across all CPUs — all CPUs switch jobs at the same instant. Overhead: synchronization interrupt at each quantum boundary.</div>
+    </div>
+  </div>
+
+</div><!-- end row 3 -->
+
+<!-- Row 4: NUMA Scheduling + Multicomputer -->
+<div class="grid section-gap">
+
+  <!-- NUMA Scheduling - blue -->
+  <div class="card blue" id="numa-scheduling">
+    <div class="card-header"><div class="dot"></div><h3>NUMA-Aware Scheduling &amp; Memory Placement</h3></div>
+    <div class="card-body">
+      <p>On NUMA systems, <em>where</em> memory is allocated and <em>which</em> CPU runs the thread dramatically affects performance.</p>
+
+      <div class="label">Process Affinity</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">CPU affinity</strong>: pin a process/thread to a specific CPU or set of CPUs to prevent migration</li>
+        <li>Keeps warm cache data valid — avoids cold-cache penalty after migration</li>
+        <li>Linux: <code>sched_setaffinity()</code> syscall, <code>taskset</code> command</li>
+        <li>Windows: <code>SetProcessAffinityMask()</code>, <code>SetThreadAffinityMask()</code></li>
+      </ul>
+
+      <div class="label">Memory Locality (NUMA Placement Policy)</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">First-touch policy</strong> (Linux default): physical page allocated on the NUMA node of the CPU that first touches it</li>
+        <li>If allocation happens in main thread (node 0), all pages land on node 0 → remote access for threads on other nodes</li>
+        <li>Fix: initialize data in the thread that will use it, or use <code>numactl --localalloc</code></li>
+      </ul>
+
+      <div class="note">
+        <div class="n-title">NUMA Latency Ratio</div>
+        Typical ratio: local DRAM access ≈ 4 ns. Remote (cross-socket) ≈ 10–14 ns. Ratio ≈ <strong>2–3× slower</strong> for remote. At scale, this difference drives 20–40% throughput gap for memory-bound workloads.
+      </div>
+
+      <div class="label">Linux NUMA Tools</div>
+      <pre><code class="language-bash"># Bind process to NUMA node 0, allocate memory locally
+numactl --cpunodebind=0 --membind=0 ./myprogram
+
+# Show NUMA topology
+numactl --hardware
+
+# Pin process to specific CPUs (CPU 0-3)
+taskset -c 0-3 ./myprogram
+
+# Check NUMA stats
+numastat -p myprogram
+
+# View NUMA node distances
+cat /sys/devices/system/node/node0/distance</code></pre>
+
+      <div class="label">NUMA-Aware Allocation in C</div>
+      <pre><code class="language-c">#include &lt;numa.h&gt;
+
+// Allocate 1MB on NUMA node 1
+void *buf = numa_alloc_onnode(1024*1024, 1);
+
+// Allocate locally (on current CPU's node)
+void *buf2 = numa_alloc_local(size);
+
+// Move pages to preferred node
+numa_migrate_pages(pid, from_nodemask, to_nodemask);</code></pre>
+
+      <div class="tip">
+        <div class="t-title">💡 NUMA + Thread Pool</div>
+        Best practice: create one thread pool per NUMA node, each pool serves requests using memory allocated on its own node. Used in databases (PostgreSQL, MongoDB) and JVMs (G1GC NUMA-aware).
+      </div>
+    </div>
+  </div>
+
+  <!-- Multicomputer Architecture - green, col-span-2 -->
+  <div class="card green col-span-2" id="multicomputer">
+    <div class="card-header"><div class="dot"></div><h3>Multicomputer Architecture — Message Passing Systems</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <p>Multicomputers are <strong style="color:var(--osg)">physically separate machines</strong> connected by a high-speed interconnect (InfiniBand, Ethernet). No shared memory — all communication is explicit message passing.</p>
+
+          <div class="label">Network Switching Modes</div>
+          <table class="tbl" style="margin-bottom:8px;">
+            <thead><tr><th>Mode</th><th>How it works</th><th>Latency</th></tr></thead>
+            <tbody>
+              <tr><td><strong style="color:var(--osg)">Store-and-Forward</strong></td><td>Each switch receives full packet, buffers it, then forwards</td><td>Proportional to #hops × packet size</td></tr>
+              <tr><td><strong style="color:var(--osg)">Circuit Switching</strong></td><td>Pre-establish path before transmission; no buffering en route</td><td>Setup latency + transfer time</td></tr>
+              <tr><td><strong style="color:var(--osg)">Wormhole Routing</strong></td><td>Forward head flit as soon as routing decision made; body follows in pipeline</td><td>Near-constant (independent of distance)</td></tr>
+            </tbody>
+          </table>
+
+          <div class="label">Network Interface Board (NIC)</div>
+          <ul class="items">
+            <li>Dedicated hardware with its own RAM for packet buffering</li>
+            <li>DMA engine: transfers data between host RAM and NIC RAM without CPU involvement</li>
+            <li><strong style="color:var(--osg)">RDMA</strong> (Remote Direct Memory Access): NIC can read/write remote node's memory directly, bypassing the remote OS kernel</li>
+            <li>Latency with RDMA: ~1–2 µs vs ~50–100 µs with kernel-mediated send/recv</li>
+          </ul>
+
+          <div class="label">Basic Send/Receive Primitives</div>
+          <pre><code class="language-c">// Blocking send: CPU waits until message delivered
+send(dest_addr, &msg_ptr, msg_len);
+
+// Blocking receive: CPU waits until message arrives
+receive(src_addr, &buf_ptr, &msg_len);
+
+// Non-blocking send: returns immediately
+// buffer must NOT be modified until confirmed sent!
+nb_send(dest_addr, &msg_ptr, msg_len, &handle);
+wait_for_completion(&handle);</code></pre>
+
+          <div class="warn">
+            <div class="w-title">⚠ Non-Blocking Send Hazard</div>
+            After a non-blocking send, modifying the send buffer before the OS copies it leads to corrupted messages. Solutions: (1) OS copies to kernel buffer immediately, (2) use interrupt/callback when safe to reuse buffer.
+          </div>
+        </div>
+
+        <div>
+          <div class="label">RDMA Operation Flow</div>
+          <div class="formula">Node A (sender)                  Node B (target)
+──────────────────               ──────────────────
+app posts RDMA Write ──────────► NIC writes to B's RAM
+NIC handles transfer             (no CPU interrupt on B)
+app gets completion              B's app reads data later
+(no kernel involvement)
+Latency: ~1 µs (InfiniBand)</div>
+
+          <div class="label">Blocking vs Non-Blocking</div>
+          <table class="tbl" style="margin-bottom:8px;">
+            <thead><tr><th>Type</th><th>CPU during send</th><th>Buffer safe after call?</th></tr></thead>
+            <tbody>
+              <tr><td>Blocking send</td><td>Waits (spins or blocks)</td><td>Yes — message delivered</td></tr>
+              <tr><td>Non-blocking send (copy)</td><td>Returns immediately</td><td>Yes — OS copied buffer</td></tr>
+              <tr><td>Non-blocking send (no copy)</td><td>Returns immediately</td><td>NO — wait for completion</td></tr>
+              <tr><td>Blocking recv</td><td>Blocks until message arrives</td><td>—</td></tr>
+              <tr><td>Non-blocking recv</td><td>Returns immediately (may be empty)</td><td>Poll/callback for arrival</td></tr>
+            </tbody>
+          </table>
+
+          <div class="label">Message Passing Challenges</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Buffering</strong>: if receiver isn't ready, where does the message go? Sender-side buffer or receiver-side buffer?</li>
+            <li><strong style="color:var(--osg)">Flow control</strong>: prevent fast sender from overwhelming slow receiver</li>
+            <li><strong style="color:var(--osg)">Partial failures</strong>: node crash mid-transfer — message lost? delivered? duplicated?</li>
+            <li><strong style="color:var(--osg)">Ordering</strong>: FIFO ordering per pair vs global ordering vs no ordering</li>
+          </ul>
+
+          <div class="info">
+            <div class="i-title">InfiniBand vs Ethernet</div>
+            InfiniBand: ~1 µs latency, 200–400 Gbps, native RDMA, lossless fabric. Used in HPC. <br>
+            Ethernet (RoCE): RDMA over Converged Ethernet — brings RDMA to commodity networks. More common in datacenter AI/ML clusters.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row 4 -->
+
+<!-- Row 5: RPC + MPI -->
+<div class="grid section-gap">
+
+  <!-- RPC - purple -->
+  <div class="card purple" id="rpc">
+    <div class="card-header"><div class="dot"></div><h3>Remote Procedure Call (RPC)</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">RPC</strong> makes a remote call look like a <em>local procedure call</em> — the programmer writes <code>result = add(a, b)</code> and the infrastructure transparently handles the network communication.</p>
+
+      <div class="label">Core Concept</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Client stub</strong>: local proxy that looks like the real function. Marshals parameters and sends message over network.</li>
+        <li><strong style="color:var(--osg)">Server stub</strong>: receives message, unmarshals parameters, calls the actual function, marshals the return value, sends reply.</li>
+        <li><strong style="color:var(--osg)">Marshaling</strong> (serialization): converting parameters (int, structs, pointers) into a flat byte stream suitable for network transmission.</li>
+        <li><strong style="color:var(--osg)">Unmarshaling</strong> (deserialization): reconstructing the original data types from the byte stream on the remote side.</li>
+      </ul>
+
+      <div class="label">RPC Call Flow</div>
+      <ol class="steps">
+        <li>Client calls <code>stub_add(a, b)</code> — looks like a normal function call</li>
+        <li>Client stub marshals <code>a</code> and <code>b</code> into a byte buffer (handles endianness, alignment)</li>
+        <li>Client stub sends the message to the server via the transport layer (TCP/UDP/IB)</li>
+        <li>Server OS receives message and wakes up the server stub</li>
+        <li>Server stub unmarshals the parameters from the byte buffer</li>
+        <li>Server stub calls the actual <code>add(a, b)</code> function on the server</li>
+        <li>Server stub marshals the return value and sends reply back to client</li>
+        <li>Client stub receives reply, unmarshals return value, returns it to caller</li>
+      </ol>
+
+      <div class="label">Marshaling Challenges</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <thead><tr><th>Problem</th><th>Cause</th><th>Solution</th></tr></thead>
+        <tbody>
+          <tr><td>Endianness</td><td>x86 is little-endian; network is big-endian</td><td>Always convert to network byte order (<code>htonl</code>/<code>ntohl</code>)</td></tr>
+          <tr><td>Pointer semantics</td><td>Pointers are address-space specific — meaningless remotely</td><td>Must deep-copy pointed-to data; no raw pointer transmission</td></tr>
+          <tr><td>Struct alignment/padding</td><td>Compiler adds padding bytes for alignment</td><td>Use packed structs or IDL-generated serializers</td></tr>
+          <tr><td>Variable-length data</td><td>Strings, arrays have unknown size at compile time</td><td>Prefix with length field</td></tr>
+        </tbody>
+      </table>
+
+      <div class="label">Failure Semantics</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Exactly-once</strong>: ideal but hard — requires idempotency + dedup log</li>
+        <li><strong style="color:var(--osg)">At-most-once</strong>: server records call ID; re-sends cached reply if duplicate detected. Used by most RPC frameworks.</li>
+        <li><strong style="color:var(--osg)">At-least-once</strong>: client retries on timeout. Safe only for <em>idempotent</em> operations (e.g., read, SET same value).</li>
+      </ul>
+
+      <div class="warn">
+        <div class="w-title">⚠ Partial Failure Problem</div>
+        If client times out, it cannot tell: (a) request was lost before server received it, (b) server crashed during execution, (c) reply was lost after server finished. RPC fundamentally cannot distinguish these cases without application-level acknowledgment.
+      </div>
+
+      <div class="label">Modern RPC Frameworks</div>
+      <ul class="items">
+        <li><code>gRPC</code> (Google): Protocol Buffers + HTTP/2. Language-agnostic IDL. Used widely in microservices.</li>
+        <li><code>Thrift</code> (Facebook/Apache): IDL-based, supports many languages and transports.</li>
+        <li><code>XML-RPC</code> / <code>SOAP</code>: older, verbose XML-based. Still in enterprise systems.</li>
+        <li><code>JSON-RPC</code>: lightweight JSON format, common in web APIs.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- MPI Basics - red -->
+  <div class="card red" id="mpi-basics">
+    <div class="card-header"><div class="dot"></div><h3>MPI Basics — Message Passing Interface</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">MPI</strong> is the de-facto standard API for writing distributed-memory parallel programs. Programs run as N independent <em>processes</em>, each with its own address space, communicating via <code>MPI_Send</code>/<code>MPI_Recv</code> and collective operations.</p>
+
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="label">Core Concepts</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Rank</strong>: unique ID of each process (0 to N-1) within a communicator</li>
+            <li><strong style="color:var(--osg)">Communicator</strong>: group of processes that can communicate (<code>MPI_COMM_WORLD</code> = all processes)</li>
+            <li><strong style="color:var(--osg)">Tag</strong>: integer label on a message for selective receive</li>
+            <li><strong style="color:var(--osg)">Collective</strong>: operation involving all processes in a communicator simultaneously</li>
+          </ul>
+
+          <div class="label">Point-to-Point Communication</div>
+          <pre><code class="language-c">// Send 100 ints to process 1, tag=0
+MPI_Send(buf, 100, MPI_INT, 1, 0, MPI_COMM_WORLD);
+
+// Receive from process 0, tag=0
+MPI_Recv(buf, 100, MPI_INT, 0, 0,
+         MPI_COMM_WORLD, &status);
+
+// Non-blocking versions
+MPI_Isend(buf, n, MPI_INT, dest, tag, comm, &req);
+MPI_Irecv(buf, n, MPI_INT, src, tag, comm, &req);
+MPI_Wait(&req, &status); // wait for completion</code></pre>
+
+          <div class="label">Collective Operations</div>
+          <pre><code class="language-c">// Broadcast: root sends to all
+MPI_Bcast(buf, 100, MPI_INT, 0, MPI_COMM_WORLD);
+
+// Reduce: all send, root collects with op
+MPI_Reduce(sendbuf, recvbuf, 100, MPI_INT,
+           MPI_SUM, 0, MPI_COMM_WORLD);
+
+// All-Reduce: all get the result
+MPI_Allreduce(sendbuf, recvbuf, 100, MPI_INT,
+              MPI_SUM, MPI_COMM_WORLD);
+
+// Scatter: root distributes chunks to all
+MPI_Scatter(sendbuf, n, MPI_INT,
+            recvbuf, n, MPI_INT, 0, comm);
+
+// Gather: all send, root collects
+MPI_Gather(sendbuf, n, MPI_INT,
+           recvbuf, n, MPI_INT, 0, comm);
+
+// Barrier: all processes synchronize here
+MPI_Barrier(MPI_COMM_WORLD);</code></pre>
+        </div>
+        <div>
+          <div class="label">Complete MPI Hello World</div>
+          <pre><code class="language-c">#include &lt;mpi.h&gt;
+#include &lt;stdio.h&gt;
+
+int main(int argc, char **argv) {
+    int rank, size;
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (rank == 0) {
+        // Master: send work to workers
+        for (int i = 1; i < size; i++) {
+            int work = i * 10;
+            MPI_Send(&work, 1, MPI_INT, i,
+                     0, MPI_COMM_WORLD);
+        }
+    } else {
+        // Worker: receive and process
+        int work;
+        MPI_Recv(&work, 1, MPI_INT, 0, 0,
+                 MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        printf("Rank %d got work=%d\n", rank, work);
+    }
+
+    MPI_Finalize();
+    return 0;
+}</code></pre>
+
+          <div class="label">Running MPI Programs</div>
+          <pre><code class="language-bash"># Compile
+mpicc -o myprogram myprogram.c
+
+# Run on 4 processes locally
+mpirun -np 4 ./myprogram
+
+# Run on cluster (SLURM)
+srun --ntasks=64 --nodes=8 ./myprogram</code></pre>
+
+          <div class="label">Collective Operation Summary</div>
+          <table class="tbl">
+            <thead><tr><th>Function</th><th>What it does</th><th>Who gets result</th></tr></thead>
+            <tbody>
+              <tr><td><code>MPI_Bcast</code></td><td>One→all broadcast</td><td>All processes</td></tr>
+              <tr><td><code>MPI_Scatter</code></td><td>Root distributes chunks</td><td>Each process gets 1 chunk</td></tr>
+              <tr><td><code>MPI_Gather</code></td><td>All send to root</td><td>Root only</td></tr>
+              <tr><td><code>MPI_Allgather</code></td><td>All send; all receive all</td><td>All processes</td></tr>
+              <tr><td><code>MPI_Reduce</code></td><td>Apply op (SUM/MAX/…)</td><td>Root only</td></tr>
+              <tr><td><code>MPI_Allreduce</code></td><td>Apply op; all get result</td><td>All processes</td></tr>
+              <tr><td><code>MPI_Barrier</code></td><td>Synchronize all</td><td>N/A</td></tr>
+            </tbody>
+          </table>
+
+          <div class="warn">
+            <div class="w-title">⚠ Deadlock in MPI</div>
+            If all processes call blocking <code>MPI_Send</code> at the same time (circular send), and no one is receiving, all block forever. Fix: use <code>MPI_Sendrecv</code>, non-blocking <code>MPI_Isend</code>/<code>MPI_Irecv</code>, or alternate send/recv order between even/odd ranks.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row 5 -->
+
+<!-- Row 6: Summary / Quick Reference -->
+<div class="grid section-gap">
+
+  <div class="card orange col-span-3" id="quick-ref">
+    <div class="card-header"><div class="dot"></div><h3>Quick Reference — Key Facts &amp; Exam Traps</h3></div>
+    <div class="card-body">
+      <div class="grid" style="gap:12px;">
+        <div>
+          <div class="label">Architecture Quick Facts</div>
+          <div class="rule">UMA = SMP = Symmetric Multiprocessor. All CPUs equal. Single shared bus or crossbar.</div>
+          <div class="rule">NUMA: "Non-Uniform" → local memory faster. Must manage thread-memory affinity explicitly.</div>
+          <div class="rule">Multicomputer: NO shared address space. Every byte of communication is explicit send/recv.</div>
+          <div class="rule">MESI E→M transition: NO bus traffic needed (only this cache has the line).</div>
+          <div class="rule">MESI S→M transition: Must broadcast invalidate to all caches sharing the line.</div>
+          <div class="rule">False sharing: different variables, same cache line → unnecessary coherence traffic.</div>
+          <div class="rule">Sequential Consistency: strongest model; most expensive; modern HW doesn't implement it.</div>
+          <div class="rule">x86 uses TSO: stores can be delayed; loads can pass pending stores from other CPUs.</div>
+        </div>
+        <div>
+          <div class="label">Scheduling Quick Facts</div>
+          <div class="rule">Time sharing: threads migrate between CPUs freely. Simple but cold-cache cost.</div>
+          <div class="rule">Space sharing: dedicated CPUs per job. No migration. Used in HPC batch systems.</div>
+          <div class="rule">Gang scheduling: all threads of a job run simultaneously. Required for spin-based synchronization.</div>
+          <div class="rule">NUMA first-touch: page allocated on node of CPU that first touches it. Init in the right thread!</div>
+          <div class="rule">numactl --localalloc: all future allocations go to local NUMA node of running CPU.</div>
+          <div class="label">RPC / Message Passing Quick Facts</div>
+          <div class="rule">RPC stub hides network: client stub marshals; server stub unmarshals. Transparent to programmer.</div>
+          <div class="rule">Marshaling must handle: endianness, pointer dereferencing, struct padding, variable-length data.</div>
+          <div class="rule">Wormhole routing: latency nearly independent of number of hops. Used in modern interconnects.</div>
+        </div>
+        <div>
+          <div class="label">MPI Patterns</div>
+          <div class="formula">Master-Worker:
+  rank 0 → distributes tasks via MPI_Send
+  rank 1..N → receive task, compute, MPI_Send result back
+  rank 0 → collect results
+
+SPMD (Single Program, Multiple Data):
+  all ranks run same code; branch on rank
+  collective ops (Bcast, Reduce) for coordination
+
+Pipeline:
+  rank i → processes data, sends to rank i+1
+  MPI_Send(to i+1) + MPI_Recv(from i-1)</div>
+
+          <div class="label">Cache Coherence Protocols</div>
+          <table class="tbl">
+            <thead><tr><th>Protocol</th><th>States</th><th>Used In</th></tr></thead>
+            <tbody>
+              <tr><td><code>MSI</code></td><td>Modified, Shared, Invalid</td><td>Textbook baseline</td></tr>
+              <tr><td><code>MESI</code></td><td>+Exclusive</td><td>Most x86 processors</td></tr>
+              <tr><td><code>MOESI</code></td><td>+Owned</td><td>AMD processors</td></tr>
+              <tr><td><code>MESIF</code></td><td>+Forward</td><td>Intel processors</td></tr>
+            </tbody>
+          </table>
+
+          <div class="tip">
+            <div class="t-title">💡 Exam Tip — Coherence vs Consistency</div>
+            <strong>Cache coherence</strong>: all CPUs eventually see the same value for a <em>single</em> memory location. <br>
+            <strong>Memory consistency</strong>: defines the <em>ordering</em> of operations across <em>different</em> memory locations. These are independent concerns!
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end row 6 -->
+
+<!-- Footer -->
+<div class="footer">
+  <span>OSG202 — Operating Systems</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code = document.createElement('code');
+    code.className = 'language-c';
+    code.textContent = pre.textContent;
+    pre.textContent = '';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+</body>
+</html>

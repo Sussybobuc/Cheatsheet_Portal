@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH04 – Cisco IOS | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH04 — Introduction to the Cisco IOS</h1>
+    <h2>CCNA INTRO · Todd Lammle, Sybex 2006 · Pages 151–212</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">Boot Process</span>
+      <span class="toc-item">CLI Modes</span>
+      <span class="toc-item">Access Methods</span>
+      <span class="toc-item">CLI Editing</span>
+      <span class="toc-item">Banners</span>
+      <span class="toc-item">Passwords</span>
+      <span class="toc-item">Interfaces</span>
+      <span class="toc-item">Config Mgmt</span>
+      <span class="toc-item">Memory Types</span>
+      <span class="toc-item">Verification</span>
+      <span class="toc-item">CDP</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</div>
+
+<!-- ROW 1 -->
+<div class="grid">
+  <div class="card blue" id="boot-process">
+    <div class="card-header"><div class="dot"></div><h3>Router Boot Process</h3></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li><strong>POST</strong> — Power-On Self Test verifies CPU, RAM, and interfaces via hardware diagnostics stored in ROM</li>
+        <li><strong>Bootstrap loads</strong> from ROM; searches for IOS image in Flash, TFTP, or ROM (in that order)</li>
+        <li><strong>IOS loads</strong> from Flash into RAM; decompresses if needed</li>
+        <li><strong>Startup-config</strong> copied from NVRAM into RAM, becoming the running-config</li>
+        <li>If <strong>no startup-config found</strong> → router enters <span class="tt" data-t="Interactive dialog prompting step-by-step basic configuration. Type 'no' to skip and go straight to CLI.">Setup Mode</span> — answer 'no' to reach CLI directly</li>
+      </ol>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">Configuration Register</div>
+        <code>0x2102</code> — default: boot IOS from Flash, load NVRAM config<br>
+        <code>0x2142</code> — skip NVRAM startup-config (password recovery)<br>
+        <code>0x2100</code> — always boot to ROMMON prompt
+      </div>
+      <div class="label">IOS Search Order</div>
+      <div class="formula">Flash → TFTP server → ROM (RxBoot)</div>
+      <div class="label">Verify Boot</div>
+      <pre>show version          ! IOS ver, register, uptime
+show flash            ! IOS filename in Flash</pre>
+    </div>
+  </div>
+
+  <div class="card green" id="cli-modes">
+    <div class="card-header"><div class="dot"></div><h3>CLI Modes & Prompts</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Mode</th><th>Prompt</th><th>Enter With</th><th>Purpose</th></tr>
+        <tr><td>User EXEC</td><td><code>Router&gt;</code></td><td>Default login</td><td>View-only, basic ping/trace</td></tr>
+        <tr><td>Privileged EXEC</td><td><code>Router#</code></td><td><code>enable</code></td><td>Full monitoring, debug, copy</td></tr>
+        <tr><td>Global Config</td><td><code>Router(config)#</code></td><td><code>configure terminal</code></td><td>System-wide configuration</td></tr>
+        <tr><td>Interface Config</td><td><code>Router(config-if)#</code></td><td><code>interface f0/0</code></td><td>Per-interface settings</td></tr>
+        <tr><td>Line Config</td><td><code>Router(config-line)#</code></td><td><code>line con 0</code></td><td>Console / VTY passwords</td></tr>
+        <tr><td>Router Config</td><td><code>Router(config-router)#</code></td><td><code>router rip</code></td><td>Routing protocol config</td></tr>
+        <tr><td>Sub-Interface</td><td><code>Router(config-subif)#</code></td><td><code>int f0/0.1</code></td><td>VLAN encapsulation (dot1q)</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">Navigation Rules</div>
+        <code>exit</code> → one level up &nbsp;|&nbsp; <code>end</code> or <code>Ctrl+Z</code> → jump to Privileged EXEC<br>
+        <code>do show run</code> → run show commands from config mode
+      </div>
+      <div class="label">User EXEC Limitations</div>
+      <ul class="items">
+        <li>Limited <code>show</code> commands — cannot see running-config</li>
+        <li>Can use: <code>ping</code>, <code>traceroute</code>, <code>telnet</code>, <code>show version</code></li>
+        <li>Cannot make any configuration changes</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card purple" id="access-methods">
+    <div class="card-header"><div class="dot"></div><h3>Router Access Methods</h3></div>
+    <div class="card-body">
+      <div class="label">Console Port — Out-of-Band Management</div>
+      <ul class="items">
+        <li>Physical: <span class="tt" data-t="Rollover cable reverses all 8 pins end-to-end (pin 1→8, 2→7, etc.). Also called Cisco blue cable.">Rollover/Rolled cable</span> (Cisco blue) + RJ-45 to DB-9 adapter to COM port</li>
+        <li>Software: HyperTerminal, PuTTY, SecureCRT, TeraTerm</li>
+        <li>Terminal settings: <strong>9600 baud · 8 data bits · No parity · 1 stop bit · No flow control</strong></li>
+        <li>Always accessible — even with no IP / IOS crash</li>
+        <li>Only one session at a time (line console 0)</li>
+      </ul>
+      <div class="label">Aux Port — Remote Out-of-Band</div>
+      <ul class="items">
+        <li>Designed for modem connection — dial-up remote management</li>
+        <li>Configured like console: <code>line aux 0</code></li>
+      </ul>
+      <div class="label">Telnet — In-Band (Port 23)</div>
+      <ul class="items">
+        <li>Requires IP connectivity and VTY password</li>
+        <li><span class="tt" data-t="All Telnet traffic including username and password is transmitted as plain text — visible to packet capture tools.">Sends all data unencrypted</span> — avoid on untrusted networks</li>
+      </ul>
+      <div class="label">SSH — Secure In-Band (Port 22)</div>
+      <ul class="items">
+        <li>Encrypted — preferred over Telnet</li>
+        <li>Requires: hostname, domain name, RSA keys, local user account</li>
+      </ul>
+      <div class="label">SSH Quick Setup</div>
+      <pre>ip domain-name lab.local
+crypto key generate rsa modulus 1024
+username admin secret cisco
+line vty 0 4
+ transport input ssh
+ login local</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2 -->
+<div class="grid section-gap">
+  <div class="card orange col-span-2" id="cli-editing">
+    <div class="card-header"><div class="dot"></div><h3>CLI Editing Shortcuts & Help System</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Cursor Movement</div>
+          <table class="tbl">
+            <tr><th>Shortcut</th><th>Action</th></tr>
+            <tr><td><code>Ctrl+A</code></td><td>Move cursor to beginning of line</td></tr>
+            <tr><td><code>Ctrl+E</code></td><td>Move cursor to end of line</td></tr>
+            <tr><td><code>Ctrl+B</code></td><td>Move cursor back one character</td></tr>
+            <tr><td><code>Ctrl+F</code></td><td>Move cursor forward one character</td></tr>
+            <tr><td><code>Esc+B</code></td><td>Move back one word</td></tr>
+            <tr><td><code>Esc+F</code></td><td>Move forward one word</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">Editing & Control</div>
+          <table class="tbl">
+            <tr><th>Shortcut</th><th>Action</th></tr>
+            <tr><td><code>Ctrl+D</code></td><td>Delete character at cursor</td></tr>
+            <tr><td><code>Ctrl+W</code></td><td>Erase word before cursor</td></tr>
+            <tr><td><code>Ctrl+U</code></td><td>Erase entire line</td></tr>
+            <tr><td><code>Ctrl+R</code></td><td>Redisplay line (after syslog interrupts)</td></tr>
+            <tr><td><code>Ctrl+Z</code></td><td>Exit to Privileged EXEC from any config</td></tr>
+            <tr><td><code>Ctrl+C</code></td><td>Abort current command / exit setup mode</td></tr>
+            <tr><td><code>Tab</code></td><td>Auto-complete partial command</td></tr>
+            <tr><td><code>↑ / Ctrl+P</code></td><td>Previous command in history buffer</td></tr>
+            <tr><td><code>↓ / Ctrl+N</code></td><td>Next command in history buffer</td></tr>
+          </table>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="label">IOS Help System — Context-Sensitive</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <pre>Router# ?              ! list ALL commands at current mode
+Router# sh?            ! commands starting with 'sh' (no space)
+Router# show ?         ! show sub-commands (space before ?)
+Router# show ip ?      ! show ip sub-commands
+Router(config)# int?   ! incomplete word help</pre>
+        <div>
+          <div class="tip">
+            <div class="t-title">Abbreviated Commands (Shortest Unique)</div>
+            <code>en</code> = <code>enable</code><br>
+            <code>conf t</code> = <code>configure terminal</code><br>
+            <code>int f0/0</code> = <code>interface FastEthernet0/0</code><br>
+            <code>sh ip int br</code> = <code>show ip interface brief</code><br>
+            <code>sh run</code> = <code>show running-config</code>
+          </div>
+          <div class="note">
+            <div class="n-title">Pipe Filtering</div>
+            <code>show run | include ip address</code><br>
+            <code>show run | begin interface</code><br>
+            <code>show run | section router</code><br>
+            <code>show run | exclude !</code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="ios-essentials">
+    <div class="card-header"><div class="dot"></div><h3>IOS Terminal Essentials</h3></div>
+    <div class="card-body">
+      <div class="label">History & Terminal</div>
+      <pre>show history
+terminal history size 50  ! max 256
+terminal monitor          ! syslog to Telnet
+no terminal monitor       ! disable syslog output
+terminal length 0         ! disable --More-- paging</pre>
+      <div class="label">Console Timeout</div>
+      <pre>line console 0
+ exec-timeout 5 30  ! 5 min 30 sec
+ exec-timeout 0 0   ! disable timeout (lab use)</pre>
+      <div class="label">Disable Lookup Delay</div>
+      <pre>no ip domain-lookup  ! prevents DNS lookup on typos</pre>
+      <div class="label">Logging Synchronous</div>
+      <pre>line console 0
+ logging synchronous  ! prevents syslog from
+                      ! interrupting typed commands</pre>
+      <div class="label">Reload / Scheduled Reload</div>
+      <pre>reload                ! immediate reboot
+reload in 30          ! reboot in 30 minutes
+reload cancel         ! cancel scheduled reload</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3 -->
+<div class="grid section-gap">
+  <div class="card blue" id="hostname-banners">
+    <div class="card-header"><div class="dot"></div><h3>Hostname & Banners</h3></div>
+    <div class="card-body">
+      <div class="label">Set Hostname</div>
+      <pre>Router(config)# hostname Router1
+Router1(config)#    ! prompt changes immediately</pre>
+      <div class="label">Banner Types</div>
+      <pre>! MOTD — shown BEFORE login (most seen)
+Router1(config)# banner motd #
+WARNING: Unauthorized access is prohibited.
+All sessions are logged. Contact admin@corp.com
+#
+
+! Login banner — shown AT the login prompt
+Router1(config)# banner login #
+Authorized users only — credentials required.
+#
+
+! EXEC banner — shown AFTER successful login
+Router1(config)# banner exec #
+Welcome to Router1. Changes are logged.
+#</pre>
+      <div class="tip">
+        <div class="t-title">Delimiter Character</div>
+        The <code>#</code> is the opening/closing delimiter. Use any character that does not appear in the message body (e.g., <code>%</code>, <code>@</code>, <code>^</code>).
+      </div>
+      <div class="label">Banner Display Order</div>
+      <div class="formula">MOTD → Login → (auth) → EXEC</div>
+    </div>
+  </div>
+
+  <div class="card red col-span-2" id="password-config">
+    <div class="card-header"><div class="dot"></div><h3>Password Configuration</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="label">Enable Passwords (Privileged EXEC)</div>
+          <pre>! Legacy clear-text — shown in show run
+Router(config)# enable password cisco
+
+! MD5-hashed — always prefer this
+Router(config)# enable secret class
+
+! When BOTH are set: secret wins always</pre>
+          <div class="warn">
+            <div class="w-title">⚠ Secret vs Password Priority</div>
+            <code>enable secret</code> always overrides <code>enable password</code>. If secret is set, password is ignored. Use <code>enable secret</code> exclusively.
+          </div>
+          <div class="label">Encrypt All Plaintext Passwords</div>
+          <pre>Router(config)# service password-encryption</pre>
+          <div class="info">
+            <div class="i-title">Encryption Types</div>
+            <code>service password-encryption</code> → Type 7 (weak, reversible)<br>
+            <code>enable secret</code> → Type 5 MD5 (strong, one-way)
+          </div>
+        </div>
+        <div>
+          <div class="label">Console Password (Line Console 0)</div>
+          <pre>Router(config)# line console 0
+Router(config-line)# password cisco
+Router(config-line)# login
+Router(config-line)# exec-timeout 5 0
+Router(config-line)# logging synchronous</pre>
+          <div class="label">VTY Passwords (Telnet/SSH — Lines 0–4)</div>
+          <pre>Router(config)# line vty 0 4
+Router(config-line)# password cisco
+Router(config-line)# login
+Router(config-line)# exec-timeout 10 0
+! For local auth (required for SSH):
+Router(config-line)# login local
+Router(config-line)# transport input ssh</pre>
+          <div class="label">Aux Port Password</div>
+          <pre>Router(config)# line aux 0
+Router(config-line)# password cisco
+Router(config-line)# login</pre>
+          <div class="tip">
+            <div class="t-title">VTY Line Range</div>
+            <code>line vty 0 4</code> = 5 simultaneous sessions. IOS 12.x+ supports <code>0 15</code> for 16 sessions.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4 -->
+<div class="grid section-gap">
+  <div class="card green col-span-2" id="interface-config">
+    <div class="card-header"><div class="dot"></div><h3>Interface Configuration</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">FastEthernet / GigabitEthernet</div>
+          <pre>Router(config)# interface FastEthernet 0/0
+Router(config-if)# ip address 192.168.1.1 255.255.255.0
+Router(config-if)# description LAN to Floor 1 Users
+Router(config-if)# no shutdown
+Router(config-if)# exit
+
+! Abbreviations accepted:
+Router(config)# int f0/0    ! FastEthernet
+Router(config)# int g0/0    ! GigabitEthernet
+Router(config)# int e0      ! Ethernet (legacy)</pre>
+          <div class="label">Interface Status Matrix</div>
+          <table class="tbl">
+            <tr><th>Line</th><th>Protocol</th><th>Meaning</th></tr>
+            <tr><td>up</td><td>up</td><td>Fully operational</td></tr>
+            <tr><td>up</td><td>down</td><td>Physical OK, encap/L3 issue</td></tr>
+            <tr><td>down</td><td>down</td><td>Physical layer failure / no cable</td></tr>
+            <tr><td>admin down</td><td>down</td><td><code>shutdown</code> applied manually</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">Serial Interface (WAN)</div>
+          <pre>Router(config)# interface Serial 0/0
+Router(config-if)# ip address 172.16.1.1 255.255.255.0
+Router(config-if)# description WAN Link to HQ
+
+! DCE side MUST provide clock signal:
+Router(config-if)# clock rate 64000
+
+! Bandwidth for routing metric (Kbps, NOT speed):
+Router(config-if)# bandwidth 64
+Router(config-if)# no shutdown</pre>
+          <div class="info">
+            <div class="i-title">DCE vs DTE Detection</div>
+            Run <code>show controllers s0/0</code> — look for "DCE" or "DTE" in first line. ISP side is typically DCE. Lab back-to-back: manually set one as DCE.
+          </div>
+          <div class="label">Remove / Shutdown Interface</div>
+          <pre>Router(config-if)# no ip address
+Router(config-if)# shutdown     ! bring interface down</pre>
+          <div class="label">Secondary IP Address</div>
+          <pre>Router(config-if)# ip address 10.0.0.1 255.255.255.0
+Router(config-if)# ip address 10.1.0.1 255.255.255.0 secondary</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card orange" id="interface-notes">
+    <div class="card-header"><div class="dot"></div><h3>Interface Quick Reference</h3></div>
+    <div class="card-body">
+      <div class="label">Common Serial Clock Rates</div>
+      <table class="tbl">
+        <tr><th>clock rate</th><th>Speed</th></tr>
+        <tr><td><code>64000</code></td><td>64 Kbps</td></tr>
+        <tr><td><code>128000</code></td><td>128 Kbps</td></tr>
+        <tr><td><code>256000</code></td><td>256 Kbps</td></tr>
+        <tr><td><code>512000</code></td><td>512 Kbps</td></tr>
+        <tr><td><code>1544000</code></td><td>T1 — 1.544 Mbps</td></tr>
+        <tr><td><code>2048000</code></td><td>E1 — 2.048 Mbps</td></tr>
+      </table>
+      <div class="label">Interface Naming Conventions</div>
+      <ul class="items">
+        <li>Legacy fixed: <code>Serial0</code>, <code>Ethernet0</code></li>
+        <li>Modular slot/port: <code>Serial0/0</code>, <code>FastEthernet0/0</code></li>
+        <li>Modular slot/subslot/port: <code>GigabitEthernet0/0/0</code></li>
+      </ul>
+      <div class="label">Loopback Interface</div>
+      <pre>interface Loopback 0
+ ip address 1.1.1.1 255.255.255.255
+ ! Always up — never goes down
+ ! Used for: router-ID, management, testing</pre>
+      <div class="note">
+        <div class="n-title">bandwidth vs clock rate</div>
+        <code>bandwidth</code> sets the metric value for routing protocols (logical). <code>clock rate</code> sets actual physical synchronization on DCE serial links.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5 -->
+<div class="grid section-gap">
+  <div class="card blue" id="memory-types">
+    <div class="card-header"><div class="dot"></div><h3>Router Memory Types</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Memory</th><th>Full Name</th><th>Stores</th><th>Volatile?</th></tr>
+        <tr><td><span class="tt" data-t="Random Access Memory — main working memory. All active data lost on power cycle.">RAM</span></td><td>Random Access Memory</td><td>Running-config, routing table, ARP cache, packet buffers, IOS decompressed</td><td style="color:var(--accent3)">Yes</td></tr>
+        <tr><td><span class="tt" data-t="Non-Volatile RAM — retains startup configuration across reboots and power cycles.">NVRAM</span></td><td>Non-Volatile RAM</td><td>Startup-config, configuration register value</td><td style="color:var(--accent2)">No</td></tr>
+        <tr><td><span class="tt" data-t="Flash memory chip — electrically erasable. Holds one or more IOS images. Contents survive power loss.">Flash</span></td><td>Flash Memory</td><td>IOS image file(s) — e.g., c2600-i-mz.122-28.bin</td><td style="color:var(--accent2)">No</td></tr>
+        <tr><td><span class="tt" data-t="Read-Only Memory — contains the bootstrap loader, POST routines, and mini-IOS (RxBoot) for recovery.">ROM</span></td><td>Read-Only Memory</td><td>Bootstrap, POST, ROMMON, mini-IOS (RxBoot)</td><td style="color:var(--accent2)">No</td></tr>
+      </table>
+      <div class="formula" style="margin-top:8px;">show version → RAM / NVRAM / Flash sizes<br>show flash → IOS filename + bytes free</div>
+      <div class="label">Memory-to-Config Mapping</div>
+      <ul class="items">
+        <li><strong>RAM</strong> holds <code>running-config</code> (active, lost on reload)</li>
+        <li><strong>NVRAM</strong> holds <code>startup-config</code> (persistent)</li>
+        <li><strong>Flash</strong> holds IOS image (persistent)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card purple col-span-2" id="config-management">
+    <div class="card-header"><div class="dot"></div><h3>Configuration Management</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="label">View Configurations</div>
+          <pre>show running-config        ! RAM — currently active
+show startup-config        ! NVRAM — saved on disk
+show running-config int f0/0  ! single interface only</pre>
+          <div class="label">Save Running-Config to NVRAM</div>
+          <pre>! Preferred method:
+copy running-config startup-config
+
+! Shorthand (legacy, same result):
+write memory
+wr</pre>
+          <div class="label">Restore Startup-Config to RAM</div>
+          <pre>copy startup-config running-config
+! WARNING: This MERGES — does NOT replace.
+! Reload for a clean restore.</pre>
+          <div class="label">Specific Interface Config</div>
+          <pre>show running-config | section interface
+show running-config | include ip address</pre>
+        </div>
+        <div>
+          <div class="label">Erase & Factory Reset</div>
+          <pre>erase startup-config   ! wipe NVRAM config
+write erase            ! same as above
+delete nvram:          ! same as above
+reload                 ! reboot after erase</pre>
+          <div class="label">TFTP Backup / Restore</div>
+          <pre>! Save running-config to TFTP server:
+copy running-config tftp:
+  Address of remote host? 192.168.1.100
+  Destination filename? router1-backup.cfg
+
+! Restore from TFTP:
+copy tftp: running-config
+  Address of remote host? 192.168.1.100
+  Source filename? router1-backup.cfg</pre>
+          <div class="warn">
+            <div class="w-title">⚠ Copy to Running-Config = Merge</div>
+            Copying TO running-config only adds/overwrites — it does NOT remove existing commands. Use <code>reload</code> after <code>copy startup running</code> for a clean slate.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 6 — Full width verification table -->
+<div class="grid section-gap">
+  <div class="card green col-span-3" id="verification-commands">
+    <div class="card-header"><div class="dot"></div><h3>Verification Commands</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Command</th><th>Mode</th><th>Shows</th><th>Key Fields / Notes</th></tr>
+        <tr><td><code>show version</code></td><td>User/Priv</td><td>IOS version, hostname, uptime, RAM, Flash, NVRAM, config register</td><td>Check register = 0x2102 for normal boot</td></tr>
+        <tr><td><code>show running-config</code></td><td>Priv</td><td>Current active configuration stored in RAM</td><td>Use <code>| include</code>, <code>| section</code> to filter</td></tr>
+        <tr><td><code>show startup-config</code></td><td>Priv</td><td>Configuration saved in NVRAM</td><td>"startup-config is not present" = erased</td></tr>
+        <tr><td><code>show interfaces</code></td><td>Priv</td><td>All interface counters: errors, bandwidth, encapsulation, MTU</td><td>Check input errors, CRC, resets for problems</td></tr>
+        <tr><td><code>show interfaces f0/0</code></td><td>Priv</td><td>Single interface detailed statistics</td><td>Line/Protocol status, IP, MAC, encap</td></tr>
+        <tr><td><code>show ip interface brief</code></td><td>Priv</td><td>Quick summary: IP address, OK, Method, Status, Protocol for all interfaces</td><td>Best quick-check — all ints on one screen</td></tr>
+        <tr><td><code>show ip interface f0/0</code></td><td>Priv</td><td>Detailed L3 info: ACLs, proxy-ARP, split-horizon, helper address</td><td>Shows inbound/outbound access lists</td></tr>
+        <tr><td><code>show controllers s0/0</code></td><td>Priv</td><td>Hardware info including whether interface is DCE or DTE</td><td>Look for "DCE" or "DTE" in first output line</td></tr>
+        <tr><td><code>show flash</code></td><td>Priv</td><td>Flash contents: IOS filename, file size, free space</td><td>Verify IOS image name for boot sequence</td></tr>
+        <tr><td><code>show protocols</code></td><td>Priv</td><td>Enabled routed protocols and per-interface addresses</td><td>Quick L3 address overview</td></tr>
+        <tr><td><code>show history</code></td><td>User/Priv</td><td>Command history buffer (default 10 entries, max 256)</td><td>Use <code>terminal history size N</code> to change</td></tr>
+        <tr><td><code>show clock</code></td><td>User/Priv</td><td>Current date and time</td><td>Set with <code>clock set HH:MM:SS DD Mon YYYY</code></td></tr>
+      </table>
+      <hr class="divider">
+      <div class="label">show ip interface brief — Sample Output</div>
+      <pre>Interface              IP-Address      OK? Method Status                Protocol
+FastEthernet0/0        192.168.1.1     YES NVRAM  up                    up
+FastEthernet0/1        unassigned      YES unset  administratively down down
+Serial0/0              172.16.1.1      YES NVRAM  up                    up
+Serial0/1              unassigned      YES unset  down                  down
+Loopback0              1.1.1.1         YES NVRAM  up                    up</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 7 -->
+<div class="grid section-gap">
+  <div class="card blue" id="cdp">
+    <div class="card-header"><div class="dot"></div><h3>CDP — Cisco Discovery Protocol</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="Layer 2 Cisco proprietary protocol. Sends hello packets every 60 seconds to discover directly connected Cisco devices regardless of network layer protocol.">CDP</span> is a Cisco-proprietary Layer 2 protocol. It discovers directly connected Cisco devices — even with no IP configured — using multicast frames.</p>
+      <div class="label">CDP Show Commands</div>
+      <pre>show cdp                     ! status, timers
+show cdp neighbors           ! summary table of neighbors
+show cdp neighbors detail    ! includes IP addresses
+show cdp entry Router2       ! single device detail
+show cdp interface           ! CDP state per interface
+show cdp traffic             ! packet statistics</pre>
+      <div class="label">show cdp neighbors — Column Headers</div>
+      <table class="tbl">
+        <tr><th>Column</th><th>Description</th></tr>
+        <tr><td>Device ID</td><td>Hostname of neighbor</td></tr>
+        <tr><td>Local Intrfce</td><td>Interface on THIS router connecting to neighbor</td></tr>
+        <tr><td>Holdtime</td><td>Seconds until neighbor entry expires</td></tr>
+        <tr><td>Capability</td><td>R=Router, S=Switch, T=Trans-Bridge, H=Host</td></tr>
+        <tr><td>Platform</td><td>Neighbor hardware model</td></tr>
+        <tr><td>Port ID</td><td>Interface on the NEIGHBOR device</td></tr>
+      </table>
+      <div class="label">Enable / Disable CDP</div>
+      <pre>cdp run                      ! global enable (on by default)
+no cdp run                   ! global disable (all interfaces)
+no cdp enable                ! disable on ONE interface only</pre>
+      <div class="note">
+        <div class="n-title">CDP Timers (Default)</div>
+        Send interval: <strong>60 seconds</strong> &nbsp;|&nbsp; Holdtime: <strong>180 seconds</strong><br>
+        Change: <code>cdp timer 30</code> · <code>cdp holdtime 90</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="card orange" id="show-version-detail">
+    <div class="card-header"><div class="dot"></div><h3>show version — Key Fields</h3></div>
+    <div class="card-body">
+      <pre style="font-size:10px;">Cisco IOS Software, Version 12.4(15)T1
+...
+Router uptime is 2 weeks, 3 days, 14 hours
+System returned to ROM by reload
+System image file is "flash:c2800nm-advipservicesk9-mz.124-15.T1.bin"
+
+cisco 2811 (revision 1.0) with
+ 249856K/12288K bytes of memory.
+ Processor board ID FCZ111600JL
+ 2 FastEthernet interfaces
+ 2 Serial(sync/async) interfaces
+
+128K bytes of non-volatile configuration memory.
+62464K bytes of ATA CompactFlash (Read/Write)
+
+Configuration register is 0x2102</pre>
+      <div class="label">Key Fields Explained</div>
+      <ul class="items">
+        <li><strong>IOS version</strong> — determines supported features</li>
+        <li><strong>System image file</strong> — IOS filename in Flash</li>
+        <li><strong>Uptime</strong> — time since last reload</li>
+        <li><strong>Memory</strong> — total RAM / shared RAM</li>
+        <li><strong>NVRAM</strong> — startup-config space (128K here)</li>
+        <li><strong>Flash (ATA)</strong> — IOS image storage</li>
+        <li><strong>Config register</strong> — <code>0x2102</code> = normal boot</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card yellow" id="password-recovery">
+    <div class="card-header"><div class="dot"></div><h3>Password Recovery Procedure</h3></div>
+    <div class="card-body">
+      <ol class="steps">
+        <li>Connect to console, power cycle router</li>
+        <li>Send <strong>Break</strong> (Ctrl+Break) within <strong>60 seconds</strong> of boot → enter <span class="tt" data-t="ROM Monitor — low-level bootstrap environment used for password recovery, IOS upgrade, and disaster recovery. Prompt: rommon&gt;">ROMMON</span></li>
+        <li>At <code>rommon&gt;</code> type: <code>confreg 0x2142</code></li>
+        <li>Type <code>reset</code> — router reboots, skips NVRAM</li>
+        <li>Router boots without config; type <code>no</code> at setup dialog</li>
+        <li>Enter <code>enable</code> (no password required)</li>
+        <li>Load old config: <code>copy startup-config running-config</code></li>
+        <li>Change password: <code>enable secret NewPass123</code></li>
+        <li>Restore register: <code>config-register 0x2102</code></li>
+        <li><code>copy running-config startup-config</code> then <code>reload</code></li>
+      </ol>
+      <div class="warn">
+        <div class="w-title">⚠ Physical Access Required</div>
+        Password recovery requires console cable and physical presence at the device.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>NWC204 · CH04 — Introduction to the Cisco IOS · Pages 151–212</span>
+  <span>CCNA INTRO · Todd Lammle · Sybex 2006</span>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

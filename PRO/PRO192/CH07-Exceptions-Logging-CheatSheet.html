@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH07 – Exceptions, Assertions &amp; Logging | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Exceptions, Assertions &amp; Logging — Chapter 7</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+  </div>
+  <div>
+    <div class="badge">PRO192</div>
+    <div class="toc" style="margin-top:8px;">
+      <span class="toc-item">§Exception Hierarchy</span>
+      <span class="toc-item">§try/catch/finally</span>
+      <span class="toc-item">§Checked vs Unchecked</span>
+      <span class="toc-item">§Custom Exceptions</span>
+      <span class="toc-item">§try-with-resources</span>
+      <span class="toc-item">§Assertions</span>
+      <span class="toc-item">§Logging</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROW 1 ── -->
+<div class="grid">
+
+  <div class="card yellow" id="exception-hierarchy">
+    <div class="card-header"><div class="dot"></div><h3>Exception Hierarchy</h3></div>
+    <div class="card-body">
+      <div class="formula">Throwable → Error (JVM errors, don't catch) | Exception (application errors, catch these)</div>
+      <pre>Throwable
+├── Error (don't catch!)
+│   ├── OutOfMemoryError
+│   ├── StackOverflowError
+│   └── VirtualMachineError
+└── Exception (catch/handle)
+    ├── RuntimeException (Unchecked)
+    │   ├── NullPointerException
+    │   ├── ArrayIndexOutOfBoundsException
+    │   ├── ClassCastException
+    │   ├── ArithmeticException (/ by zero)
+    │   ├── NumberFormatException
+    │   └── IllegalArgumentException
+    └── Checked Exceptions
+        ├── IOException
+        ├── FileNotFoundException
+        ├── SQLException
+        └── ParseException</pre>
+    </div>
+  </div>
+
+  <div class="card blue" id="try-catch">
+    <div class="card-header"><div class="dot"></div><h3>try / catch / finally</h3></div>
+    <div class="card-body">
+      <pre>try {
+    // Code that may throw exceptions
+    int result = 10 / divisor;
+    String s = null;
+    s.length();  // NullPointerException
+} catch (ArithmeticException e) {
+    System.err.println("Division error: " + e.getMessage());
+} catch (NullPointerException e) {
+    System.err.println("Null pointer: " + e.getMessage());
+} catch (Exception e) {
+    // Catch-all (less specific, must come AFTER specific)
+    e.printStackTrace();
+} finally {
+    // ALWAYS runs — cleanup resources
+    System.out.println("Finally block");
+}
+
+// Multi-catch (Java 7+)
+try {
+    ...
+} catch (IOException | SQLException e) {
+    System.err.println("I/O or DB error: " + e);
+}</pre>
+      <ul class="items">
+        <li>catch blocks checked in order — put specific first</li>
+        <li>finally runs even if exception not caught</li>
+        <li>finally runs even after return</li>
+        <li>if exception in finally — original exception lost</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card green" id="checked-unchecked">
+    <div class="card-header"><div class="dot"></div><h3>Checked vs Unchecked</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th></th><th>Checked</th><th>Unchecked (Runtime)</th></tr>
+        <tr><td>Extends</td><td>Exception</td><td>RuntimeException</td></tr>
+        <tr><td>Must handle?</td><td>Yes (compile error if not)</td><td>No</td></tr>
+        <tr><td>Cause</td><td>External factors (file, network)</td><td>Programming errors</td></tr>
+        <tr><td>Examples</td><td>IOException, SQLException</td><td>NPE, AIOOBE, CCE</td></tr>
+      </table>
+      <div class="label">throws declaration</div>
+      <pre>// Must declare checked exceptions in signature
+public void readFile(String path) throws IOException {
+    FileReader fr = new FileReader(path); // checked
+    ...
+}
+
+// Or handle it:
+public void readFile(String path) {
+    try {
+        FileReader fr = new FileReader(path);
+    } catch (IOException e) {
+        System.err.println("File error: " + e);
+    }
+}</pre>
+      <div class="tip"><div class="t-title">Tip</div>Debate: James Gosling (Java creator) stands by checked exceptions; most modern languages (Kotlin, C#) dropped them. In practice: catch what you can handle, propagate the rest.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── ROW 2 ── -->
+<div class="grid section-gap">
+
+  <div class="card red" id="throwing">
+    <div class="card-header"><div class="dot"></div><h3>Throwing Exceptions</h3></div>
+    <div class="card-body">
+      <div class="label">throw statement</div>
+      <pre>public void setAge(int age) {
+    if (age &lt; 0 || age &gt; 150) {
+        throw new IllegalArgumentException(
+            "Invalid age: " + age);
+    }
+    this.age = age;
+}
+
+public void processFile(String path) throws IOException {
+    if (path == null) {
+        throw new NullPointerException("Path cannot be null");
+    }
+    // ... file processing
+}
+
+// Re-throw (with cause)
+try {
+    lowLevelMethod();
+} catch (LowLevelException e) {
+    throw new HighLevelException("High level message", e);
+}</pre>
+      <div class="tip"><div class="t-title">Tip</div>Include the original exception as cause when re-throwing — preserves the full stack trace chain</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="custom-exceptions">
+    <div class="card-header"><div class="dot"></div><h3>Custom Exceptions</h3></div>
+    <div class="card-body">
+      <pre>// Checked custom exception
+public class InsufficientFundsException extends Exception {
+    private double amount;
+
+    public InsufficientFundsException(double amount) {
+        super("Insufficient funds: need " + amount + " more");
+        this.amount = amount;
+    }
+
+    public double getAmount() { return amount; }
+}
+
+// Unchecked custom exception
+public class DatabaseException extends RuntimeException {
+    public DatabaseException(String message) {
+        super(message);
+    }
+    public DatabaseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
+
+// Usage
+public void withdraw(double amount)
+        throws InsufficientFundsException {
+    if (amount &gt; balance) {
+        throw new InsufficientFundsException(amount - balance);
+    }
+    balance -= amount;
+}</pre>
+    </div>
+  </div>
+
+  <div class="card orange" id="try-resources">
+    <div class="card-header"><div class="dot"></div><h3>try-with-resources</h3></div>
+    <div class="card-body">
+      <div class="formula">Auto-closes resources that implement AutoCloseable when block exits</div>
+      <pre>// Old way (verbose):
+FileReader fr = null;
+try {
+    fr = new FileReader("file.txt");
+    // use fr
+} finally {
+    if (fr != null) fr.close();
+}
+
+// try-with-resources (Java 7+):
+try (FileReader fr = new FileReader("file.txt");
+     BufferedReader br = new BufferedReader(fr)) {
+    String line = br.readLine();
+    // fr and br auto-closed even if exception
+}
+
+// Multiple resources — closed in reverse order
+try (var conn = DriverManager.getConnection(url);
+     var stmt = conn.createStatement()) {
+    var rs = stmt.executeQuery("SELECT ...");
+}</pre>
+      <div class="label">Custom AutoCloseable</div>
+      <pre>public class ManagedResource implements AutoCloseable {
+    public ManagedResource() { System.out.println("Opened"); }
+    @Override
+    public void close() { System.out.println("Closed"); }
+}</pre>
+      <div class="tip"><div class="t-title">Tip</div>Always use try-with-resources for streams, connections, and any AutoCloseable resource</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── ASSERTIONS & LOGGING (full-width) ── -->
+<div class="card yellow section-gap" id="assertions-logging">
+  <div class="card-header"><div class="dot"></div><h3>Assertions &amp; Logging</h3></div>
+  <div class="card-body">
+    <div class="grid-2">
+      <div>
+        <div class="label">Assertions</div>
+        <pre>// assert condition;
+// assert condition : message;
+
+double sqrt(double x) {
+    assert x &gt;= 0 : "sqrt requires non-negative input";
+    return Math.sqrt(x);
+}
+
+// Enable assertions at runtime:
+// java -ea MyClass
+// java -ea:com.example... MyClass  (specific package)
+// Disabled by default in production!</pre>
+        <div class="label">When to use assert vs exception</div>
+        <table class="tbl">
+          <tr><th>Use</th><th>Assert</th><th>Exception</th></tr>
+          <tr><td>Internal invariants</td><td>YES</td><td>No</td></tr>
+          <tr><td>Preconditions (public API)</td><td>No</td><td>YES (IllegalArgumentException)</td></tr>
+          <tr><td>Production code check</td><td>No (disabled)</td><td>YES</td></tr>
+          <tr><td>Postconditions</td><td>YES</td><td>Sometimes</td></tr>
+        </table>
+        <div class="warn" style="margin-top:8px;"><div class="w-title">Warning</div>NEVER use assert for argument checking in public methods — assertions can be disabled at runtime!</div>
+      </div>
+      <div>
+        <div class="label">Java Logging</div>
+        <pre>import java.util.logging.*;
+
+public class MyClass {
+    private static final Logger logger =
+        Logger.getLogger(MyClass.class.getName());
+
+    public void process() {
+        logger.info("Processing started");
+        logger.warning("Low memory");
+        logger.severe("Critical error occurred");
+        logger.fine("Debug detail");  // verbose
+        logger.log(Level.INFO, "Message with {0}", param);
+    }
+}</pre>
+        <div class="label">Log Levels (high to low)</div>
+        <table class="tbl">
+          <tr><th>Level</th><th>Use</th></tr>
+          <tr><td>SEVERE</td><td>Serious failure</td></tr>
+          <tr><td>WARNING</td><td>Potential problem</td></tr>
+          <tr><td>INFO</td><td>Informational (default shown)</td></tr>
+          <tr><td>CONFIG</td><td>Configuration</td></tr>
+          <tr><td>FINE</td><td>Debug trace</td></tr>
+          <tr><td>FINER</td><td>More detail</td></tr>
+          <tr><td>FINEST</td><td>Most detailed</td></tr>
+        </table>
+        <div class="tip"><div class="t-title">Tip</div>For real projects use SLF4J + Logback or Log4j2 instead of java.util.logging</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROW 3 ── -->
+<div class="grid-2 section-gap">
+
+  <div class="card blue" id="exception-best-practices">
+    <div class="card-header"><div class="dot"></div><h3>Exception Best Practices</h3></div>
+    <div class="card-body">
+      <ul class="items">
+        <li>Catch specific exceptions (not just Exception)</li>
+        <li>Don't swallow exceptions with empty catch blocks</li>
+        <li>Include meaningful error messages</li>
+        <li>Use try-with-resources for resource cleanup</li>
+        <li>Wrap low-level exceptions with domain exceptions</li>
+        <li>Prefer unchecked exceptions for programming errors</li>
+        <li>Document exceptions with @throws Javadoc</li>
+      </ul>
+      <div class="label">Anti-patterns to avoid</div>
+      <pre>// BAD: empty catch (swallows exception silently)
+try { ... } catch (Exception e) {}
+
+// BAD: catching too broad
+try { ... } catch (Exception e) { e.printStackTrace(); }
+
+// BAD: using exceptions for control flow
+try {
+    int val = Integer.parseInt(str);
+} catch (NumberFormatException e) {
+    // This is valid — parseInt has no "safe" version
+}
+
+// GOOD: use Optional or return code when no exception is expected</pre>
+    </div>
+  </div>
+
+  <div class="card green" id="stack-traces">
+    <div class="card-header"><div class="dot"></div><h3>Stack Traces</h3></div>
+    <div class="card-body">
+      <pre>// Reading a stack trace:
+Exception in thread "main" java.lang.NullPointerException
+    at com.example.MyClass.method(MyClass.java:42)
+    at com.example.Main.main(Main.java:10)
+//  ^class          ^method  ^file    ^line</pre>
+      <div class="label">Getting stack trace in code</div>
+      <pre>try {
+    riskyOperation();
+} catch (Exception e) {
+    // Get string version
+    StringWriter sw = new StringWriter();
+    e.printStackTrace(new PrintWriter(sw));
+    String stackTrace = sw.toString();
+
+    // Get cause
+    Throwable cause = e.getCause();
+
+    // Get message
+    String msg = e.getMessage();
+
+    // All stack frames
+    StackTraceElement[] frames = e.getStackTrace();
+}</pre>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <span>PRO192 · Chapter 7 · Core Java Vol I, 12th Ed.</span>
+  <span>Horstmann &amp; Cornell</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  window.toggleTOC=function(){open=!open;toc.className=open?'toc-open':'toc-collapsed';};
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

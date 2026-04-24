@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH04 – Objects and Classes | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Objects and Classes — Chapter 4</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+  </div>
+  <div>
+    <div class="badge">PRO192</div>
+    <div class="toc" style="margin-top:8px;">
+      <span class="toc-item">§OOP Intro</span>
+      <span class="toc-item">§Defining Classes</span>
+      <span class="toc-item">§Constructors</span>
+      <span class="toc-item">§this</span>
+      <span class="toc-item">§Static</span>
+      <span class="toc-item">§Encapsulation</span>
+      <span class="toc-item">§Records</span>
+      <span class="toc-item">§Packages</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROW 1 ─────────────────────────────────────────────────────────────── -->
+<div class="grid">
+
+  <!-- Card 1: OOP Intro -->
+  <div class="card yellow" id="oop-intro">
+    <div class="card-header"><div class="dot"></div><h3>OOP Concepts Introduction</h3></div>
+    <div class="card-body">
+      <div class="formula">Object = State (fields) + Behavior (methods) + Identity (unique reference)</div>
+      <div class="label">Key Terms</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>Meaning</th></tr>
+        <tr><td>Class</td><td>Blueprint/template for objects; defines structure and behavior</td></tr>
+        <tr><td>Object</td><td>Instance of a class; created with <code>new</code></td></tr>
+        <tr><td>Field</td><td>Data stored in an object (instance variable)</td></tr>
+        <tr><td>Method</td><td>Function defined in a class; operates on object's data</td></tr>
+        <tr><td>Constructor</td><td>Special method to initialize a new object</td></tr>
+        <tr><td>Encapsulation</td><td>Hiding data + behavior in one unit; access via methods</td></tr>
+        <tr><td>this</td><td>Reference to the current object instance</td></tr>
+      </table>
+      <div class="tip"><div class="t-title">Tip</div>Objects model real-world entities: <code>BankAccount</code> object has <code>balance</code> (field) and <code>deposit()</code> (method)</div>
+    </div>
+  </div>
+
+  <!-- Card 2: Defining a Class -->
+  <div class="card blue" id="class-definition">
+    <div class="card-header"><div class="dot"></div><h3>Defining a Class</h3></div>
+    <div class="card-body">
+      <pre>public class Employee {
+    // Instance fields
+    private String name;
+    private double salary;
+    private LocalDate hireDate;
+
+    // Constructor
+    public Employee(String name, double salary) {
+        this.name = name;
+        this.salary = salary;
+        this.hireDate = LocalDate.now();
+    }
+
+    // Getter (accessor)
+    public String getName() { return name; }
+    public double getSalary() { return salary; }
+
+    // Setter (mutator)
+    public void setSalary(double newSalary) {
+        if (newSalary &gt; 0) salary = newSalary;
+    }
+
+    // Method
+    public void raiseSalary(double percent) {
+        salary *= 1 + percent / 100;
+    }
+}</pre>
+      <div class="label">Usage</div>
+      <pre>Employee emp = new Employee("Alice", 75000);
+emp.raiseSalary(10);
+System.out.println(emp.getSalary()); // 82500.0</pre>
+    </div>
+  </div>
+
+  <!-- Card 3: Access Modifiers -->
+  <div class="card green" id="access-modifiers">
+    <div class="card-header"><div class="dot"></div><h3>Access Modifiers</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Modifier</th><th>Class</th><th>Package</th><th>Subclass</th><th>World</th></tr>
+        <tr><td>private</td><td>✓</td><td>✗</td><td>✗</td><td>✗</td></tr>
+        <tr><td>(default)</td><td>✓</td><td>✓</td><td>✗</td><td>✗</td></tr>
+        <tr><td>protected</td><td>✓</td><td>✓</td><td>✓</td><td>✗</td></tr>
+        <tr><td>public</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+      </table>
+      <div class="label">Best Practices</div>
+      <ul class="items">
+        <li>Fields should be <code>private</code> (encapsulation)</li>
+        <li>Getters/setters <code>public</code></li>
+        <li>Helper methods <code>private</code></li>
+        <li>Constants <code>public static final</code></li>
+      </ul>
+      <div class="warn"><div class="w-title">Warning</div>Making fields public breaks encapsulation — validation logic can't be enforced</div>
+      <div class="label">Final field</div>
+      <pre>private final String id;  // set once, never changed
+// Final instance field must be set in constructor</pre>
+    </div>
+  </div>
+
+</div><!-- end row 1 -->
+
+<!-- ── ROW 2 ─────────────────────────────────────────────────────────────── -->
+<div class="grid section-gap">
+
+  <!-- Card 4: Constructors -->
+  <div class="card purple" id="constructors">
+    <div class="card-header"><div class="dot"></div><h3>Constructors</h3></div>
+    <div class="card-body">
+      <div class="label">Rules</div>
+      <ul class="items">
+        <li>Same name as class, no return type</li>
+        <li>Called with <code>new</code>, can be overloaded</li>
+        <li>If no constructor defined → default no-arg constructor provided</li>
+        <li>Once you define any constructor → default gone</li>
+      </ul>
+      <pre>public class Circle {
+    private double radius;
+
+    // No-arg constructor
+    public Circle() { this.radius = 1.0; }
+
+    // Parameterized constructor
+    public Circle(double radius) {
+        if (radius &lt; 0) throw new IllegalArgumentException();
+        this.radius = radius;
+    }
+
+    // Constructor chaining with this()
+    public Circle(int diameter) {
+        this(diameter / 2.0);  // must be first statement
+    }
+}</pre>
+      <div class="tip"><div class="t-title">Tip</div>Constructor chaining with <code>this(...)</code> avoids code duplication. Must be first statement.</div>
+    </div>
+  </div>
+
+  <!-- Card 5: Static -->
+  <div class="card orange" id="static">
+    <div class="card-header"><div class="dot"></div><h3>Static Fields and Methods</h3></div>
+    <div class="card-body">
+      <div class="formula">static = belongs to CLASS, not instances. Shared by all objects.</div>
+      <pre>public class MathUtils {
+    // Static field (class variable)
+    public static final double PI = 3.14159;
+    private static int instanceCount = 0;
+
+    public MathUtils() { instanceCount++; }
+
+    // Static method (no 'this', no instance needed)
+    public static double circleArea(double r) {
+        return PI * r * r;
+    }
+
+    public static int getCount() { return instanceCount; }
+}
+
+// Usage: no object needed
+double area = MathUtils.circleArea(5);
+int count = MathUtils.getCount();</pre>
+      <div class="warn"><div class="w-title">Warning</div>Static methods cannot access instance fields or call instance methods directly</div>
+      <div class="label">Static initializer block</div>
+      <pre>static {
+    // runs once when class is loaded
+    System.out.println("Class loaded");
+}</pre>
+    </div>
+  </div>
+
+  <!-- Card 6: Method Parameters -->
+  <div class="card blue" id="method-params">
+    <div class="card-header"><div class="dot"></div><h3>Method Parameters</h3></div>
+    <div class="card-body">
+      <div class="formula">Java is ALWAYS pass-by-value. For objects, the reference (address) is copied.</div>
+      <div class="label">Primitives vs Objects</div>
+      <pre>void tripleValue(double x) {
+    x = x * 3;  // only changes local copy
+}
+
+void tripleSalary(Employee emp) {
+    emp.raiseSalary(200);  // modifies the object through reference
+}
+
+void swap(Employee a, Employee b) {
+    // CANNOT swap references — only swaps local copies
+    Employee temp = a; a = b; b = temp;  // no effect outside!
+}</pre>
+      <ul class="items">
+        <li>Primitive types → method gets a copy, cannot modify original</li>
+        <li>Object references → method gets copy of reference → can modify object's state</li>
+        <li>But cannot reassign the original reference</li>
+      </ul>
+      <div class="tip"><div class="t-title">Tip</div>Think of object reference as a sticky note with an address. Method gets a copy of the note — can go to the house and change it, but can't move the original note.</div>
+    </div>
+  </div>
+
+</div><!-- end row 2 -->
+
+<!-- ── ROW 3: Full-width Encapsulation ───────────────────────────────────── -->
+<div class="card yellow section-gap" id="encapsulation-patterns">
+  <div class="card-header"><div class="dot"></div><h3>Encapsulation &amp; Design Patterns</h3></div>
+  <div class="card-body">
+    <div class="grid-2">
+
+      <div>
+        <div class="label">Getters &amp; Setters (JavaBeans pattern)</div>
+        <pre>public class Person {
+    private String name;   // private field
+    private int age;
+
+    // Getter: returns value
+    public String getName() { return name; }
+
+    // Setter: validates before setting
+    public void setName(String name) {
+        if (name == null || name.isEmpty())
+            throw new IllegalArgumentException("Name cannot be empty");
+        this.name = name;
+    }
+
+    public int getAge() { return age; }
+
+    public void setAge(int age) {
+        if (age &lt; 0 || age &gt; 150)
+            throw new IllegalArgumentException("Invalid age");
+        this.age = age;
+    }
+}</pre>
+        <div class="tip"><div class="t-title">Tip</div>getName/setName convention = JavaBean property 'name'. Frameworks (Spring, Hibernate) rely on this.</div>
+      </div>
+
+      <div>
+        <div class="label">Records (Java 16+ — immutable data classes)</div>
+        <pre>// Compact, immutable data holder
+public record Point(double x, double y) {
+    // Auto-generated: constructor, getters, equals, hashCode, toString
+
+    // Custom validation in compact constructor
+    public Point {
+        if (x &lt; 0 || y &lt; 0)
+            throw new IllegalArgumentException();
+    }
+
+    // Can add methods
+    public double distance(Point other) {
+        return Math.sqrt(Math.pow(x - other.x, 2) +
+                         Math.pow(y - other.y, 2));
+    }
+}
+
+// Usage
+Point p = new Point(3.0, 4.0);
+System.out.println(p.x());      // accessor (not getX!)
+System.out.println(p);          // Point[x=3.0, y=4.0]</pre>
+        <div class="label">Immutable class (pre-records way)</div>
+        <pre>public final class ImmutablePoint {
+    private final double x;
+    private final double y;
+    public ImmutablePoint(double x, double y) {
+        this.x = x; this.y = y;
+    }
+    public double getX() { return x; }
+    public double getY() { return y; }
+    // no setters!
+}</pre>
+        <div class="tip"><div class="t-title">Tip</div>Immutable objects are thread-safe and easier to reason about. Prefer records for simple data carriers.</div>
+      </div>
+
+    </div>
+  </div>
+</div><!-- end row 3 -->
+
+<!-- ── ROW 4: 2 cols ─────────────────────────────────────────────────────── -->
+<div class="grid-2 section-gap">
+
+  <!-- Card 7: Packages -->
+  <div class="card green" id="packages">
+    <div class="card-header"><div class="dot"></div><h3>Packages &amp; Imports</h3></div>
+    <div class="card-body">
+      <div class="formula">Package = namespace for classes. Maps to directory structure.</div>
+      <pre>// Declare package (first line, before imports)
+package com.company.project;
+
+// Import single class
+import java.util.ArrayList;
+
+// Import all classes in package (avoid in large projects)
+import java.util.*;
+
+// Static import (import static members)
+import static java.lang.Math.*;  // then use sqrt() not Math.sqrt()
+
+// No import needed for java.lang (String, System, Math, etc.)</pre>
+      <div class="label">Naming Convention</div>
+      <ul class="items">
+        <li>Package: all lowercase, reverse domain (<code>com.oracle.java</code>)</li>
+        <li>Class: PascalCase (<code>ClassName</code>)</li>
+        <li>Method/field: camelCase (<code>methodName</code>)</li>
+        <li>Constant: UPPER_SNAKE_CASE (<code>MAX_VALUE</code>)</li>
+      </ul>
+      <div class="label">Common Packages</div>
+      <table class="tbl">
+        <tr><th>Package</th><th>Contains</th></tr>
+        <tr><td>java.lang</td><td>String, Math, System, Object, Integer… (auto-imported)</td></tr>
+        <tr><td>java.util</td><td>Collections, Scanner, Arrays, Random…</td></tr>
+        <tr><td>java.io</td><td>File, InputStream, OutputStream…</td></tr>
+        <tr><td>java.nio</td><td>New IO (Path, Files, Channels…)</td></tr>
+        <tr><td>java.net</td><td>URL, Socket, ServerSocket…</td></tr>
+        <tr><td>java.time</td><td>LocalDate, LocalDateTime, Duration…</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 8: Object Methods -->
+  <div class="card purple" id="object-methods">
+    <div class="card-header"><div class="dot"></div><h3>Object Class Methods</h3></div>
+    <div class="card-body">
+      <p>All classes extend <code>Object</code> implicitly</p>
+      <div class="label">Key methods to override</div>
+      <pre>public class Employee {
+    private String name;
+    private double salary;
+
+    @Override
+    public String toString() {
+        return "Employee[name=" + name + ", salary=" + salary + "]";
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (!(obj instanceof Employee other)) return false;
+        return Objects.equals(name, other.name)
+            &amp;&amp; Double.compare(salary, other.salary) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, salary);
+    }
+}</pre>
+      <div class="warn"><div class="w-title">Warning</div>If you override equals(), you MUST override hashCode() too — contract requires equal objects have same hash</div>
+      <div class="label">Object methods</div>
+      <table class="tbl">
+        <tr><th>Method</th><th>Description</th></tr>
+        <tr><td>toString()</td><td>String representation; called by print</td></tr>
+        <tr><td>equals(Object)</td><td>Content equality (default: reference ==)</td></tr>
+        <tr><td>hashCode()</td><td>Hash for HashMap/HashSet</td></tr>
+        <tr><td>clone()</td><td>Shallow copy (implement Cloneable)</td></tr>
+        <tr><td>getClass()</td><td>Runtime class: obj.getClass().getName()</td></tr>
+        <tr><td>finalize()</td><td>Deprecated; don't use</td></tr>
+      </table>
+    </div>
+  </div>
+
+</div><!-- end row 4 -->
+
+<div class="footer">
+  <a href="../PRO192.html">← PRO192 Index</a>
+  <span>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell</span>
+  <span>CH04 / 09</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  function toggleTOC(){open=!open;toc.className=open?'toc-open':'toc-collapsed';}
+  document.querySelector('.toc-hdr').addEventListener('click',toggleTOC);
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

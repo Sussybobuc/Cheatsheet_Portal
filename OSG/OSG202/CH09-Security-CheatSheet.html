@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH09 – Security | OSG202</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Sans+Condensed:wght@400;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<!-- Fixed TOC Sidebar -->
+<nav id="page-toc" class="toc-open">
+  <div class="toc-hdr" onclick="toggleTOC()">
+    <span>Contents</span>
+    <span class="toc-chevron">▾</span>
+  </div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-left">
+    <h1>CH09 — Security</h1>
+    <h2>OSG202 · Operating Systems · Threats, Crypto, Access Control &amp; Defenses</h2>
+    <div style="margin-top:10px;" class="toc">
+      <span class="toc-item">CIA Triad</span>
+      <span class="toc-item">Authentication</span>
+      <span class="toc-item">Password Security</span>
+      <span class="toc-item">Symmetric Crypto</span>
+      <span class="toc-item">Asymmetric / RSA</span>
+      <span class="toc-item">Hashing &amp; Signatures</span>
+      <span class="toc-item">Access Control</span>
+      <span class="toc-item">Malware</span>
+      <span class="toc-item">Attacks</span>
+      <span class="toc-item">OS Defenses</span>
+      <span class="toc-item">Network Security</span>
+      <span class="toc-item">TPM</span>
+    </div>
+  </div>
+  <span class="badge">CH09</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 1: CIA Triad (full-width)
+     ═══════════════════════════════════════════════════ -->
+<div class="grid">
+
+  <!-- CIA Triad -->
+  <div class="card blue col-span-3" id="cia-triad">
+    <div class="card-header"><div class="dot"></div><h3>CIA Triad &amp; Threats</h3></div>
+    <div class="card-body">
+      <div class="grid" style="gap:12px;">
+        <div>
+          <div class="label">The CIA Triad</div>
+          <div class="rule">Confidentiality · Integrity · Availability</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Confidentiality</strong> — only <em>authorized</em> principals may read data; prevents unauthorized disclosure</li>
+            <li><strong style="color:var(--osg)">Integrity</strong> — data has not been tampered with or altered by unauthorized parties; ensures trustworthiness</li>
+            <li><strong style="color:var(--osg)">Availability</strong> — system and data remain accessible to authorized users when needed; prevents denial of service</li>
+          </ul>
+          <div class="info" style="margin-top:8px;">
+            <div class="i-title">Authenticity (4th goal)</div>
+            Some models add <strong>Authenticity</strong> — verifying that data originates from the claimed source (not fabricated). Addressed by digital signatures.
+          </div>
+          <div class="label" style="margin-top:8px;">Key Definitions</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Security policy</strong> — a formal statement of what <em>is</em> and <em>is not</em> allowed in a system</li>
+            <li><strong style="color:var(--osg)">Security mechanism</strong> — the technical means by which a policy is enforced (encryption, ACLs, firewalls…)</li>
+            <li><strong style="color:var(--osg)">Threat</strong> — a potential cause of harm to a system or organization</li>
+            <li><strong style="color:var(--osg)">Attack</strong> — a deliberate attempt to exploit a vulnerability</li>
+            <li><strong style="color:var(--osg)">Vulnerability</strong> — a weakness that can be exploited by a threat</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Threat Categories (Classic Model)</div>
+          <table class="tbl">
+            <tr><th>Threat</th><th>Description</th><th>CIA Pillar Attacked</th><th>Example</th></tr>
+            <tr><td><strong style="color:var(--accent3)">Interruption</strong></td><td>System resource destroyed or unavailable</td><td style="color:var(--accent3)">Availability</td><td>DoS/DDoS attack, hardware destruction</td></tr>
+            <tr><td><strong style="color:var(--accent4)">Interception</strong></td><td>Unauthorized party gains access to data</td><td style="color:var(--accent4)">Confidentiality</td><td>Packet sniffing, wiretapping</td></tr>
+            <tr><td><strong style="color:var(--accent5)">Modification</strong></td><td>Unauthorized party alters data in transit</td><td style="color:var(--accent5)">Integrity</td><td>Man-in-the-middle, file tampering</td></tr>
+            <tr><td><strong style="color:var(--accent2)">Fabrication</strong></td><td>Unauthorized party inserts counterfeit data</td><td style="color:var(--accent2)">Authenticity</td><td>DNS spoofing, replay attacks</td></tr>
+          </table>
+          <div class="label" style="margin-top:10px;">Types of Attackers</div>
+          <table class="tbl">
+            <tr><th>Attacker Type</th><th>Behavior</th><th>Risk Level</th></tr>
+            <tr><td><strong style="color:var(--osg)">Passive Eavesdropper</strong></td><td>Listens/monitors traffic only; does not modify data</td><td style="color:var(--accent5)">Medium — hard to detect</td></tr>
+            <tr><td><strong style="color:var(--osg)">Active Intruder</strong></td><td>Intercepts and modifies data in transit (MitM)</td><td style="color:var(--accent3)">High — data corrupted</td></tr>
+            <tr><td><strong style="color:var(--osg)">Insider Threat</strong></td><td>Authorized user abuses legitimate access privileges</td><td style="color:var(--accent3)">Very High — bypasses perimeter</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">Security Models Overview</div>
+          <div class="tip">
+            <div class="t-title">Policy vs. Mechanism</div>
+            A <strong>policy</strong> says "employees may only read files in their department." A <strong>mechanism</strong> (e.g., <code>ACL</code>) enforces that constraint technically. Weak mechanisms break even strong policies.
+          </div>
+          <div class="label">Attack Surfaces</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Software</strong> — bugs, buffer overflows, logic errors in OS/apps</li>
+            <li><strong style="color:var(--osg)">Network</strong> — open ports, unencrypted protocols, misconfigured firewalls</li>
+            <li><strong style="color:var(--osg)">Human</strong> — phishing, social engineering, weak passwords, insider threats</li>
+            <li><strong style="color:var(--osg)">Physical</strong> — stolen hardware, shoulder surfing, dumpster diving</li>
+          </ul>
+          <div class="label" style="margin-top:8px;">Threat vs Risk</div>
+          <div class="formula">Risk = Threat × Vulnerability × Impact</div>
+          <div class="note">
+            <div class="n-title">Principle of Least Privilege</div>
+            Every process, user, or system component should operate using the minimum set of privileges necessary to complete its function. Limits blast radius of a compromise.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 1 -->
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 2: Auth Methods + Password Security
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <!-- Authentication Methods -->
+  <div class="card green col-span-2" id="auth-methods">
+    <div class="card-header"><div class="dot"></div><h3>Authentication Methods</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="label">Three Authentication Factors</div>
+          <div class="rule">Know · Have · Are</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Something you Know</strong> — password, PIN, passphrase, security question answer</li>
+            <li><strong style="color:var(--osg)">Something you Have</strong> — smart card, <code>OTP</code> hardware token, FIDO2 key, phone (TOTP app)</li>
+            <li><strong style="color:var(--osg)">Something you Are</strong> — biometrics: fingerprint, iris scan, face recognition, voice print</li>
+          </ul>
+          <div class="info" style="margin-top:8px;">
+            <div class="i-title">MFA / 2FA</div>
+            <strong>Multi-Factor Authentication</strong> requires 2 or more independent factors. Compromising one factor alone is insufficient. Even if a password is stolen, the attacker still lacks the hardware token.
+          </div>
+          <div class="label">Challenge-Response Protocol</div>
+          <ol class="steps">
+            <li>Server generates a random <strong style="color:var(--osg)">nonce</strong> (challenge) <code>R</code> and sends to client</li>
+            <li>Client computes <code>f(R, secret)</code> where <code>f</code> is a keyed-hash function (e.g., <code>HMAC-SHA256</code>)</li>
+            <li>Client sends response <code>f(R, secret)</code> to server</li>
+            <li>Server independently computes <code>f(R, secret)</code> using stored secret and compares</li>
+            <li>If equal → authenticated. Secret never travels over the wire.</li>
+          </ol>
+          <div class="tip">
+            <div class="t-title">Why Challenge-Response?</div>
+            Prevents replay attacks — a recorded response cannot be reused because the next challenge will be a different nonce <code>R'</code>.
+          </div>
+        </div>
+        <div>
+          <div class="label">Biometric Metrics</div>
+          <table class="tbl">
+            <tr><th>Metric</th><th>Meaning</th><th>Ideal Value</th></tr>
+            <tr><td><code>FAR</code></td><td>False Accept Rate — impostor accepted as legitimate user</td><td>As low as possible</td></tr>
+            <tr><td><code>FRR</code></td><td>False Reject Rate — legitimate user rejected</td><td>As low as possible</td></tr>
+            <tr><td><code>EER</code></td><td>Equal Error Rate — point where FAR = FRR</td><td>Lower EER = better system</td></tr>
+          </table>
+          <div class="warn" style="margin-top:8px;">
+            <div class="w-title">FAR vs FRR Tradeoff</div>
+            Lowering the acceptance threshold reduces <code>FAR</code> but increases <code>FRR</code>. Raising it does the opposite. Security systems prefer low <code>FAR</code>; convenience-focused prefer low <code>FRR</code>.
+          </div>
+          <div class="label">Lamport One-Time Password Hash Chain</div>
+          <div class="formula">P_0 = seed,  P_i = H(P_{i-1})<br>Server stores P_n.  Client sends P_{n-1}.<br>Server verifies: H(P_{n-1}) == P_n → OK</div>
+          <ul class="items">
+            <li>Server stores <code>P_n</code> (the last hash in chain). Client sends next-to-last value.</li>
+            <li>Server applies <code>H()</code> once and compares — if match, authenticated</li>
+            <li>Each password used only once; chain consumed in reverse</li>
+            <li>Even if attacker sees <code>P_{n-1}</code>, they cannot derive <code>P_{n-2}</code> (one-way hash)</li>
+          </ul>
+          <div class="label">Auth Method Comparison</div>
+          <table class="tbl">
+            <tr><th>Method</th><th>Strength</th><th>Main Attack Vector</th></tr>
+            <tr><td>Static password</td><td style="color:var(--accent3)">Low</td><td>Phishing, dictionary, credential stuffing</td></tr>
+            <tr><td>Password + TOTP</td><td style="color:var(--accent5)">Medium</td><td>SIM swap, real-time phishing</td></tr>
+            <tr><td>FIDO2 / Passkey</td><td style="color:var(--accent2)">High</td><td>Physical device theft</td></tr>
+            <tr><td>Biometrics alone</td><td style="color:var(--accent5)">Medium</td><td>Spoofing, irreplaceable if compromised</td></tr>
+            <tr><td>Client cert (TLS)</td><td style="color:var(--accent2)">High</td><td>Private key theft</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Password Security -->
+  <div class="card red" id="password-security">
+    <div class="card-header"><div class="dot"></div><h3>Password Security</h3></div>
+    <div class="card-body">
+      <div class="warn">
+        <div class="w-title">Never Store Plaintext Passwords</div>
+        If the password file is read, all accounts are immediately compromised. No legitimate system stores plaintext passwords.
+      </div>
+      <div class="label">UNIX /etc/shadow Scheme</div>
+      <div class="formula">stored = H(password || salt)<br>salt = random n-bit value, stored alongside hash</div>
+      <ul class="items">
+        <li><code>/etc/shadow</code> stores <code>$algorithm$salt$hash</code> per user</li>
+        <li>Classic UNIX used <strong style="color:var(--osg)">12-bit salt</strong> → 4096 possible salts</li>
+        <li>Verification: compute <code>H(input || stored_salt)</code>, compare to stored hash</li>
+        <li>Password never stored — only the hash is kept</li>
+      </ul>
+      <div class="label">Why Salt Defeats Precomputation</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Dictionary attack (no salt)</strong>: precompute <code>H(word)</code> for all common words, compare entire table to password file in one pass</li>
+        <li><strong style="color:var(--osg)">With 12-bit salt</strong>: attacker must compute <code>H(word || salt_i)</code> for each of 4096 salts — 4096× more work</li>
+        <li><strong style="color:var(--osg)">Rainbow tables</strong>: time-memory tradeoff chains of hashes — also defeated by salt (table must be rebuilt per salt)</li>
+      </ul>
+      <div class="rule">salt forces attacker to crack each password individually</div>
+      <div class="label">Modern Password Hashing</div>
+      <table class="tbl">
+        <tr><th>Algorithm</th><th>Key Property</th><th>Status</th></tr>
+        <tr><td><code>MD5</code> / <code>SHA-1</code></td><td>Too fast: 10B+ hashes/sec on GPU</td><td style="color:var(--accent3)">Do NOT use</td></tr>
+        <tr><td><code>bcrypt</code></td><td>Adaptive work factor (cost param), blowfish-based</td><td style="color:var(--accent2)">Recommended</td></tr>
+        <tr><td><code>scrypt</code></td><td>Memory-hard: resists ASIC/GPU attacks</td><td style="color:var(--accent2)">Recommended</td></tr>
+        <tr><td><code>Argon2id</code></td><td>PHC winner; memory+time+parallelism params</td><td style="color:var(--accent2)">Best practice</td></tr>
+      </table>
+      <div class="warn" style="margin-top:8px;">
+        <div class="w-title">MD5 / SHA-1 Are Too Fast</div>
+        A GPU can compute billions of <code>SHA-1</code> hashes per second. <code>bcrypt</code> with cost=12 takes ~250ms per hash — intentionally slow to frustrate brute force.
+      </div>
+      <div class="tip">
+        <div class="t-title">Pepper</div>
+        A <strong>pepper</strong> is a secret value (like salt) stored <em>outside</em> the database (e.g., in an HSM or config). Even if the DB is stolen, attacker can't crack without the pepper.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 2 -->
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 3: Symmetric + Asymmetric Crypto
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <!-- Symmetric Cryptography -->
+  <div class="card purple" id="symmetric-crypto">
+    <div class="card-header"><div class="dot"></div><h3>Symmetric Cryptography</h3></div>
+    <div class="card-body">
+      <div class="info">
+        <div class="i-title">Core Concept</div>
+        The <strong>same key</strong> is used for both encryption and decryption. Both parties must share the key securely before communication — the <strong>key distribution problem</strong>.
+      </div>
+      <div class="formula">C = E_K(P)    (encrypt plaintext P with key K)
+P = D_K(C)    (decrypt ciphertext C with same key K)</div>
+      <div class="label">Historical &amp; Modern Ciphers</div>
+      <table class="tbl">
+        <tr><th>Cipher</th><th>Key Size</th><th>Block Size</th><th>Status</th></tr>
+        <tr><td><code>DES</code></td><td>56-bit (effective)</td><td>64-bit</td><td style="color:var(--accent3)">Broken (brute-forced 1999 in &lt;24h)</td></tr>
+        <tr><td><code>3DES</code></td><td>112-bit (effective)</td><td>64-bit</td><td style="color:var(--accent5)">Deprecated — slow, small block</td></tr>
+        <tr><td><code>AES-128</code></td><td>128-bit</td><td>128-bit</td><td style="color:var(--accent2)">Current standard (NIST)</td></tr>
+        <tr><td><code>AES-256</code></td><td>256-bit</td><td>128-bit</td><td style="color:var(--accent2)">High-security standard</td></tr>
+        <tr><td><code>ChaCha20</code></td><td>256-bit</td><td>Stream</td><td style="color:var(--accent2)">TLS 1.3, mobile-friendly</td></tr>
+      </table>
+      <div class="label" style="margin-top:8px;"><code>AES</code> — Rijndael (NIST Standard 2001)</div>
+      <ul class="items">
+        <li>128-bit block size; supports 128, 192, 256-bit keys</li>
+        <li>10/12/14 rounds of SubBytes → ShiftRows → MixColumns → AddRoundKey</li>
+        <li>Hardware acceleration: <code>AES-NI</code> instructions on x86/ARM</li>
+      </ul>
+      <div class="label">Block Cipher Modes of Operation</div>
+      <table class="tbl">
+        <tr><th>Mode</th><th>Properties</th><th>Use Case</th></tr>
+        <tr><td><code>ECB</code></td><td>Each block encrypted independently — <strong style="color:var(--accent3)">patterns visible in ciphertext!</strong></td><td style="color:var(--accent3)">Never use</td></tr>
+        <tr><td><code>CBC</code></td><td>XOR plaintext with previous ciphertext block before encrypt; needs IV</td><td>File encryption</td></tr>
+        <tr><td><code>CTR</code></td><td>Encrypts a counter, XOR with plaintext — stream cipher behavior</td><td>Random access, parallelizable</td></tr>
+        <tr><td><code>GCM</code></td><td>CTR + GHASH authentication tag — AEAD (authenticated encryption)</td><td>TLS 1.3, recommended</td></tr>
+      </table>
+      <div class="warn">
+        <div class="w-title">ECB is Insecure</div>
+        Identical plaintext blocks produce identical ciphertext blocks. The infamous "ECB penguin" demonstrates structure leaking through encryption.
+      </div>
+      <div class="label">Conceptual AES Usage</div>
+      <pre><code class="language-c">// Conceptual AES encrypt/decrypt (OpenSSL API)
+AES_KEY enc_key, dec_key;
+uint8_t key[16], iv[16], pt[16], ct[16], out[16];
+
+AES_set_encrypt_key(key, 128, &amp;enc_key);
+AES_cbc_encrypt(pt, ct, 16, &amp;enc_key, iv, AES_ENCRYPT);
+
+AES_set_decrypt_key(key, 128, &amp;dec_key);
+AES_cbc_encrypt(ct, out, 16, &amp;dec_key, iv, AES_DECRYPT);
+// out == pt (original plaintext recovered)</code></pre>
+      <div class="rule">Symmetric crypto is fast; problem is securely distributing the shared key</div>
+    </div>
+  </div>
+
+  <!-- Asymmetric Crypto -->
+  <div class="card orange col-span-2" id="asymmetric-crypto">
+    <div class="card-header"><div class="dot"></div><h3>Asymmetric (Public-Key) Cryptography</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="info">
+            <div class="i-title">Key Pair Concept</div>
+            Two mathematically linked keys: <strong style="color:var(--osg)">public key</strong> (share freely) and <strong style="color:var(--osg)">private key</strong> (never share). What one key encrypts, only the other can decrypt.
+          </div>
+          <div class="label">RSA — Rivest–Shamir–Adleman</div>
+          <div class="formula">// Key Generation
+p, q = large distinct primes (~2048 bits each)
+n = p × q                        (modulus)
+φ(n) = (p-1)(q-1)               (Euler totient)
+choose e: 1 &lt; e &lt; φ(n), gcd(e, φ(n)) = 1
+d = e⁻¹ mod φ(n)                (mod inverse)
+
+Public key:  (e, n)
+Private key: (d, n)</div>
+          <div class="formula">// Encryption &amp; Decryption
+C = M^e mod n      (encrypt with public key)
+M = C^d mod n      (decrypt with private key)</div>
+          <div class="formula">// Digital Signature (reversed roles)
+S = H(M)^d mod n   (sign with private key)
+verify: S^e mod n == H(M)  (verify with public key)</div>
+          <div class="rule">Security relies on hardness of factoring n = p × q into p and q</div>
+          <ul class="items">
+            <li>Current recommendation: RSA-2048 minimum, RSA-4096 for long-term secrets</li>
+            <li><code>PKCS#1 v1.5</code> padding was broken — use <code>OAEP</code> padding for encryption</li>
+            <li><code>PSS</code> padding for signatures</li>
+            <li>RSA-2048 provides ~112 bits of security</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Diffie-Hellman Key Exchange</div>
+          <div class="formula">// Public parameters: prime p, generator g
+Alice: picks secret a, sends A = g^a mod p
+Bob:   picks secret b, sends B = g^b mod p
+
+Shared secret:
+  Alice: s = B^a mod p = g^(ab) mod p
+  Bob:   s = A^b mod p = g^(ab) mod p
+→ Both derive same s without transmitting it!</div>
+          <div class="tip">
+            <div class="t-title">DH Never Transmits the Key</div>
+            An eavesdropper sees <code>g, p, A, B</code> but computing <code>a</code> from <code>g^a mod p</code> is the <strong>Discrete Logarithm Problem</strong> — computationally infeasible for large primes.
+          </div>
+          <div class="label">ECDH — Elliptic Curve Diffie-Hellman</div>
+          <ul class="items">
+            <li>Same concept, using elliptic curve math instead of integer modular exponentiation</li>
+            <li>256-bit ECDH ≈ 3072-bit DH in security — much smaller keys!</li>
+            <li><code>Curve25519</code> and <code>P-256</code> are common curves used in <code>TLS 1.3</code></li>
+          </ul>
+          <div class="label">Comparison: Symmetric vs Asymmetric</div>
+          <table class="tbl">
+            <tr><th>Property</th><th>Symmetric</th><th>Asymmetric</th></tr>
+            <tr><td>Key count</td><td>1 shared key</td><td>Key pair (pub + priv)</td></tr>
+            <tr><td>Speed</td><td style="color:var(--accent2)">Fast (hardware accel)</td><td style="color:var(--accent3)">Slow (1000× slower)</td></tr>
+            <tr><td>Key distribution</td><td style="color:var(--accent3)">Problem — must be pre-shared</td><td style="color:var(--accent2)">Solved — public key shared freely</td></tr>
+            <tr><td>Key scaling</td><td style="color:var(--accent3)">O(n²) keys for n parties</td><td style="color:var(--accent2)">O(n) key pairs</td></tr>
+            <tr><td>Use in TLS</td><td>Bulk data encryption</td><td>Handshake / key exchange</td></tr>
+          </table>
+          <div class="note">
+            <div class="n-title">Hybrid Encryption</div>
+            In practice: use asymmetric (<code>RSA</code> or <code>ECDH</code>) to securely exchange a random <strong>session key</strong>, then use <code>AES-GCM</code> for all bulk data. This is exactly how <code>TLS</code> works.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 3 -->
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 4: Hashing + Access Control
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <!-- Hash Functions & Digital Signatures -->
+  <div class="card yellow" id="hashing-sigs">
+    <div class="card-header"><div class="dot"></div><h3>Hash Functions &amp; Digital Signatures</h3></div>
+    <div class="card-body">
+      <div class="label">Cryptographic Hash Properties</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Deterministic</strong> — same input always produces same digest</li>
+        <li><strong style="color:var(--osg)">Preimage resistant</strong> — cannot reverse <code>H(x)</code> to find <code>x</code></li>
+        <li><strong style="color:var(--osg)">Second preimage resistant</strong> — given <code>x</code>, cannot find <code>x'</code> where <code>H(x)=H(x')</code></li>
+        <li><strong style="color:var(--osg)">Collision resistant</strong> — cannot find any <code>x, x'</code> where <code>H(x)=H(x')</code></li>
+        <li><strong style="color:var(--osg)">Avalanche effect</strong> — 1-bit input change → ~50% output bits change</li>
+      </ul>
+      <div class="label">Hash Algorithm Status</div>
+      <table class="tbl">
+        <tr><th>Hash</th><th>Digest Size</th><th>Status</th><th>Notes</th></tr>
+        <tr><td><code>MD5</code></td><td>128-bit</td><td style="color:var(--accent3)">Broken</td><td>Collisions found 2004; do not use for security</td></tr>
+        <tr><td><code>SHA-1</code></td><td>160-bit</td><td style="color:var(--accent3)">Broken</td><td>SHAttered attack 2017; deprecated by browsers/CAs</td></tr>
+        <tr><td><code>SHA-256</code></td><td>256-bit</td><td style="color:var(--accent2)">Secure</td><td>Part of SHA-2 family; current standard</td></tr>
+        <tr><td><code>SHA-512</code></td><td>512-bit</td><td style="color:var(--accent2)">Secure</td><td>SHA-2; faster on 64-bit CPUs</td></tr>
+        <tr><td><code>SHA-3</code></td><td>224–512-bit</td><td style="color:var(--accent2)">Secure</td><td>Keccak sponge construction; NIST 2015</td></tr>
+      </table>
+      <div class="label" style="margin-top:8px;">Digital Signature Verification Steps</div>
+      <ol class="steps">
+        <li>Sender computes <code>digest = H(document)</code> using agreed hash function (e.g., <code>SHA-256</code>)</li>
+        <li>Sender encrypts digest with their <strong>private key</strong>: <code>sig = D_priv(digest)</code></li>
+        <li>Sender transmits <code>(document, sig)</code> to receiver</li>
+        <li>Receiver independently computes <code>digest' = H(document)</code></li>
+        <li>Receiver decrypts signature with sender's <strong>public key</strong>: <code>digest'' = E_pub(sig)</code></li>
+        <li>If <code>digest' == digest''</code> → signature valid; document unmodified and from correct sender</li>
+      </ol>
+      <div class="formula">// RSA property required for signatures:
+E_pub( D_priv(x) ) = x
+D_priv( E_pub(x) ) = x
+// RSA is commutative — both operations work in either order</div>
+      <div class="label">PKI — Public Key Infrastructure</div>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Certificate Authority (CA)</strong> — trusted third party that signs public key certificates</li>
+        <li><strong style="color:var(--osg)">X.509 certificate</strong> — binds a public key to an identity (domain name, organization)</li>
+        <li>Browsers ship with ~40–140 trusted root CAs pre-installed</li>
+        <li><strong style="color:var(--osg)">Certificate chain</strong> — root CA → intermediate CA → end-entity cert</li>
+        <li><strong style="color:var(--osg)">OCSP / CRL</strong> — mechanisms to check if a certificate has been revoked</li>
+      </ul>
+      <div class="warn">
+        <div class="w-title">CA Compromise is Catastrophic</div>
+        If a root CA is compromised, attackers can issue fraudulent certificates for any domain. <code>Certificate Transparency</code> logs help detect mis-issued certs.
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Control -->
+  <div class="card blue col-span-2" id="access-control">
+    <div class="card-header"><div class="dot"></div><h3>Access Control</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="label">Protection Matrix</div>
+          <div class="info">
+            <div class="i-title">Formal Model</div>
+            A matrix where <strong>rows = domains</strong> (users/processes) and <strong>columns = objects</strong> (files, devices, memory). Each cell lists the operations that domain may perform on that object.
+          </div>
+          <table class="tbl" style="margin-top:6px;">
+            <tr><th></th><th>file_A</th><th>file_B</th><th>/dev/sda</th></tr>
+            <tr><td><code>Alice</code></td><td>read, write</td><td>read</td><td>—</td></tr>
+            <tr><td><code>Bob</code></td><td>read</td><td>read, write</td><td>—</td></tr>
+            <tr><td><code>root</code></td><td>r, w, exec</td><td>r, w, exec</td><td>r, w</td></tr>
+          </table>
+          <div class="label" style="margin-top:10px;">ACL vs Capabilities</div>
+          <table class="tbl">
+            <tr><th>Property</th><th>ACL</th><th>Capability</th></tr>
+            <tr><td>Stored with</td><td>Object (file)</td><td>Subject (process/user)</td></tr>
+            <tr><td>Answers</td><td>"Who can access this file?"</td><td>"What can this process access?"</td></tr>
+            <tr><td>Revocation</td><td style="color:var(--accent2)">Easy — edit object's list</td><td style="color:var(--accent3)">Hard — must find all copies</td></tr>
+            <tr><td>Delegation</td><td style="color:var(--accent3)">Complex</td><td style="color:var(--accent2)">Easy — pass capability token</td></tr>
+            <tr><td>UNIX example</td><td><code>chmod</code>, <code>chown</code></td><td>File descriptor (open fd)</td></tr>
+          </table>
+          <div class="label" style="margin-top:8px;">UNIX File Permissions (ACL)</div>
+          <div class="formula">-rwxr-xr--  1 alice staff 1024 file.sh
+ |||  |||  |||
+ |||  |||  └── other: r-- (read only)
+ |||  └──────── group: r-x (read+exec)
+ └──────────── owner: rwx (all)</div>
+          <div class="rule">UNIX: 9 permission bits = owner(rwx) | group(rwx) | other(rwx)</div>
+        </div>
+        <div>
+          <div class="label">Access Control Models</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">DAC (Discretionary)</strong> — resource owner decides access. UNIX permissions, Windows NTFS ACLs. Flexible but owner can make mistakes.</li>
+            <li><strong style="color:var(--osg)">MAC (Mandatory)</strong> — system policy forces access rules based on security labels. Users cannot override. Used in military/classified systems.</li>
+            <li><strong style="color:var(--osg)">RBAC (Role-Based)</strong> — permissions assigned to <em>roles</em> (admin, editor, viewer); users assigned to roles. Simplifies management at scale.</li>
+            <li><strong style="color:var(--osg)">ABAC (Attribute-Based)</strong> — policies based on attributes of user, resource, environment (time, location). Most expressive.</li>
+          </ul>
+          <div class="label" style="margin-top:8px;">Bell-LaPadula Model (MAC for Confidentiality)</div>
+          <div class="formula">Simple Security Property (no read up):
+  Subject s at level L can read object o
+  only if level(o) ≤ L
+
+*-Property (no write down):
+  Subject s at level L can write object o
+  only if level(o) ≥ L</div>
+          <div class="rule">BLP: "Read down, Write up" — prevents leaking secrets to lower levels</div>
+          <div class="label">Linux Mandatory Access Control</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">SELinux</strong> — every process and file has a security context (type enforcement). Used in Android, RHEL/Fedora.</li>
+            <li><strong style="color:var(--osg)">AppArmor</strong> — profile-based; simpler than SELinux. Used in Ubuntu, Debian.</li>
+            <li>Both enforce that even <code>root</code> cannot exceed what policy allows</li>
+          </ul>
+          <div class="tip">
+            <div class="t-title">RBAC in Practice</div>
+            Rather than granting Alice individual file permissions, assign her the <code>editor</code> role. All editors share the same permissions. Revoking access means removing the role assignment.
+          </div>
+          <div class="label">setuid / setgid Bits</div>
+          <ul class="items">
+            <li><code>setuid</code> — execute with file owner's privileges (e.g., <code>passwd</code> runs as root)</li>
+            <li>Allows temporary privilege elevation for specific operations</li>
+            <li>Dangerous if the <code>setuid</code> binary has vulnerabilities — attacker gains root</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 4 -->
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 5: Malware + Attacks (full width row)
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <!-- Malware Taxonomy -->
+  <div class="card red col-span-2" id="malware">
+    <div class="card-header"><div class="dot"></div><h3>Malware Taxonomy</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>Type</th>
+          <th>How It Spreads</th>
+          <th>Primary Effect</th>
+          <th>Notable Example</th>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Virus</strong></td>
+          <td>Attaches to executable; spreads when infected file is copied or run. <em>Requires host file.</em></td>
+          <td>Data corruption, payload execution, system instability</td>
+          <td>Brain (1986), Melissa (1999)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Worm</strong></td>
+          <td>Self-replicates over network; exploits vulnerabilities. <em>No host needed.</em></td>
+          <td>Network saturation, payload delivery, lateral movement</td>
+          <td>Morris Worm (1988), Blaster (2003)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Trojan Horse</strong></td>
+          <td>User runs legitimate-looking program containing hidden malicious payload</td>
+          <td>Backdoor installation, credential theft, bot enrollment</td>
+          <td>Zeus banking trojan</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Rootkit</strong></td>
+          <td>Installed after gaining root; modifies kernel to hide itself</td>
+          <td>Persistence, hiding processes/files, privilege maintenance</td>
+          <td>Sony BMG rootkit (2005)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Ransomware</strong></td>
+          <td>Phishing email / exploit → encrypt victim's files with attacker's key</td>
+          <td>Files encrypted; demands ransom payment for decryption key</td>
+          <td>WannaCry (2017), LockBit</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Spyware</strong></td>
+          <td>Bundled with software, drive-by download</td>
+          <td>Keylogging, screenshot capture, credential harvesting</td>
+          <td>FinFisher, Pegasus</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Adware</strong></td>
+          <td>Bundled with free software installers</td>
+          <td>Unwanted ads, browser hijacking, may escalate to spyware</td>
+          <td>Superfish (Lenovo)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Botnet</strong></td>
+          <td>Malware enrolls host; C&amp;C server issues commands</td>
+          <td>DDoS attacks, spam campaigns, crypto mining</td>
+          <td>Mirai (IoT, 2016)</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Keylogger</strong></td>
+          <td>Software/hardware hooks into keyboard input</td>
+          <td>Captures passwords, PINs, messages in real-time</td>
+          <td>Hardware keyloggers, software hooks</td>
+        </tr>
+        <tr>
+          <td><strong style="color:var(--osg)">Logic Bomb</strong></td>
+          <td>Planted in legitimate software by insider; triggers on condition</td>
+          <td>Activates destructive payload on specific date or event</td>
+          <td>Insider threat scenarios</td>
+        </tr>
+      </table>
+      <div class="grid-2" style="gap:10px; margin-top:10px;">
+        <div>
+          <div class="warn">
+            <div class="w-title">Rootkits Are Especially Dangerous</div>
+            Rootkits that modify the kernel intercept system calls — <code>readdir()</code>, <code>ps</code>, <code>netstat</code> all lie. You <strong>cannot trust the OS</strong> to detect them. External boot media or remote attestation required.
+          </div>
+          <div class="label">Rootkit Techniques</div>
+          <ul class="items">
+            <li>Hook <code>sys_getdents</code> to hide directories/files from <code>ls</code></li>
+            <li>Patch <code>/proc</code> filesystem to hide processes from <code>ps</code></li>
+            <li>Modify kernel module list to hide from <code>lsmod</code></li>
+            <li>Userland rootkits: replace system binaries (<code>ls</code>, <code>ps</code>, <code>netstat</code>) with trojaned versions</li>
+          </ul>
+        </div>
+        <div>
+          <div class="info">
+            <div class="i-title">Worm vs Virus</div>
+            A <strong>virus</strong> needs a host file and human action (running an infected program) to propagate. A <strong>worm</strong> spreads automatically over networks by exploiting software vulnerabilities — no user interaction needed (e.g., Morris Worm exploited <code>sendmail</code> and <code>fingerd</code> bugs).
+          </div>
+          <div class="label">Ransomware Kill Chain</div>
+          <ol class="steps">
+            <li>Initial access: phishing email with malicious macro or exploit</li>
+            <li>Establish persistence; exfiltrate valuable data (double extortion)</li>
+            <li>Enumerate network shares and backup systems</li>
+            <li>Delete shadow copies: <code>vssadmin delete shadows</code></li>
+            <li>Encrypt all files with attacker-controlled key; drop ransom note</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- OS Defenses (moved here to be in this row) -->
+  <div class="card green" id="os-defenses">
+    <div class="card-header"><div class="dot"></div><h3>OS Defense Mechanisms</h3></div>
+    <div class="card-body">
+      <div class="label">ASLR — Address Space Layout Randomization</div>
+      <div class="tip">
+        <div class="t-title">What It Does</div>
+        Randomizes the base addresses of the stack, heap, libraries, and executable at each run. Attacker cannot hardcode memory addresses in their exploit payload.
+      </div>
+      <ul class="items">
+        <li>Enabled by default on modern Linux, Windows, macOS</li>
+        <li>Defeated by information leaks (format string bugs that reveal addresses)</li>
+        <li>32-bit: only ~16 bits of entropy — brute-forceable! 64-bit is much stronger.</li>
+      </ul>
+      <div class="label">Stack Canaries</div>
+      <div class="formula">stack frame layout:
+  [ local_vars ] [ canary ] [ saved_rbp ] [ ret addr ]
+before function return:
+  check canary == original → if not, abort()</div>
+      <ul class="items">
+        <li>GCC: <code>-fstack-protector</code> flag inserts canary automatically</li>
+        <li>Canary value chosen randomly at program start, stored in <code>%gs</code> segment</li>
+        <li>Sequential stack overflows must overwrite canary to reach return address — detected</li>
+        <li>Defeated by: arbitrary write primitives, canary leak + overwrite</li>
+      </ul>
+      <div class="label">DEP / NX Bit (No-Execute)</div>
+      <ul class="items">
+        <li>CPU marks stack and heap pages as non-executable (<code>NX</code> bit in page table entry)</li>
+        <li>Injected shellcode on the stack cannot be executed — causes fault</li>
+        <li>Defeated by <strong style="color:var(--osg)">Return-Oriented Programming (ROP)</strong> — doesn't inject new code, reuses existing code</li>
+      </ul>
+      <div class="label">Sandboxing</div>
+      <ul class="items">
+        <li><code>seccomp</code> (Linux) — whitelist of allowed syscalls; others → SIGKILL</li>
+        <li>Chrome renderer uses seccomp-BPF to restrict to ~few dozen syscalls</li>
+        <li><code>namespaces</code> + <code>cgroups</code> → Docker container isolation</li>
+        <li>Syscall filtering limits damage even if attacker achieves code execution</li>
+      </ul>
+      <div class="label">Attack → Defense Mapping</div>
+      <table class="tbl">
+        <tr><th>Attack</th><th>Primary Defense</th><th>Backup Defense</th></tr>
+        <tr><td>Buffer overflow / shellcode</td><td><code>ASLR</code> + <code>NX</code></td><td>Stack canary</td></tr>
+        <tr><td>ROP chain</td><td><code>ASLR</code> (randomize gadget locs)</td><td>CFI (Control Flow Integrity)</td></tr>
+        <tr><td>Privilege escalation</td><td>Least privilege, <code>seccomp</code></td><td><code>SELinux</code> / <code>AppArmor</code></td></tr>
+        <tr><td>Heap spray</td><td><code>ASLR</code></td><td>Heap guard pages</td></tr>
+        <tr><td>Kernel exploit</td><td><code>SMEP</code>/<code>SMAP</code> bits</td><td>Kernel hardening flags</td></tr>
+      </table>
+      <div class="rule">Defense in depth: no single mechanism is sufficient alone</div>
+    </div>
+  </div>
+
+</div><!-- /grid row 5 -->
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 6: Attacks (full width)
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card orange col-span-3" id="attacks">
+    <div class="card-header"><div class="dot"></div><h3>Common Attack Techniques</h3></div>
+    <div class="card-body">
+      <div class="grid" style="gap:14px;">
+        <div>
+          <div class="label">Buffer Overflow — Stack Smashing</div>
+          <div class="info">
+            <div class="i-title">Core Concept</div>
+            Write more data into a fixed-size stack buffer than it can hold. Overflow overwrites adjacent stack memory including the <strong>saved return address</strong>. When the function returns, execution jumps to attacker-controlled address.
+          </div>
+          <pre><code class="language-c">// Vulnerable function — never use gets()!
+void vuln(void) {
+    char buf[64];
+    gets(buf);      // reads unlimited input!
+    // if input > 64 bytes:
+    // buf overflows → overwrites return address
+}
+
+// Stack layout after overflow:
+// [buf: 64 bytes]
+// [saved rbp: 8 bytes]  ← overwritten
+// [ret addr: 8 bytes]   ← redirected to shellcode!
+
+// Safe alternative:
+void safe(void) {
+    char buf[64];
+    fgets(buf, sizeof(buf), stdin);  // bounded
+}</code></pre>
+          <div class="warn">
+            <div class="w-title">gets() is Banned</div>
+            <code>gets()</code> has been removed from C11 standard. Also: <code>strcpy()</code>, <code>sprintf()</code> without bounds. Use <code>strncpy()</code>, <code>snprintf()</code>, <code>strlcpy()</code>.
+          </div>
+          <div class="label">Heap Spray</div>
+          <ul class="items">
+            <li>Fill the heap with many copies of <code>NOP sled + shellcode</code></li>
+            <li>Jump to any approximate address in the heap — high probability of landing in sled</li>
+            <li>Used when exact address cannot be predicted (browser exploits with controlled allocation)</li>
+            <li>Mitigated by <code>ASLR</code> and heap metadata protections</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">SQL Injection</div>
+          <div class="formula">// Vulnerable query construction:
+"SELECT * FROM users WHERE user='" + input + "'"
+
+// Attacker inputs: ' OR '1'='1
+// Resulting query:
+SELECT * FROM users WHERE user='' OR '1'='1'
+// '1'='1' is always true → returns ALL users!
+
+// Worse — input: '; DROP TABLE users; --
+SELECT * FROM users WHERE user=''; DROP TABLE users; --'</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Prevention</strong>: use <strong>parameterized queries</strong> / prepared statements</li>
+            <li><code>db.query("SELECT * FROM users WHERE id = ?", [userId])</code></li>
+            <li>Input is never interpreted as SQL — always treated as data</li>
+            <li>Also: ORMs, stored procedures, input validation/whitelist</li>
+          </ul>
+          <div class="label">TOCTOU — Time-of-Check-to-Time-of-Use</div>
+          <div class="warn">
+            <div class="w-title">Race Condition Vulnerability</div>
+            A resource is checked (e.g., <code>access()</code> for permissions) and then used (e.g., <code>open()</code>) — but the resource can change between check and use. Attacker swaps the resource in the gap.
+          </div>
+          <pre><code class="language-c">// TOCTOU vulnerability:
+if (access("file.txt", W_OK) == 0) {  // check
+    // attacker replaces file.txt with symlink here!
+    fd = open("file.txt", O_WRONLY);  // use
+    // now writing to attacker's target file
+}
+// Fix: use O_NOFOLLOW, atomic operations, capabilities</code></pre>
+        </div>
+        <div>
+          <div class="label">Return-Oriented Programming (ROP)</div>
+          <div class="info">
+            <div class="i-title">Bypassing NX/DEP</div>
+            Instead of injecting shellcode, attacker chains together small existing code sequences ending in <code>ret</code> (<strong>gadgets</strong>). The return address is overwritten to point to a gadget; each gadget's <code>ret</code> pops the next gadget address off the stack.
+          </div>
+          <div class="formula">// ROP chain concept:
+stack: [ gadget1_addr | gadget2_addr | gadget3_addr | ... ]
+// gadget1: pop rdi; ret   → sets argument
+// gadget2: pop rsi; ret   → sets argument
+// gadget3: call puts@plt  → calls library fn
+// No new code injected — only reuse existing code!</div>
+          <ul class="items">
+            <li>Requires: stack control + knowledge of gadget addresses</li>
+            <li>Defeated by: <code>ASLR</code> (unknown addresses) + <code>CFI</code> (Control Flow Integrity)</li>
+            <li>Tools: <code>ROPgadget</code>, <code>pwntools</code> for building chains</li>
+          </ul>
+          <div class="label">Social Engineering</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">Phishing</strong> — fraudulent email/website impersonates trusted entity to steal credentials</li>
+            <li><strong style="color:var(--osg)">Spear phishing</strong> — targeted phishing with personalized details (from OSINT)</li>
+            <li><strong style="color:var(--osg)">Pretexting</strong> — fabricated scenario to manipulate victim (e.g., "IT support" calling for password)</li>
+            <li><strong style="color:var(--osg)">Vishing</strong> — voice phishing via phone call</li>
+            <li><strong style="color:var(--osg)">Baiting</strong> — leaving malicious USB drives in parking lots</li>
+          </ul>
+          <div class="rule">80%+ of breaches involve phishing or stolen credentials — the human is the weakest link</div>
+          <div class="label">Format String Vulnerability</div>
+          <pre><code class="language-c">// Vulnerable:
+printf(user_input);          // user controls format string!
+// Attacker inputs: "%x %x %x %n"
+// %x reads stack values (information leak)
+// %n writes to arbitrary address!
+
+// Safe:
+printf("%s", user_input);   // user_input treated as data</code></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 6 -->
+
+<!-- ═══════════════════════════════════════════════════
+     ROW 7: Network Security + TPM
+     ═══════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <!-- Network Security -->
+  <div class="card purple col-span-2" id="network-security">
+    <div class="card-header"><div class="dot"></div><h3>Network Security</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:12px;">
+        <div>
+          <div class="label">Firewalls</div>
+          <table class="tbl">
+            <tr><th>Type</th><th>Layer</th><th>What It Inspects</th><th>Limitation</th></tr>
+            <tr><td>Packet Filter</td><td>L3/L4</td><td>IP src/dst, port, protocol</td><td>No state; easy to spoof</td></tr>
+            <tr><td>Stateful</td><td>L3/L4</td><td>Connection state table</td><td>Can't see payload content</td></tr>
+            <tr><td>Application Layer (WAF)</td><td>L7</td><td>HTTP headers, payload, SQL</td><td>Slower; TLS decryption needed</td></tr>
+            <tr><td>NGFW</td><td>L3–L7</td><td>Deep packet inspection, app ID</td><td>Expensive; complex config</td></tr>
+          </table>
+          <div class="label" style="margin-top:8px;">VPN — Virtual Private Network</div>
+          <ul class="items">
+            <li><strong style="color:var(--osg)">IPsec</strong> — network layer; transparent to applications; used in site-to-site VPNs. Two modes: <code>Transport</code> (encrypt payload) and <code>Tunnel</code> (encrypt entire packet)</li>
+            <li><strong style="color:var(--osg)">OpenVPN</strong> — TLS-based; runs over UDP or TCP; crosses NAT</li>
+            <li><strong style="color:var(--osg)">WireGuard</strong> — modern, minimal (~4K LoC); fast; uses <code>ChaCha20</code>/<code>Poly1305</code></li>
+          </ul>
+          <div class="label">IDS — Intrusion Detection System</div>
+          <table class="tbl">
+            <tr><th>Type</th><th>Method</th><th>Strength</th><th>Weakness</th></tr>
+            <tr><td>Signature-based</td><td>Pattern matching against known attack signatures</td><td>High accuracy for known attacks</td><td>Misses zero-days</td></tr>
+            <tr><td>Anomaly-based</td><td>Baseline normal behavior; flag deviations</td><td>Can detect novel attacks</td><td>High false positive rate</td></tr>
+            <tr><td>HIDS</td><td>Agent on host monitors files/logs/syscalls</td><td>Deep visibility</td><td>Attacker may disable agent</td></tr>
+            <tr><td>NIDS</td><td>Network tap monitors traffic flows</td><td>Passive; hard to disable</td><td>Blind to encrypted traffic</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">TLS Handshake (TLS 1.3)</div>
+          <ol class="steps">
+            <li><strong>ClientHello</strong> — client sends supported cipher suites, TLS version, <code>key_share</code> (ECDH public value), random nonce</li>
+            <li><strong>ServerHello</strong> — server selects cipher suite, sends its <code>key_share</code> (ECDH public value)</li>
+            <li><strong>Shared Secret Derived</strong> — both sides independently compute <code>ECDH shared secret</code> and derive session keys via <code>HKDF</code></li>
+            <li><strong>Certificate + CertificateVerify</strong> — server sends X.509 cert; signs handshake transcript with private key to prove possession</li>
+            <li><strong>Client verifies</strong> — checks cert chain against trusted CAs, verifies signature</li>
+            <li><strong>Finished</strong> — both sides send MAC over full handshake transcript; session is established. All data now encrypted with symmetric keys.</li>
+          </ol>
+          <div class="formula">TLS 1.3 provides:
+  Confidentiality  → AES-GCM / ChaCha20-Poly1305
+  Integrity        → AEAD authentication tag
+  Authentication   → X.509 certificate + signature
+  Forward Secrecy  → ephemeral ECDHE (new key per session)</div>
+          <div class="note">
+            <div class="n-title">TLS 1.3 Removes Weak Ciphers</div>
+            TLS 1.3 removed: <code>RC4</code>, <code>3DES</code>, <code>MD5</code>/<code>SHA-1</code> in HMACs, RSA static key exchange (no forward secrecy), and export-grade ciphers. Only AEAD ciphers allowed.
+          </div>
+          <div class="label">Forward Secrecy</div>
+          <div class="tip">
+            <div class="t-title">Why ECDHE?</div>
+            Ephemeral DH generates a <em>new</em> key pair per session. Even if the server's long-term private key is later stolen, past session recordings cannot be decrypted — each session had its own ephemeral key.
+          </div>
+          <div class="label">Common Network Attacks</div>
+          <table class="tbl">
+            <tr><th>Attack</th><th>Description</th><th>Defense</th></tr>
+            <tr><td>DNS Spoofing</td><td>Inject forged DNS responses</td><td><code>DNSSEC</code></td></tr>
+            <tr><td>ARP Spoofing</td><td>Fake ARP replies to redirect LAN traffic</td><td>Dynamic ARP Inspection</td></tr>
+            <tr><td>MitM (TLS)</td><td>Intercept encrypted session</td><td><code>HSTS</code>, certificate pinning</td></tr>
+            <tr><td>DDoS</td><td>Flood target with traffic</td><td>Rate limiting, CDN scrubbing</td></tr>
+            <tr><td>SYN Flood</td><td>Half-open TCP connections exhaust table</td><td><code>SYN cookies</code></td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trusted Computing / TPM -->
+  <div class="card yellow" id="tpm">
+    <div class="card-header"><div class="dot"></div><h3>Trusted Computing &amp; TPM</h3></div>
+    <div class="card-body">
+      <div class="info">
+        <div class="i-title">What is a TPM?</div>
+        A <strong>Trusted Platform Module</strong> is a dedicated security hardware chip (or firmware equivalent) on the motherboard. It provides: secure key storage, hardware random number generation, cryptographic operations, and platform state measurement.
+      </div>
+      <div class="label">Platform Configuration Registers (PCRs)</div>
+      <ul class="items">
+        <li>TPM contains 24 (or more) <strong style="color:var(--osg)">PCR</strong> registers (256-bit each)</li>
+        <li>PCRs can only be <strong>extended</strong> — never directly overwritten: <code>PCR_new = H(PCR_old || new_value)</code></li>
+        <li>This creates a tamper-evident hash chain of measurements</li>
+        <li>PCR values represent a cryptographic fingerprint of the software boot chain</li>
+      </ul>
+      <div class="formula">PCR_extend(i, value):
+  PCR[i] = SHA256( PCR[i] || value )
+// initial value: PCR[i] = 0x000...000</div>
+      <div class="label">Secure Boot</div>
+      <ul class="items">
+        <li><code>UEFI</code> firmware checks digital signature of bootloader before executing it</li>
+        <li>Bootloader must be signed by a trusted CA (Microsoft CA for Windows)</li>
+        <li>Prevents loading of unauthorized OS or malicious bootloaders (bootkits)</li>
+        <li>Linux: signed by distro key or user's enrolled <code>MOK</code> (Machine Owner Key)</li>
+      </ul>
+      <div class="label">Remote Attestation Flow</div>
+      <ol class="steps">
+        <li><strong>Boot</strong>: BIOS/UEFI measures itself → extends <code>PCR[0]</code></li>
+        <li>BIOS measures bootloader → extends <code>PCR[4]</code></li>
+        <li>Bootloader measures kernel → extends <code>PCR[8]</code></li>
+        <li>Kernel measures initrd, modules → extends further PCRs</li>
+        <li><strong>Attestation</strong>: challenger sends random nonce <code>N</code> to system</li>
+        <li>TPM signs <code>(PCR_values || N)</code> with <strong style="color:var(--osg)">AIK (Attestation Identity Key)</strong> — private key sealed inside TPM</li>
+        <li>Challenger receives <code>quote</code>, verifies signature with AIK public key</li>
+        <li>Challenger compares PCR values to expected "golden" values — if match, platform is trusted</li>
+      </ol>
+      <div class="tip">
+        <div class="t-title">Why the Nonce?</div>
+        The nonce (fresh random value from challenger) prevents <strong>replay attacks</strong> — an attacker cannot present a previously recorded valid quote as if it were fresh.
+      </div>
+      <div class="label">TPM Capabilities Summary</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>Description</th></tr>
+        <tr><td><code>TPM_Seal</code></td><td>Encrypt data; can only be decrypted if PCR values match (state unchanged)</td></tr>
+        <tr><td><code>TPM_Unseal</code></td><td>Decrypt sealed data; fails if system state has changed (PCR mismatch)</td></tr>
+        <tr><td><code>TPM_Quote</code></td><td>Sign PCR values with AIK; used for remote attestation</td></tr>
+        <tr><td><code>NV Storage</code></td><td>Non-volatile storage for keys; survives reboots; protected by auth</td></tr>
+        <tr><td><code>RNG</code></td><td>Hardware random number generator; seed for keys and nonces</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">BitLocker &amp; TPM</div>
+        Windows BitLocker seals the disk encryption key to TPM PCR values. If the boot chain is modified (e.g., malicious bootloader), PCRs change → TPM refuses to unseal → disk remains encrypted even if stolen.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 7 -->
+
+<!-- Footer -->
+<div class="footer">
+  <span>OSG202 — Operating Systems</span>
+  <span style="color:var(--text-dim);">CH09 · Security · CIA Triad · Cryptography · Access Control · Malware · Defenses · TPM</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<!-- Prism.js -->
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code = document.createElement('code');
+    code.className = 'language-c';
+    code.textContent = pre.textContent;
+    pre.textContent = '';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+
+<!-- TOC Sidebar Script -->
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+
+</body>
+</html>

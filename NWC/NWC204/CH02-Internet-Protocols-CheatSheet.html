@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH02 – Internet Protocols | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Internet Protocols — Chapter 2</h1>
+    <h2>CCNA INTRO Study Guide · Lammle · NWC204 — Computer Networking</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">§DoD Model</span>
+      <span class="toc-item">§App Protocols</span>
+      <span class="toc-item">§FTP Active/Passive</span>
+      <span class="toc-item">§TCP Handshake</span>
+      <span class="toc-item">§UDP</span>
+      <span class="toc-item">§ICMP</span>
+      <span class="toc-item">§ARP/RARP</span>
+      <span class="toc-item">§DHCP DORA</span>
+      <span class="toc-item">§IPv4 Classes</span>
+      <span class="toc-item">§Private Ranges</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</div>
+
+<!-- ROW 1: DoD Model -->
+<div class="grid">
+  <div class="card col-span-3 blue" id="dod-model">
+    <div class="card-header"><span class="dot"></span><h3>DoD (TCP/IP) Model vs OSI Model</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>DoD Layer</th>
+          <th>DoD Name</th>
+          <th>Corresponding OSI Layers</th>
+          <th>Key Protocols</th>
+          <th>PDU</th>
+          <th>Function</th>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:700;">4</td>
+          <td><strong style="color:var(--accent3);">Process / Application</strong></td>
+          <td>Application (7) + Presentation (6) + Session (5)</td>
+          <td>Telnet, SSH, FTP, TFTP, SMTP, POP3, IMAP, HTTP, HTTPS, DNS, SNMP, NTP, DHCP</td>
+          <td>Data</td>
+          <td>User-facing services; data formatting, session management</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:700;">3</td>
+          <td><strong style="color:var(--accent2);">Host-to-Host</strong></td>
+          <td>Transport (4)</td>
+          <td>TCP, UDP</td>
+          <td>Segment / Datagram</td>
+          <td>End-to-end delivery; reliability (TCP), speed (UDP); port numbers; flow control</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);font-weight:700;">2</td>
+          <td><strong style="color:var(--accent);">Internet</strong></td>
+          <td>Network (3)</td>
+          <td>IP, ICMP, ARP, RARP, BootP, DHCP</td>
+          <td>Packet</td>
+          <td>Logical addressing; routing; path selection; best-effort connectionless delivery</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-weight:700;">1</td>
+          <td><strong style="color:var(--text-muted);">Network Access</strong></td>
+          <td>Data Link (2) + Physical (1)</td>
+          <td>Ethernet, 802.11, PPP, HDLC, Frame Relay, ARP</td>
+          <td>Frame / Bit</td>
+          <td>Physical transmission; MAC addressing; media access; hardware interface</td>
+        </tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">Model Comparison Note</div>
+        The DoD model was developed by the US Department of Defense and predates OSI. TCP/IP is based on the DoD model. OSI is a theoretical reference model; DoD/TCP-IP is the practical implementation. Both map to each other as shown above.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: App Layer Protocols -->
+<div class="grid section-gap">
+  <div class="card orange col-span-2" id="app-protocols">
+    <div class="card-header"><span class="dot"></span><h3>Process/Application Layer Protocols</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>Protocol</th>
+          <th>Port(s)</th>
+          <th>Transport</th>
+          <th>Function</th>
+          <th>Notes</th>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">Telnet</td>
+          <td>23</td><td>TCP</td>
+          <td>Remote terminal emulation</td>
+          <td>Cleartext — credentials visible on wire; replaced by SSH</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">SSH</td>
+          <td>22</td><td>TCP</td>
+          <td>Secure remote shell / command line</td>
+          <td>Encrypted; replaces Telnet; uses public key or password auth</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">FTP</td>
+          <td>20/21</td><td>TCP</td>
+          <td>File transfer with auth (user/pass)</td>
+          <td>Port 21=control, Port 20=data (active). Passive uses ephemeral ports</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">TFTP</td>
+          <td>69</td><td>UDP</td>
+          <td>Trivial file transfer — no auth, no dir listing</td>
+          <td>Used to upload/download Cisco IOS images and configs; lock-step ACK</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">SMTP</td>
+          <td>25</td><td>TCP</td>
+          <td>Send email from client to server / server to server</td>
+          <td>Outbound only; does not retrieve email (use POP3/IMAP for that)</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">POP3</td>
+          <td>110</td><td>TCP</td>
+          <td>Retrieve email from server (download &amp; delete)</td>
+          <td>Email downloaded to local device; removed from server by default</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">IMAP4</td>
+          <td>143</td><td>TCP</td>
+          <td>Retrieve email — stays on server</td>
+          <td>Better than POP3 for multi-device access; server-side folders/search</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">SNMP</td>
+          <td>161/162</td><td>UDP</td>
+          <td>Network device management and monitoring</td>
+          <td>161=queries (manager→agent); 162=traps (agent→manager). SNMPv3 encrypted</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">HTTP</td>
+          <td>80</td><td>TCP</td>
+          <td>Web page transfer (HyperText Transfer Protocol)</td>
+          <td>Cleartext; stateless; replaced by HTTPS for sensitive data</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:600;">HTTPS</td>
+          <td>443</td><td>TCP</td>
+          <td>Encrypted web traffic (HTTP over TLS)</td>
+          <td>Uses SSL/TLS at Presentation layer; certificates for authentication</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">DNS</td>
+          <td>53</td><td>UDP/TCP</td>
+          <td>Resolve hostnames to IP addresses</td>
+          <td>UDP for queries; TCP for zone transfers / responses &gt;512B. Hierarchical</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">NTP</td>
+          <td>123</td><td>UDP</td>
+          <td>Network Time Protocol — synchronize clocks</td>
+          <td>Stratum 0=atomic clock; Stratum 1=directly connected; etc. Critical for logs/certs</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">DHCP</td>
+          <td>67/68</td><td>UDP</td>
+          <td>Dynamic IP address assignment</td>
+          <td>Server=67, Client=68; broadcast-based; DORA process; leases addresses</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:600;">BootP</td>
+          <td>67/68</td><td>UDP</td>
+          <td>Bootstrap protocol — older precursor to DHCP</td>
+          <td>Static mapping of MAC to IP; no leasing; used by diskless workstations</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card red" id="ftp-modes">
+    <div class="card-header"><span class="dot"></span><h3>FTP — Active vs Passive Mode</h3></div>
+    <div class="card-body">
+      <div class="label">Active Mode (PORT command)</div>
+      <ul class="items">
+        <li>Client connects from ephemeral port to server port 21 (control)</li>
+        <li>Client sends PORT command specifying its data IP:Port</li>
+        <li><strong>Server initiates</strong> data connection from port 20 to client's specified port</li>
+        <li>Problem: firewalls/NAT often block inbound connections from server</li>
+      </ul>
+      <pre>Client:1025 ──────→ Server:21  (control)
+Client:1026 ←────── Server:20  (data — SERVER initiates)</pre>
+      <div class="label">Passive Mode (PASV command)</div>
+      <ul class="items">
+        <li>Client connects from ephemeral port to server port 21 (control)</li>
+        <li>Client sends PASV command</li>
+        <li>Server replies with its data IP:Port (ephemeral &gt;1023)</li>
+        <li><strong>Client initiates</strong> the data connection to server's ephemeral port</li>
+        <li>Firewall-friendly — client always initiates both connections</li>
+      </ul>
+      <pre>Client:1025 ──────→ Server:21    (control)
+Client:1026 ──────→ Server:5001  (data — CLIENT initiates)</pre>
+      <div class="tip">
+        <div class="t-title">Key Difference</div>
+        <strong>Active:</strong> Server initiates data connection (port 20 → client). Problems with firewalls.<br>
+        <strong>Passive:</strong> Client initiates data connection (client → server high port). Firewall-friendly.
+      </div>
+      <div class="label">DNS Resolution Process</div>
+      <ol class="steps">
+        <li>Client queries local DNS cache first</li>
+        <li>If not found, query Recursive DNS server (ISP/configured)</li>
+        <li>Recursive DNS queries Root DNS server (knows TLD servers)</li>
+        <li>Root refers to TLD server (.com, .org, etc.)</li>
+        <li>TLD refers to Authoritative DNS server for that domain</li>
+        <li>Authoritative server returns IP address to client</li>
+      </ol>
+      <div class="note">
+        <div class="n-title">DNS Record Types</div>
+        <strong>A</strong> = hostname → IPv4 &nbsp;|&nbsp; <strong>AAAA</strong> = hostname → IPv6<br>
+        <strong>CNAME</strong> = alias &nbsp;|&nbsp; <strong>MX</strong> = mail server &nbsp;|&nbsp; <strong>PTR</strong> = reverse lookup
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: TCP Handshake + UDP + ICMP -->
+<div class="grid section-gap">
+  <div class="card blue" id="tcp-handshake">
+    <div class="card-header"><span class="dot"></span><h3>TCP — 3-Way Handshake &amp; Features</h3></div>
+    <div class="card-body">
+      <div class="label">Connection Establishment (3-Way Handshake)</div>
+      <pre>Client                      Server
+  │──── SYN (seq=100) ────────→│
+  │   Synchronize, start seq   │
+  │                            │
+  │←── SYN-ACK (seq=300, ─────│
+  │         ack=101) ──────────│
+  │   Server acknowledges      │
+  │                            │
+  │──── ACK (ack=301) ────────→│
+  │   Connection established   │
+  │                            │
+  │◄═══════ DATA ═════════════►│</pre>
+      <div class="label">Connection Termination (4-Way)</div>
+      <pre>Client ──── FIN ────→ Server  (initiates close)
+Client ←─── ACK ──── Server  (half-closed)
+Client ←─── FIN ──── Server  (server closes)
+Client ──── ACK ────→ Server  (TIME_WAIT then CLOSED)</pre>
+      <div class="label">Windowing (Flow Control)</div>
+      <div class="formula">Sender Window = number of segments sent before ACK required
+Small window → slow, reliable
+Large window → fast, risk of overflow
+Dynamic: expands on success, shrinks on loss</div>
+      <pre>Window=1:  [1]→ ACK → [2]→ ACK → [3]→ ACK  (slow)
+Window=3:  [1,2,3]→ ACK → [4,5,6]→ ACK      (faster)</pre>
+      <div class="label">TCP Reliability Features</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>How It Works</th></tr>
+        <tr><td>Sequencing</td><td>Each byte numbered; receiver reorders if needed</td></tr>
+        <tr><td>Acknowledgements</td><td>ACK = "received up to byte N, send N+1 next"</td></tr>
+        <tr><td>Retransmission</td><td>No ACK within timeout → retransmit segment</td></tr>
+        <tr><td>Windowing</td><td>Sliding window limits unACKed data in flight</td></tr>
+        <tr><td>Checksum</td><td>Detects corrupted segments (discard + retransmit)</td></tr>
+        <tr><td>Flow Control</td><td>Receiver advertises window size to slow sender</td></tr>
+      </table>
+      <div class="info">
+        <div class="i-title">TCP Flags</div>
+        <strong>SYN</strong> — synchronize sequence numbers (connection start)<br>
+        <strong>ACK</strong> — acknowledgement number is valid<br>
+        <strong>FIN</strong> — no more data from sender (graceful close)<br>
+        <strong>RST</strong> — reset/abort connection immediately<br>
+        <strong>PSH</strong> — push data to application immediately<br>
+        <strong>URG</strong> — urgent pointer field is valid
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="icmp-protocol">
+    <div class="card-header"><span class="dot"></span><h3>ICMP — Internet Control Message Protocol</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="ICMP is a Layer 3 protocol (part of IP) used for error reporting and network diagnostics. It is encapsulated directly in IP packets, not TCP/UDP.">ICMP</span> is used by IP for error reporting and diagnostic functions. Not used for data delivery. Encapsulated directly in IP (Protocol 1).</p>
+      <div class="label">Key ICMP Message Types</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Code</th><th>Message</th><th>Triggered By</th></tr>
+        <tr><td>0</td><td>0</td><td style="color:var(--accent2);">Echo Reply</td><td>Response to ping (type 8)</td></tr>
+        <tr><td>3</td><td>0</td><td style="color:var(--accent3);">Dest Unreachable: Network</td><td>No route to destination network</td></tr>
+        <tr><td>3</td><td>1</td><td style="color:var(--accent3);">Dest Unreachable: Host</td><td>Network reachable but host not responding</td></tr>
+        <tr><td>3</td><td>2</td><td style="color:var(--accent3);">Dest Unreachable: Protocol</td><td>Protocol not supported at destination</td></tr>
+        <tr><td>3</td><td>3</td><td style="color:var(--accent3);">Dest Unreachable: Port</td><td>Port not open at destination (TCP RST)</td></tr>
+        <tr><td>3</td><td>4</td><td style="color:var(--accent3);">Fragmentation Needed</td><td>DF bit set but packet too large</td></tr>
+        <tr><td>5</td><td>0</td><td style="color:var(--yellow);">Redirect: Network</td><td>Better route exists via another router</td></tr>
+        <tr><td>8</td><td>0</td><td style="color:var(--accent2);">Echo Request</td><td>ping command — tests reachability</td></tr>
+        <tr><td>11</td><td>0</td><td style="color:var(--accent4);">Time Exceeded: TTL</td><td>TTL decremented to 0; used by traceroute</td></tr>
+        <tr><td>11</td><td>1</td><td style="color:var(--accent4);">Time Exceeded: Reassembly</td><td>Fragment reassembly timeout</td></tr>
+        <tr><td>12</td><td>0</td><td style="color:var(--accent3);">Parameter Problem</td><td>Invalid IP header field</td></tr>
+      </table>
+      <div class="label">Ping — How It Works</div>
+      <pre>Host A ──── ICMP Echo Request (Type 8) ────→ Host B
+Host A ←─── ICMP Echo Reply   (Type 0) ───── Host B</pre>
+      <div class="label">Traceroute — How It Works</div>
+      <ol class="steps">
+        <li>Send packet with TTL=1 → first router decrements to 0, sends "TTL Exceeded" (Type 11)</li>
+        <li>Send packet with TTL=2 → second router responds with TTL Exceeded</li>
+        <li>Continue incrementing TTL until destination reached</li>
+        <li>Destination sends Echo Reply (or ICMP Port Unreachable for UDP traceroute)</li>
+        <li>Each hop's IP address and RTT are recorded</li>
+      </ol>
+      <div class="warn">
+        <div class="w-title">ICMP Is Not for Data</div>
+        ICMP does not use TCP or UDP. It is a Layer 3 protocol. Firewalls often block ICMP, making ping/traceroute unreliable for troubleshooting through firewalls.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="arp-rarp">
+    <div class="card-header"><span class="dot"></span><h3>ARP, RARP, BootP &amp; DHCP</h3></div>
+    <div class="card-body">
+      <div class="label">ARP — Address Resolution Protocol</div>
+      <p>Resolves <strong>IP address → MAC address</strong>. Required before Layer 2 frame can be built.</p>
+      <ol class="steps">
+        <li>Host A wants to send to 192.168.1.10; checks ARP cache</li>
+        <li>ARP Request: broadcast (FF:FF:FF:FF:FF:FF) "Who has 192.168.1.10?"</li>
+        <li>Host B (192.168.1.10) receives broadcast, sends ARP Reply (unicast)</li>
+        <li>ARP Reply: "192.168.1.10 is at MAC AA:BB:CC:DD:EE:FF"</li>
+        <li>Host A caches the IP→MAC mapping; builds frame</li>
+      </ol>
+      <pre>ARP Request:  SRC=A's MAC, DST=FF:FF:FF:FF:FF:FF  [broadcast]
+ARP Reply:    SRC=B's MAC, DST=A's MAC              [unicast]</pre>
+      <div class="label">ARP Cache</div>
+      <ul class="items">
+        <li>OS maintains ARP cache table (IP → MAC mappings)</li>
+        <li>Entries expire after timeout (typically 4 hours Windows, 20 min Cisco)</li>
+        <li>View with <code>arp -a</code> (Windows/Linux) or <code>show arp</code> (Cisco)</li>
+        <li>Gratuitous ARP: device ARPs its own IP (announce MAC change)</li>
+        <li>ARP spoofing: attacker responds to ARP requests with attacker's MAC (MITM)</li>
+      </ul>
+      <div class="label">RARP — Reverse ARP</div>
+      <ul class="items">
+        <li>Resolves <strong>MAC address → IP address</strong> (opposite of ARP)</li>
+        <li>Used by diskless workstations to discover their IP at boot</li>
+        <li>Obsolete — replaced by BootP then DHCP</li>
+        <li>Requires RARP server on same broadcast domain</li>
+      </ul>
+      <div class="label">DHCP DORA Process</div>
+      <ol class="steps">
+        <li><strong>Discover:</strong> Client broadcasts DHCPDISCOVER (src=0.0.0.0, dst=255.255.255.255)</li>
+        <li><strong>Offer:</strong> DHCP server unicasts/broadcasts DHCPOFFER (IP, mask, gateway, DNS, lease)</li>
+        <li><strong>Request:</strong> Client broadcasts DHCPREQUEST (accepts offer, notifies other servers)</li>
+        <li><strong>Acknowledge:</strong> Server sends DHCPACK confirming lease; client configures interface</li>
+      </ol>
+      <div class="formula">D-O-R-A: Discover → Offer → Request → Acknowledge</div>
+      <div class="label">DHCP Lease Info Provided</div>
+      <ul class="items">
+        <li>IP address (from configured pool)</li>
+        <li>Subnet mask</li>
+        <li>Default gateway (router)</li>
+        <li>DNS server addresses</li>
+        <li>Lease duration (typically 8 days)</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">DHCP Relay Agent</div>
+        DHCP uses broadcasts. Routers don't forward broadcasts. A DHCP relay agent (ip helper-address on Cisco router) forwards DHCP broadcast as unicast to DHCP server on another network.
+      </div>
+      <pre>Router config for DHCP relay:
+interface FastEthernet0/0
+ ip helper-address 10.0.0.10</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4: IPv4 Classes + Private Ranges -->
+<div class="grid section-gap">
+  <div class="card purple col-span-2" id="ipv4-classes">
+    <div class="card-header"><span class="dot"></span><h3>IPv4 Address Classes &amp; Structure</h3></div>
+    <div class="card-body">
+      <p>IPv4 addresses are <strong>32 bits</strong> written in <span class="tt" data-t="32-bit IP address split into 4 octets (8 bits each), each written as decimal 0-255, separated by dots. E.g., 192.168.1.1">dotted decimal notation</span> (4 octets × 8 bits). Address = Network portion + Host portion.</p>
+      <table class="tbl">
+        <tr>
+          <th>Class</th>
+          <th>First Octet Range</th>
+          <th>Default Mask</th>
+          <th>CIDR</th>
+          <th>Network Bits</th>
+          <th>Host Bits</th>
+          <th>Max Networks</th>
+          <th>Hosts/Network</th>
+          <th>Purpose</th>
+        </tr>
+        <tr>
+          <td style="color:var(--accent3);font-weight:700;">A</td>
+          <td>1 – 126</td>
+          <td>255.0.0.0</td>
+          <td>/8</td>
+          <td>8</td>
+          <td>24</td>
+          <td>126</td>
+          <td style="color:var(--accent2);">16,777,214</td>
+          <td>Very large organizations</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);font-weight:700;">B</td>
+          <td>128 – 191</td>
+          <td>255.255.0.0</td>
+          <td>/16</td>
+          <td>16</td>
+          <td>16</td>
+          <td>16,382</td>
+          <td style="color:var(--accent2);">65,534</td>
+          <td>Medium-large organizations</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);font-weight:700;">C</td>
+          <td>192 – 223</td>
+          <td>255.255.255.0</td>
+          <td>/24</td>
+          <td>24</td>
+          <td>8</td>
+          <td>2,097,152</td>
+          <td style="color:var(--yellow);">254</td>
+          <td>Small organizations / homes</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent4);font-weight:700;">D</td>
+          <td>224 – 239</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>Multicast groups (not unicast)</td>
+        </tr>
+        <tr>
+          <td style="color:var(--text-muted);font-weight:700;">E</td>
+          <td>240 – 255</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>N/A</td>
+          <td>Research/Experimental (reserved)</td>
+        </tr>
+      </table>
+      <div class="label">Class A Breakdown</div>
+      <div class="formula">Network.Host.Host.Host  (N.H.H.H)
+First bit always 0 → first octet 0–127 (but 0 and 127 reserved)
+Valid Class A networks: 1.0.0.0 – 126.0.0.0  (126 networks)
+Hosts per network: 2^24 - 2 = 16,777,214</div>
+      <div class="label">Class B Breakdown</div>
+      <div class="formula">Network.Network.Host.Host  (N.N.H.H)
+First 2 bits always 10 → first octet 128–191
+Valid Class B networks: 128.0.0.0 – 191.255.0.0  (16,382 networks)
+Hosts per network: 2^16 - 2 = 65,534</div>
+      <div class="label">Class C Breakdown</div>
+      <div class="formula">Network.Network.Network.Host  (N.N.N.H)
+First 3 bits always 110 → first octet 192–223
+Valid Class C networks: 192.0.0.0 – 223.255.255.0  (2,097,152 networks)
+Hosts per network: 2^8 - 2 = 254</div>
+      <div class="label">Special &amp; Reserved Addresses</div>
+      <table class="tbl">
+        <tr><th>Address / Range</th><th>Purpose</th></tr>
+        <tr><td><code>0.0.0.0</code></td><td>Default route; "this network / unspecified source"</td></tr>
+        <tr><td><code>127.0.0.0/8</code></td><td>Loopback — 127.0.0.1 tests local TCP/IP stack (never routed)</td></tr>
+        <tr><td><code>255.255.255.255</code></td><td>Limited broadcast (sent to all on local segment)</td></tr>
+        <tr><td>Host bits all 0s</td><td>Network address (identifies the network, not a host)</td></tr>
+        <tr><td>Host bits all 1s</td><td>Directed broadcast (sent to all hosts in that subnet)</td></tr>
+        <tr><td><code>169.254.0.0/16</code></td><td>APIPA — Automatic Private IP Addressing (no DHCP found)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card red" id="private-ranges">
+    <div class="card-header"><span class="dot"></span><h3>Private IP Ranges &amp; Special Addresses</h3></div>
+    <div class="card-body">
+      <div class="label">RFC 1918 Private Address Ranges</div>
+      <p>Private addresses are <strong>not routable</strong> on the public internet. Used internally; NAT translates to public IPs.</p>
+      <table class="tbl">
+        <tr><th>Class</th><th>Range</th><th>CIDR</th><th>Subnet Mask</th><th>Addresses</th></tr>
+        <tr>
+          <td style="color:var(--accent3);">A</td>
+          <td><code>10.0.0.0</code> – <code>10.255.255.255</code></td>
+          <td>/8</td>
+          <td>255.0.0.0</td>
+          <td>16,777,216</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent2);">B</td>
+          <td><code>172.16.0.0</code> – <code>172.31.255.255</code></td>
+          <td>/12</td>
+          <td>255.240.0.0</td>
+          <td>1,048,576</td>
+        </tr>
+        <tr>
+          <td style="color:var(--accent);">C</td>
+          <td><code>192.168.0.0</code> – <code>192.168.255.255</code></td>
+          <td>/16</td>
+          <td>255.255.0.0</td>
+          <td>65,536</td>
+        </tr>
+      </table>
+      <div class="label">IP Header Key Fields</div>
+      <table class="tbl">
+        <tr><th>Field</th><th>Size</th><th>Purpose</th></tr>
+        <tr><td>Version</td><td>4-bit</td><td>IPv4=4, IPv6=6</td></tr>
+        <tr><td>IHL</td><td>4-bit</td><td>Header length in 32-bit words (min=5 = 20 bytes)</td></tr>
+        <tr><td>DSCP/ToS</td><td>8-bit</td><td>QoS — Differentiated Services marking</td></tr>
+        <tr><td>Total Length</td><td>16-bit</td><td>Header + data (max 65,535 bytes)</td></tr>
+        <tr><td>Identification</td><td>16-bit</td><td>Fragment identification</td></tr>
+        <tr><td>Flags</td><td>3-bit</td><td>DF=Don't Fragment, MF=More Fragments</td></tr>
+        <tr><td>Fragment Offset</td><td>13-bit</td><td>Position of fragment in original packet</td></tr>
+        <tr><td>TTL</td><td>8-bit</td><td>Hops remaining; each router decrements by 1</td></tr>
+        <tr><td>Protocol</td><td>8-bit</td><td>1=ICMP, 6=TCP, 17=UDP, 89=OSPF</td></tr>
+        <tr><td>Header Checksum</td><td>16-bit</td><td>Integrity check on header only</td></tr>
+        <tr><td>Source IP</td><td>32-bit</td><td>Sender's IP address</td></tr>
+        <tr><td>Destination IP</td><td>32-bit</td><td>Recipient's IP address</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">IP is Connectionless &amp; Best-Effort</div>
+        IP does NOT guarantee delivery, ordering, or error recovery. It just forwards packets based on destination IP. Reliability is TCP's job (Layer 4).
+      </div>
+      <div class="warn">
+        <div class="w-title">127.0.0.0 Reserved — Never Usable</div>
+        The entire 127.0.0.0/8 range is reserved for loopback. That's why Class A only has 126 usable networks (1–126), not 128. Network 0 is also reserved.
+      </div>
+      <div class="label">NAT Overview</div>
+      <ul class="items">
+        <li><strong>NAT</strong> = Network Address Translation</li>
+        <li>Translates private IPs to public IP(s) for internet access</li>
+        <li><strong>Static NAT:</strong> 1 private ↔ 1 public (one-to-one)</li>
+        <li><strong>Dynamic NAT:</strong> pool of public IPs, assigned from pool</li>
+        <li><strong>PAT (NAT Overload):</strong> many private → 1 public (using port numbers)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <a href="../NWC204.html">← NWC204 Index</a>
+  <span>CCNA INTRO · Lammle · Ch2</span>
+  <span>NWC204 — Computer Networking</span>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

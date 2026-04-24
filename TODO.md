@@ -1,17 +1,11 @@
 TODO
 Now: Plan_T.md
 
-Long-Term: (Dont do anything about these yet)
-    - English/Vietnamese (Maybe not if too big of a scale)
-    - Improve UI/UX
-        - Light/Dark Mode
-    - Intergate with the SSA project ??? maybe
-
---- Copilot's Ideas (let's talk about these) ---
-    - Study/quiz mode: use the 257 tooltip definitions as flashcard prompts — flip card, guess the term
-    - Reading progress bar: thin accent-color bar that grows as you scroll down each chapter page
-    - Chapter completion tracker: "Mark as studied" button per chapter, progress % shown on CEA/COA.html hero
-    - Print / PDF stylesheet: @media print rules so chapters export cleanly as study handouts (MAE chapters already have this in shared.css)
+-- NWWC204 --
+    - Weird text placement
+    - too many red texts
+    - many boxes need resizing
+    - find bugs
 
 --- Copilot Bug Log ---
     [2025-01] Full sweep done — 0 real bugs found outside MAE (all currently building):

@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH04 – File Systems | OSG202</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH04 — File Systems</h1>
+    <h2>Modern Operating Systems · Tanenbaum · 4th Ed. · Chapter 4</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">File Concepts</span>
+      <span class="toc-item">Access Methods</span>
+      <span class="toc-item">Directories</span>
+      <span class="toc-item">Disk Layout</span>
+      <span class="toc-item">Allocation Methods</span>
+      <span class="toc-item">I-nodes</span>
+      <span class="toc-item">Hard Links</span>
+      <span class="toc-item">LFS &amp; Journaling</span>
+      <span class="toc-item">VFS</span>
+      <span class="toc-item">Backup</span>
+    </div>
+  </div>
+  <div><span class="badge">OSG202</span></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 1 — FILE CONCEPTS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid">
+
+  <div class="card blue" id="file-attributes">
+    <div class="card-header"><div class="dot"></div><h3>File Attributes</h3></div>
+    <div class="card-body">
+      <p>Every file has <strong style="color:var(--osg)">metadata</strong> stored separately from its data — in the directory or <code>inode</code> on UNIX systems.</p>
+      <table class="tbl">
+        <tr><th>Attribute</th><th>Description</th><th>Example / Notes</th></tr>
+        <tr><td><code>Name</code></td><td>Human-readable label</td><td>Case-sensitive on UNIX; case-insensitive on FAT/NTFS</td></tr>
+        <tr><td><code>Type</code></td><td>Helps OS identify content</td><td>Extension (.txt, .exe) or magic number in file</td></tr>
+        <tr><td><code>Size</code></td><td>Current length in bytes</td><td>Also tracks allocated blocks vs. used bytes</td></tr>
+        <tr><td><code>Protection</code></td><td>Access control (rwx)</td><td>Owner / Group / Others on UNIX; ACLs on NTFS</td></tr>
+        <tr><td><code>atime</code></td><td>Last access time</td><td>Updated on every read (can be disabled with <code>noatime</code>)</td></tr>
+        <tr><td><code>mtime</code></td><td>Last modification time</td><td>Changes when file data changes</td></tr>
+        <tr><td><code>ctime</code></td><td>Last inode-change time</td><td>Changes on metadata change (not creation on UNIX)</td></tr>
+        <tr><td><code>Owner</code></td><td>UID of creating user</td><td>Stored as integer in inode, mapped via <code>/etc/passwd</code></td></tr>
+        <tr><td><code>Location</code></td><td>Pointer to disk blocks</td><td>Array of block addresses in inode</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">Stat System Call</div>
+        <code>stat(path, &amp;buf)</code> fills a <code>struct stat</code> with all attributes above. Use <code>lstat()</code> for symlinks.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="file-operations">
+    <div class="card-header"><div class="dot"></div><h3>File Operations</h3></div>
+    <div class="card-body">
+      <p>The OS provides a <strong style="color:var(--osg)">system call interface</strong> for file I/O. All operations go through the kernel.</p>
+      <ul class="items">
+        <li><code>open(path, flags, mode)</code> — Returns a <strong>file descriptor</strong>; OS checks permissions &amp; places entry in open-file table</li>
+        <li><code>close(fd)</code> — Releases kernel resources; flushes kernel buffers if <code>O_SYNC</code> not set</li>
+        <li><code>read(fd, buf, n)</code> — Copies up to <em>n</em> bytes from current file position into user buffer</li>
+        <li><code>write(fd, buf, n)</code> — Copies <em>n</em> bytes from user buffer to file; may extend file size</li>
+        <li><code>lseek(fd, offset, whence)</code> — Repositions file pointer; no actual I/O performed</li>
+        <li><code>unlink(path)</code> — Removes directory entry; file data freed only when link count = 0</li>
+        <li><code>rename(old, new)</code> — Atomic on same FS; cross-FS requires copy + delete</li>
+        <li><code>truncate(path, len)</code> — Shrinks or extends file to exactly <em>len</em> bytes</li>
+        <li><code>fcntl(fd, cmd, arg)</code> — Miscellaneous: get/set flags, advisory locking (<code>F_SETLK</code>)</li>
+        <li><code>mmap(addr, len, prot, flags, fd, off)</code> — Maps file into process address space</li>
+      </ul>
+      <div class="info">
+        <div class="i-title">Open File Table</div>
+        Kernel maintains a <strong>per-process FD table</strong> → <strong>system-wide open file table</strong> (position, flags, ref-count) → <strong>vnode/inode table</strong>. Multiple FDs can share one open-file entry via <code>dup()</code> / <code>fork()</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple" id="file-types">
+    <div class="card-header"><div class="dot"></div><h3>File Types</h3></div>
+    <div class="card-body">
+      <p>UNIX exposes almost everything as a <strong style="color:var(--osg)">file</strong>. The file type is stored in the <code>inode</code> mode bits.</p>
+      <table class="tbl">
+        <tr><th>Type</th><th>ls char</th><th>Description</th></tr>
+        <tr><td><strong>Regular</strong></td><td><code>-</code></td><td>ASCII text or binary data; no structure imposed by OS</td></tr>
+        <tr><td><strong>Directory</strong></td><td><code>d</code></td><td>Special file containing (name → inode) mapping table</td></tr>
+        <tr><td><strong>Char Special</strong></td><td><code>c</code></td><td>Byte-stream device: terminal, serial port, <code>/dev/null</code></td></tr>
+        <tr><td><strong>Block Special</strong></td><td><code>b</code></td><td>Random-access device: hard disk, SSD, <code>/dev/sda</code></td></tr>
+        <tr><td><strong>Named Pipe</strong></td><td><code>p</code></td><td>FIFO for IPC between unrelated processes</td></tr>
+        <tr><td><strong>Socket</strong></td><td><code>s</code></td><td>Network / local IPC endpoint</td></tr>
+        <tr><td><strong>Symlink</strong></td><td><code>l</code></td><td>Stores path string to another file; may dangle</td></tr>
+      </table>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">Magic Numbers</div>
+        Many binary formats identify themselves with a <strong>magic number</strong> in the first bytes: ELF → <code>7f 45 4c 46</code>, ZIP → <code>50 4b 03 04</code>, JPEG → <code>ff d8 ff</code>. The <code>file</code> command uses these to detect type.
+      </div>
+      <div class="formula">Regular file subtypes:
+  ASCII  — printable text, newline-delimited
+  Binary — structured data (ELF, JPEG, ZIP…)
+  Both   — OS treats them identically</div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 1 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 2 — FILE ACCESS & DIRECTORIES
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card orange" id="access-methods">
+    <div class="card-header"><div class="dot"></div><h3>Access Methods</h3></div>
+    <div class="card-body">
+      <div class="label">Sequential Access</div>
+      <p><strong style="color:var(--osg)">Sequential access</strong> reads/writes bytes in order from the beginning. The file pointer advances automatically after each operation. Efficient for streaming; used by compilers, grep, sort.</p>
+      <div class="formula">read(fd, buf, n)    /* advances ptr by n */
+write(fd, buf, n)   /* advances ptr by n */
+rewind(file)        /* ptr = 0           */</div>
+      <div class="label">Random Access</div>
+      <p><strong style="color:var(--osg)">Random access</strong> (direct access) allows reading/writing at any byte position without scanning preceding bytes. Essential for databases.</p>
+      <div class="formula">lseek(fd, offset, SEEK_SET)   /* absolute */
+lseek(fd, offset, SEEK_CUR)   /* relative  */
+lseek(fd, -offset, SEEK_END)  /* from end  */
+
+New position = base + offset
+  SEEK_SET → base = 0
+  SEEK_CUR → base = current position
+  SEEK_END → base = file size</div>
+      <div class="info">
+        <div class="i-title">Indexed Access</div>
+        Some systems add an <strong>index layer</strong>: an index file maps keys → byte offsets; main file holds variable-length records. Databases implement this via B-trees on top of the OS file.
+      </div>
+      <div class="warn">
+        <div class="w-title">Sparse Files</div>
+        <code>lseek</code> past EOF then <code>write</code> creates a <strong>sparse file</strong>. Gaps are never allocated on disk but appear as NUL bytes. <code>cp</code> may un-sparse them; use <code>cp --sparse=always</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="directory-structures">
+    <div class="card-header"><div class="dot"></div><h3>Directory Structures</h3></div>
+    <div class="card-body">
+      <div class="label">Single-Level (Flat)</div>
+      <p>All files in <strong style="color:var(--osg)">one directory</strong>. Simple; name collisions inevitable with multiple users. Used in early MS-DOS and embedded systems.</p>
+      <hr class="divider">
+      <div class="label">Two-Level</div>
+      <p>One <strong style="color:var(--osg)">master directory</strong> (MFD) → per-user directories (UFD). Isolates users; still no subdirectories. Naming like <code>user/file</code>.</p>
+      <hr class="divider">
+      <div class="label">Tree-Structured (Hierarchical)</div>
+      <p>Arbitrary-depth subdirectories form a <strong style="color:var(--osg)">tree</strong> rooted at <code>/</code>. Each directory entry maps name → inode. Used by all modern UNIX/Windows systems.</p>
+      <ul class="items">
+        <li>Each process has a <strong>current working directory</strong> (<code>cwd</code>) stored in its PCB</li>
+        <li><code>chdir(path)</code> changes the cwd for the calling process</li>
+        <li>Leaf nodes = files; internal nodes = directories</li>
+      </ul>
+      <hr class="divider">
+      <div class="label">DAG (Directed Acyclic Graph)</div>
+      <p>Allows <strong style="color:var(--osg)">shared subdirectories</strong> — multiple parents point to the same directory inode. More flexible than a pure tree.</p>
+      <div class="note">
+        <div class="n-title">⚠ DAG Cycle Risk</div>
+        Hard links to <strong>directories</strong> can introduce cycles, breaking tools like <code>find</code> and <code>du</code>. UNIX forbids hard links to directories (except <code>.</code> and <code>..</code>) for this reason. Symbolic links can still create cycles; <code>find -L</code> uses a depth limit to guard against them.
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="path-names">
+    <div class="card-header"><div class="dot"></div><h3>Path Names</h3></div>
+    <div class="card-body">
+      <div class="label">Absolute Path</div>
+      <p>Starts from the <strong style="color:var(--osg)">root directory</strong> <code>/</code>. Always unambiguous regardless of cwd.</p>
+      <div class="formula">/home/alice/docs/report.txt
+/usr/local/bin/python3
+/etc/passwd</div>
+      <div class="label">Relative Path</div>
+      <p>Starts from the <strong style="color:var(--osg)">current working directory</strong>. Shorter, but context-dependent.</p>
+      <div class="formula">docs/report.txt          # relative
+../sibling/file.c        # go up one level
+./script.sh              # explicit "here"</div>
+      <div class="label">Special Entries in Every Directory</div>
+      <table class="tbl">
+        <tr><th>Entry</th><th>Points To</th><th>Notes</th></tr>
+        <tr><td><code>.</code></td><td>Itself</td><td>Current directory; <code>inode</code> same as dir itself</td></tr>
+        <tr><td><code>..</code></td><td>Parent dir</td><td>At root <code>/</code>, <code>..</code> also points to <code>/</code></td></tr>
+      </table>
+      <div class="label">Windows Paths</div>
+      <div class="formula">C:\Users\Alice\Documents\report.txt
+  Drive letter  → C:
+  Separator     → \ (backslash)
+  UNC path      → \\server\share\file</div>
+      <div class="tip">
+        <div class="t-title">Working Directory</div>
+        Each process inherits its parent's <code>cwd</code> on <code>fork()</code>. The shell's <code>cd</code> command calls <code>chdir()</code>. Print it with <code>getcwd(buf, size)</code> or the <code>pwd</code> command.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 2 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 3 — FILE SYSTEM LAYOUT ON DISK
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid-2 section-gap">
+
+  <div class="card blue col-span-2" id="disk-layout">
+    <div class="card-header"><div class="dot"></div><h3>File System Layout on Disk</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <p>A disk is divided into <strong style="color:var(--osg)">partitions</strong>. Each partition can hold an independent file system. The overall disk structure (simplified UNIX ext2-style):</p>
+          <div class="formula">Sector 0:  [ MBR — Master Boot Record ]
+           Contains: bootstrap code (446 B)
+                     Partition table (4×16 B)
+                     Magic signature 0x55AA
+           ─────────────────────────────────────
+Partition: [ Boot Block   ]  ← sector 0 of partition
+           [ Superblock   ]  ← FS metadata
+           [ Free Bitmap  ]  ← 1 bit per block
+           [ I-node Table ]  ← array of inodes
+           [ Root Dir     ]  ← inode #2 on ext2
+           [ Data Blocks  ]  ← file/dir content</div>
+          <div class="warn">
+            <div class="w-title">MBR vs GPT</div>
+            <strong>MBR</strong> (Master Boot Record) supports max 4 primary partitions and 2 TB disks. <strong>GPT</strong> (GUID Partition Table) supports 128 partitions and 9.4 ZB disks. UEFI systems use GPT with a protective MBR for compatibility.
+          </div>
+        </div>
+        <div>
+          <div class="label">MBR — Master Boot Record</div>
+          <p>Located at <strong style="color:var(--osg)">sector 0</strong> of the disk. BIOS loads MBR into RAM at address <code>0x7C00</code> and jumps to it. The bootstrap code reads the partition table to find the active partition and loads its boot block.</p>
+          <table class="tbl" style="margin-bottom:8px;">
+            <tr><th>Component</th><th>Size</th><th>Purpose</th></tr>
+            <tr><td>Bootstrap code</td><td>446 bytes</td><td>Finds &amp; loads boot sector of active partition</td></tr>
+            <tr><td>Partition table</td><td>64 bytes</td><td>Four 16-byte entries: start, size, type, flags</td></tr>
+            <tr><td>Magic number</td><td>2 bytes</td><td><code>0x55 0xAA</code> — BIOS validity signature</td></tr>
+          </table>
+          <div class="label">Superblock</div>
+          <p>The <strong style="color:var(--osg)">superblock</strong> is the most critical metadata structure. Corruption = FS unmountable. Multiple backup copies kept at fixed offsets.</p>
+          <ul class="items">
+            <li><code>s_magic</code> — identifies FS type (ext2: <code>0xEF53</code>)</li>
+            <li><code>s_blocks_count</code> — total blocks in FS</li>
+            <li><code>s_inodes_count</code> — total inodes allocated</li>
+            <li><code>s_block_size</code> — bytes per block (1K, 2K, 4K)</li>
+            <li><code>s_free_blocks_count</code> — free data blocks</li>
+            <li><code>s_free_inodes_count</code> — free inodes</li>
+            <li><code>s_mtime</code> — last mount time (used by <code>fsck</code>)</li>
+          </ul>
+          <div class="tip">
+            <div class="t-title">Block Groups (ext2/3/4)</div>
+            ext2 divides the disk into <strong>block groups</strong>. Each group has its own superblock copy, block bitmap, inode bitmap, inode table, and data blocks. This localises related data and improves cache hit rate.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid-2 Section 3 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 4 — FILE ALLOCATION METHODS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card green" id="contiguous-allocation">
+    <div class="card-header"><div class="dot"></div><h3>Contiguous Allocation</h3></div>
+    <div class="card-body">
+      <p>Each file occupies a <strong style="color:var(--osg)">contiguous run of disk blocks</strong>. The directory entry stores only the start block and length.</p>
+      <div class="formula">/* Directory entry */
+struct cont_entry {
+  char   name[14];
+  int    start;   /* first block number */
+  int    length;  /* number of blocks   */
+};
+
+/* Access block i of file */
+block_addr = start + i;</div>
+      <div class="info">
+        <div class="i-title">Advantages</div>
+        <strong>Sequential read</strong> is maximally fast — one seek, then streaming reads. <strong>Random access</strong> is O(1): compute <code>start + i</code>, seek once, read.
+      </div>
+      <div class="warn">
+        <div class="w-title">External Fragmentation</div>
+        As files are created and deleted, free space is split into small <strong>holes</strong>. A large file cannot fit even if total free space is sufficient. <strong>Compaction</strong> fixes this but requires copying the entire disk — prohibitively expensive. Used on CD-ROMs (read-only, no deletion) and some DVDs where fragmentation is impossible.
+      </div>
+      <div class="rule">Rule: Contiguous allocation requires knowing file size at creation time. Not practical for files that grow dynamically.</div>
+    </div>
+  </div>
+
+  <div class="card orange" id="linked-list-allocation">
+    <div class="card-header"><div class="dot"></div><h3>Linked List Allocation</h3></div>
+    <div class="card-body">
+      <p>Each disk block contains a <strong style="color:var(--osg)">pointer to the next block</strong>. Directory entry stores only the first block number. No external fragmentation — any free block can be appended.</p>
+      <div class="formula">/* Each block on disk */
+struct linked_block {
+  uint32_t next;        /* next block# or -1 */
+  uint8_t  data[BSIZE - 4]; /* payload      */
+};
+
+/* Directory entry */
+struct dir_entry {
+  char     name[14];
+  uint32_t first_block;
+};</div>
+      <div class="warn">
+        <div class="w-title">Random Access is O(n)</div>
+        To read block <em>i</em>, you must follow <em>i</em> pointers sequentially from the start — each requiring a disk seek. Databases that need random access cannot tolerate this.
+      </div>
+      <div class="note">
+        <div class="n-title">Space Overhead</div>
+        The pointer steals bytes from each block. With a 512-byte block and 4-byte pointer, only <strong>508 bytes</strong> of actual data per block. If a record spans two blocks, two seeks are needed to read it — breaking the concept of a "block".
+      </div>
+      <div class="rule">Rule: Linked allocation works well for sequential access only. Reliability is poor — one corrupt pointer breaks the chain for all subsequent data.</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="fat-allocation">
+    <div class="card-header"><div class="dot"></div><h3>FAT — File Allocation Table</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">FAT</strong> is linked-list allocation moved into a separate table kept entirely in RAM. Each FAT entry stores the next block number for that block. The entire chain for any file can be traversed in memory without disk seeks.</p>
+      <div class="formula">FAT (in RAM — indexed by block number):
+  Block:  0    1    2    3    4    5    6
+  FAT:  [ -  | 3  | -  | 6  | -  | 2  | EOF ]
+              ↑              ↑
+          file A start    file A continues
+
+File A:  block 1 → block 3 → block 6 → EOF
+File B:  block 5 → block 2 → EOF</div>
+      <ul class="items">
+        <li>Directory entry stores <strong>starting block</strong> only — FAT handles the chain</li>
+        <li>Free blocks marked with <code>0</code>; end-of-file with special value (<code>0xFFFF</code>, <code>0x0FFFFFFF</code>)</li>
+        <li>Random access: traverse chain in RAM (fast), then one disk seek for actual data</li>
+        <li>FAT12 (12-bit) → max 4,096 clusters; FAT16 → 65,536; FAT32 → 268 million</li>
+      </ul>
+      <div class="warn">
+        <div class="w-title">RAM Requirement</div>
+        A 200 GB FAT32 disk with 512-byte clusters needs a <strong>200 MB FAT</strong> resident in RAM at all times. This is why large drives use larger cluster sizes (4–64 KB), reducing FAT size at the cost of internal fragmentation.
+      </div>
+      <div class="tip">
+        <div class="t-title">Variants</div>
+        <code>FAT12</code> — floppy disks · <code>FAT16</code> — small hard disks · <code>FAT32</code> — USB drives, SD cards · <code>exFAT</code> — large flash storage (no 4 GB file limit)
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 4 top -->
+
+<!-- Comparison table — full width -->
+<div class="grid section-gap" style="margin-top:12px;">
+  <div class="card yellow col-span-3" id="allocation-comparison">
+    <div class="card-header"><div class="dot"></div><h3>Allocation Methods — Comparison</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>Method</th>
+          <th>Random Access</th>
+          <th>Sequential Access</th>
+          <th>Space Overhead</th>
+          <th>External Fragmentation</th>
+          <th>Internal Fragmentation</th>
+          <th>Reliability</th>
+          <th>Best Use Case</th>
+        </tr>
+        <tr>
+          <td><strong>Contiguous</strong></td>
+          <td style="color:var(--accent2);">O(1) — seek once</td>
+          <td style="color:var(--accent2);">Excellent</td>
+          <td style="color:var(--accent2);">None</td>
+          <td style="color:var(--accent3);">Severe over time</td>
+          <td>Last block only</td>
+          <td style="color:var(--accent2);">High</td>
+          <td>Read-only media (CD/DVD)</td>
+        </tr>
+        <tr>
+          <td><strong>Linked List</strong></td>
+          <td style="color:var(--accent3);">O(n) — follow chain</td>
+          <td style="color:var(--yellow);">Good</td>
+          <td style="color:var(--accent3);">Pointer per block</td>
+          <td style="color:var(--accent2);">None</td>
+          <td>None</td>
+          <td style="color:var(--accent3);">Poor (chain breaks)</td>
+          <td>Sequential log files</td>
+        </tr>
+        <tr>
+          <td><strong>FAT</strong></td>
+          <td style="color:var(--yellow);">O(n) in RAM, 1 seek</td>
+          <td style="color:var(--accent2);">Excellent</td>
+          <td style="color:var(--yellow);">FAT table in RAM</td>
+          <td style="color:var(--accent2);">None</td>
+          <td>Up to cluster size</td>
+          <td style="color:var(--yellow);">Moderate</td>
+          <td>Removable media, flash</td>
+        </tr>
+        <tr>
+          <td><strong>I-nodes</strong></td>
+          <td style="color:var(--accent2);">O(1) direct, O(log n) indirect</td>
+          <td style="color:var(--accent2);">Excellent</td>
+          <td style="color:var(--accent2);">Inode per file only</td>
+          <td style="color:var(--accent2);">None</td>
+          <td>Last block only</td>
+          <td style="color:var(--accent2);">High</td>
+          <td>UNIX/Linux (ext2/3/4)</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 5 — I-NODES
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid-2 section-gap">
+
+  <div class="card blue col-span-2" id="inode-structure">
+    <div class="card-header"><div class="dot"></div><h3>I-node Structure</h3></div>
+    <div class="card-body">
+      <div class="grid-2" style="gap:16px;">
+        <div>
+          <p>An <strong style="color:var(--osg)">i-node</strong> (index node) stores all file metadata plus block addresses. Only the inodes of <em>open</em> files need to be in memory simultaneously — far more scalable than FAT.</p>
+          <pre><code class="language-c">/* Simplified UNIX inode (on disk) */
+struct inode {
+  uint16_t mode;        /* type + rwx bits     */
+  uint16_t nlinks;      /* hard link count      */
+  uint16_t uid, gid;    /* owner IDs            */
+  uint32_t size;        /* bytes in file        */
+  uint32_t atime;       /* last access          */
+  uint32_t mtime;       /* last modification    */
+  uint32_t ctime;       /* last inode change    */
+  uint32_t direct[12];  /* 12 direct block ptrs */
+  uint32_t single_ind;  /* → block of ptrs      */
+  uint32_t double_ind;  /* → block of blk ptrs  */
+  uint32_t triple_ind;  /* → 3 levels of ptrs   */
+};</code></pre>
+          <div class="info">
+            <div class="i-title">Key Design Insight</div>
+            Small files (the vast majority) need only the <strong>12 direct pointers</strong> — no indirection overhead. Large files pay the indirection cost only when needed. The inode itself is typically 128 or 256 bytes.
+          </div>
+        </div>
+        <div>
+          <div class="label">Block Pointer Levels</div>
+          <div class="formula">Assume: block_size = 1 KB
+         ptr_size   = 4 bytes
+         ptrs/block = 1024/4 = 256
+
+Direct (×12):    12 × 1 KB         =    12 KB
+Single Indirect: 256 × 1 KB        =   256 KB
+Double Indirect: 256² × 1 KB       =    64 MB
+Triple Indirect: 256³ × 1 KB       =    16 GB
+─────────────────────────────────────────────
+Max file size ≈ 16 GB (1 KB blocks)
+
+With 4 KB blocks (ptrs/block = 1024):
+Direct:    12 × 4 KB  =    48 KB
+Single:  1024 × 4 KB  =     4 MB
+Double:  1024² × 4 KB =     4 GB
+Triple:  1024³× 4 KB  =     4 TB</div>
+          <div class="label">Inode Number vs File</div>
+          <p>A file is identified by its <strong style="color:var(--osg)">inode number</strong>, not its name. The directory only maps names → inode numbers. Delached/renamed files retain their inode.</p>
+          <div class="rule">Inode count is fixed at mkfs time. Running out of inodes (df -i) prevents new files even with free disk space.</div>
+          <div class="tip">
+            <div class="t-title">In-Memory Inode</div>
+            When a file is opened, the on-disk inode is loaded into a kernel <strong>in-memory inode</strong> which adds: reference count, dirty flag, lock, device ID, and a pointer to associated page-cache pages.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid-2 Section 5 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 6 — DIRECTORIES IMPLEMENTATION
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card green" id="fixed-size-entries">
+    <div class="card-header"><div class="dot"></div><h3>Fixed-Size Directory Entries</h3></div>
+    <div class="card-body">
+      <p>Classic <strong style="color:var(--osg)">UNIX v7</strong> used fixed 16-byte directory entries: 14 bytes for filename + 2 bytes for inode number. Simple to implement, easy to binary-search.</p>
+      <div class="formula">/* UNIX v7 directory entry (16 bytes) */
+struct dir_v7 {
+  uint16_t inode;      /* 2 bytes: inode #   */
+  char     name[14];   /* 14 bytes: filename */
+};
+
+/* inode==0 means entry is deleted/free */</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th>Property</th><th>Value / Impact</th></tr>
+        <tr><td>Max filename length</td><td>14 chars — severely limiting</td></tr>
+        <tr><td>Entry size</td><td>16 bytes exactly</td></tr>
+        <tr><td>Random access</td><td>O(n) linear scan by default</td></tr>
+        <tr><td>Deletion</td><td>Set inode = 0; slot reusable</td></tr>
+        <tr><td>Still used by</td><td>Some embedded/RTOS systems</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Max Directory Entries</div>
+        With 1 KB blocks: <code>1024 / 16 = 64 entries per block</code>. A directory file is just a list of these 16-byte records; it grows by allocating new blocks like any other file.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple" id="variable-length-entries">
+    <div class="card-header"><div class="dot"></div><h3>Variable-Length Directory Entries</h3></div>
+    <div class="card-body">
+      <p>Modern FS (ext2+, NTFS) use <strong style="color:var(--osg)">variable-length entries</strong> to support long filenames efficiently. Each entry has a length field so the next entry can be found.</p>
+      <div class="formula">/* ext2-style directory entry */
+struct ext2_dir_entry {
+  uint32_t inode;       /* inode number         */
+  uint16_t rec_len;     /* total entry length   */
+  uint8_t  name_len;    /* length of name       */
+  uint8_t  file_type;   /* regular/dir/symlink… */
+  char     name[];      /* name (not NUL-term'd)*/
+};
+/* Entries are 4-byte aligned; padding fills gap */</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th>Field</th><th>Size</th><th>Notes</th></tr>
+        <tr><td><code>inode</code></td><td>4 B</td><td>0 = deleted entry</td></tr>
+        <tr><td><code>rec_len</code></td><td>2 B</td><td>Jump to next entry: <code>ptr += rec_len</code></td></tr>
+        <tr><td><code>name_len</code></td><td>1 B</td><td>Actual name bytes (max 255)</td></tr>
+        <tr><td><code>file_type</code></td><td>1 B</td><td>Avoids stat() just to get type</td></tr>
+        <tr><td><code>name</code></td><td>1–255 B</td><td>Padded to 4-byte boundary</td></tr>
+      </table>
+      <div class="warn">
+        <div class="w-title">Deletion Creates Holes</div>
+        When an entry is deleted, its <code>rec_len</code> is merged into the preceding entry's <code>rec_len</code>, absorbing the hole. The next <code>create</code> may split a hole if the name fits.
+      </div>
+      <div class="tip">
+        <div class="t-title">Hash Trees (dir_index)</div>
+        ext3/4 optionally organise directory entries as an <strong>HTree</strong> (half-B-tree), turning filename lookup from O(n) linear scan into O(log n). Enabled with <code>tune2fs -E hash_alg</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="hard-symbolic-links">
+    <div class="card-header"><div class="dot"></div><h3>Hard Links vs Symbolic Links</h3></div>
+    <div class="card-body">
+      <div class="label">Hard Links</div>
+      <p>A <strong style="color:var(--osg)">hard link</strong> is simply a new directory entry pointing to an existing inode. The inode's <code>nlinks</code> counter increments. The file's data is not duplicated.</p>
+      <div class="formula">ln  original.txt  hardlink.txt
+/* Both entries → same inode number */
+/* inode.nlinks == 2 now            */
+/* rm original.txt → nlinks == 1    */
+/* Data freed only when nlinks == 0 */</div>
+      <ul class="items">
+        <li>Hard links cannot span <strong>different file systems</strong> (inode numbers are per-FS)</li>
+        <li>Cannot hard-link <strong>directories</strong> (would create cycles — only <code>.</code> and <code>..</code> are exceptions)</li>
+        <li>Deleting the "original" leaves all other hard links fully valid</li>
+      </ul>
+      <hr class="divider">
+      <div class="label">Symbolic (Soft) Links</div>
+      <p>A <strong style="color:var(--osg)">symlink</strong> is a special file whose data is a path string. The kernel follows it transparently on every access.</p>
+      <div class="formula">ln -s  /home/alice/file.txt  link.txt
+/* Symlink file contains: /home/alice/file.txt */
+/* Crossing FS boundaries: YES                 */
+/* Linking directories: YES (with care)        */</div>
+      <div class="warn">
+        <div class="w-title">Dangling Symlink</div>
+        If the target path is deleted or moved, the symlink <strong>dangles</strong> — it exists but every access returns <code>ENOENT</code>. Hard links cannot dangle because they hold a reference to the inode directly.
+      </div>
+      <div class="note">
+        <div class="n-title">Fast Symlinks</div>
+        If the target path is ≤ 60 characters, many FS (ext2+) store it <strong>inline in the inode itself</strong> (in the block pointer array space), avoiding a separate disk block entirely.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 6 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 7 — SPECIAL FILE SYSTEMS
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card orange" id="log-structured-fs">
+    <div class="card-header"><div class="dot"></div><h3>Log-Structured File System (LFS)</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">LFS</strong> treats the entire disk as a <strong>circular log</strong>. All writes (data AND metadata) are buffered in a memory segment and written as one large sequential operation — eliminating random write I/O.</p>
+      <ol class="steps">
+        <li>Writes accumulate in a <strong>write buffer</strong> (segment, typically 512 KB–1 MB)</li>
+        <li>Full segment flushed to disk as <strong>one sequential write</strong> at the log tail</li>
+        <li>Each segment has a <strong>segment summary</strong> at its start listing what's inside</li>
+        <li>New inode written into segment; <strong>inode map</strong> updated to record new location</li>
+        <li><strong>Cleaner thread</strong> runs in background: finds old segments with live data, copies live data to new segment, marks old segment as free</li>
+      </ol>
+      <div class="formula">Disk layout (circular):
+[ Seg 0 ][ Seg 1 ][ Seg 2 ][ ... ][ Seg N ]
+    ↑ Clean point         ↑ Log tail (write here)
+
+Inode Map:  inode# → current disk address
+Checkpoint: periodic flush of inode map to fixed location</div>
+      <div class="info">
+        <div class="i-title">Why LFS Wins on Writes</div>
+        Traditional FS: create a file = <em>5+ seeks</em> (inode, bitmap, data, directory, updated inode). LFS: all of those go into the same segment = <strong>1 sequential write</strong>. Disk write throughput approaches raw disk bandwidth.
+      </div>
+      <div class="warn">
+        <div class="w-title">Read Performance</div>
+        Fresh files read sequentially — fast. After cleaning, old file data may be scattered around the log, causing seeks. LFS works best for <strong>write-heavy</strong> workloads (web logs, databases).
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="journaling-fs">
+    <div class="card-header"><div class="dot"></div><h3>Journaling File Systems</h3></div>
+    <div class="card-body">
+      <p>A <strong style="color:var(--osg)">journal</strong> (write-ahead log) records pending operations <em>before</em> performing them. On crash, the journal is replayed to reach a consistent state — no need for full <code>fsck</code>.</p>
+      <ol class="steps">
+        <li>Write a <strong>begin-transaction</strong> record to the journal</li>
+        <li>Write all changed blocks (metadata, optionally data) to the journal</li>
+        <li>Write a <strong>commit</strong> record to the journal (operation is durable once this lands)</li>
+        <li>Write blocks to their <strong>actual locations</strong> on disk (the "real" write)</li>
+        <li>Mark the journal space as <strong>free</strong> (transaction complete)</li>
+      </ol>
+      <div class="formula">Journal modes (ext3/4):
+  journal    — data + metadata logged (safest, slowest)
+  ordered    — data written before metadata logged (default)
+  writeback  — metadata only; data may predate metadata (fastest)</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th>File System</th><th>Journal</th><th>Notes</th></tr>
+        <tr><td><code>ext3</code></td><td>Yes (3 modes)</td><td>Backward compatible with ext2</td></tr>
+        <tr><td><code>ext4</code></td><td>Yes + extents</td><td>Default Linux FS, 64-bit block numbers</td></tr>
+        <tr><td><code>NTFS</code></td><td>Yes (MFT log)</td><td>Windows default since NT 3.1</td></tr>
+        <tr><td><code>ReiserFS</code></td><td>Yes</td><td>Good for many small files</td></tr>
+        <tr><td><code>XFS</code></td><td>Yes</td><td>High-performance, 64-bit from the start</td></tr>
+        <tr><td><code>ZFS / Btrfs</code></td><td>CoW + txn</td><td>Copy-on-write; no separate journal needed</td></tr>
+      </table>
+      <div class="rule">Rule: Operations must be idempotent — replaying a committed transaction twice must leave the FS in the same state as replaying it once. This is why journal entries describe what the final state should be, not just the delta.</div>
+    </div>
+  </div>
+
+  <div class="card blue" id="vfs-layer">
+    <div class="card-header"><div class="dot"></div><h3>Virtual File System (VFS)</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">VFS</strong> is an abstraction layer in the kernel that presents a uniform POSIX interface to user processes regardless of the underlying concrete file system (ext4, NTFS, NFS, tmpfs…).</p>
+      <div class="formula">User Process
+  ↓   open(), read(), write(), stat()
+POSIX API (syscall interface)
+  ↓
+┌─────────── VFS Layer ───────────┐
+│  Superblock obj │ Vnode obj     │
+│  Dentry cache   │ File obj      │
+└─────────────────────────────────┘
+  ↓ file_ops, inode_ops, super_ops
+┌──────┐ ┌──────┐ ┌──────┐ ┌────┐
+│ ext4 │ │ NFS  │ │tmpfs │ │FAT │
+└──────┘ └──────┘ └──────┘ └────┘</div>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th>VFS Object</th><th>Represents</th><th>Key Operations</th></tr>
+        <tr><td><code>super_block</code></td><td>Mounted FS instance</td><td><code>alloc_inode</code>, <code>write_super</code>, <code>statfs</code></td></tr>
+        <tr><td><code>inode</code></td><td>Individual file/dir</td><td><code>create</code>, <code>lookup</code>, <code>link</code>, <code>permission</code></td></tr>
+        <tr><td><code>dentry</code></td><td>Directory entry (name component)</td><td><code>d_compare</code>, <code>d_delete</code>, <code>d_iput</code></td></tr>
+        <tr><td><code>file</code></td><td>Open file instance</td><td><code>read</code>, <code>write</code>, <code>llseek</code>, <code>mmap</code></td></tr>
+      </table>
+      <div class="info">
+        <div class="i-title">Dentry Cache</div>
+        The <strong>dcache</strong> maps (parent inode, name) → child inode in RAM, avoiding repeated directory lookups. It is one of the most effective kernel caches — a cache hit means no disk I/O for path resolution.
+      </div>
+      <div class="tip">
+        <div class="t-title">Adding a New FS</div>
+        Implement the <code>file_operations</code>, <code>inode_operations</code>, and <code>super_operations</code> function tables and register with <code>register_filesystem()</code>. The VFS dispatches all calls through these tables.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 7 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 8 — FILE SYSTEM MANAGEMENT
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card red" id="block-size-tradeoff">
+    <div class="card-header"><div class="dot"></div><h3>Block Size Trade-off</h3></div>
+    <div class="card-body">
+      <p>The <strong style="color:var(--osg)">block size</strong> chosen at <code>mkfs</code> time fundamentally affects both performance and space efficiency. It cannot be changed without reformatting.</p>
+      <div class="formula">Efficiency(b) = file_size / ceil(file_size / b) × b
+
+Small blocks (512 B):
+  + Low internal fragmentation
+  - Many seeks for large files
+  - Large inode indirect chain
+
+Large blocks (64 KB):
+  + Fast streaming I/O, few seeks
+  - Severe waste for small files
+    (a 1-byte file uses 64 KB on disk!)</div>
+      <div class="note">
+        <div class="n-title">Median File Size Stat</div>
+        Studies of real-world FS show the <strong>median file size ≈ 2,475 bytes</strong> (Tanenbaum, 4th Ed.). With 4 KB blocks (typical default), the average waste per file is nearly 50% of the last block. Yet 4 KB is the near-universal default because disk bandwidth benefits outweigh wasted space for most workloads.
+      </div>
+      <table class="tbl">
+        <tr><th>Block Size</th><th>Disk Efficiency</th><th>I/O Speed</th><th>Inode depth needed</th></tr>
+        <tr><td>512 B</td><td style="color:var(--accent2);">Very high</td><td style="color:var(--accent3);">Low (many seeks)</td><td>More indirect levels sooner</td></tr>
+        <tr><td>1 KB</td><td style="color:var(--accent2);">High</td><td style="color:var(--yellow);">Moderate</td><td>Triple indirect at ~16 GB</td></tr>
+        <tr><td>4 KB</td><td style="color:var(--yellow);">Moderate</td><td style="color:var(--accent2);">Good (standard)</td><td>Triple indirect at ~4 TB</td></tr>
+        <tr><td>64 KB</td><td style="color:var(--accent3);">Low for small files</td><td style="color:var(--accent2);">Excellent</td><td>Rarely needed</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card green" id="free-space-management">
+    <div class="card-header"><div class="dot"></div><h3>Free Space Management</h3></div>
+    <div class="card-body">
+      <p>The OS must track which disk blocks are <strong style="color:var(--osg)">free</strong> for allocation. Two primary methods:</p>
+      <div class="label">Bitmap (Bit Vector)</div>
+      <p>One bit per block: <code>0</code> = free, <code>1</code> = allocated. Very compact — a 100 GB disk with 4 KB blocks needs only ~3 MB bitmap.</p>
+      <div class="formula">/* Find first free block */
+for (i = 0; i &lt; num_blocks/32; i++) {
+  if (bitmap[i] != 0xFFFFFFFF) {
+    bit = ffs(~bitmap[i]) - 1;  /* find first 0 bit */
+    return i*32 + bit;
+  }
+}
+/* Hardware popcount/BSF instructions make this fast */</div>
+      <div class="info">
+        <div class="i-title">Bitmap Advantage</div>
+        Supports <strong>contiguous block search</strong> efficiently using bit manipulation. Modern CPUs can scan 64 bits at once. The bitmap for an entire disk fits in RAM, enabling fast kernel-side allocation decisions.
+      </div>
+      <hr class="divider">
+      <div class="label">Free List (Linked Blocks)</div>
+      <p>Free blocks are chained together — each free block stores the address of the next free block. Only one block of the list needs to be in RAM.</p>
+      <ul class="items">
+        <li>Low memory overhead — only one block in RAM</li>
+        <li>Poor performance: allocating <em>n</em> blocks requires reading <em>n</em> disk blocks</li>
+        <li>Cannot easily find contiguous free regions</li>
+        <li>Used when RAM is severely constrained</li>
+      </ul>
+      <div class="rule">Rule: Bitmap preferred for general-purpose FS. Free list used only when memory is extremely limited (early Unix, embedded systems).</div>
+    </div>
+  </div>
+
+  <div class="card purple" id="disk-quotas">
+    <div class="card-header"><div class="dot"></div><h3>Disk Quotas</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--osg)">Disk quotas</strong> limit how much disk space and how many files each user (or group) can consume, preventing any single user from filling the disk.</p>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th>Limit Type</th><th>Behaviour</th><th>Enforcement</th></tr>
+        <tr><td><strong>Soft limit</strong></td><td>Warning issued when exceeded</td><td>Grace period (e.g., 7 days); then hard-enforced</td></tr>
+        <tr><td><strong>Hard limit</strong></td><td>Absolute maximum</td><td>Write returns <code>EDQUOT</code> immediately</td></tr>
+      </table>
+      <div class="formula">Kernel quota table (per user):
+  uid | blocks_used | blocks_soft | blocks_hard
+      | inodes_used | inodes_soft | inodes_hard
+      | grace_time  | flags
+
+Quota checked on every:
+  - block allocation (file write / file extend)
+  - inode allocation (file create / mkdir)</div>
+      <div class="rule">Rule: Quota enforcement happens at the point of allocation — checked when blocks/inodes are allocated, not at filesystem mount. The quota file is updated atomically with the inode.</div>
+      <div class="info">
+        <div class="i-title">Commands</div>
+        <code>quotacheck</code> — scan FS to rebuild quota database<br>
+        <code>edquota -u alice</code> — edit user quota<br>
+        <code>repquota -a</code> — report all users' quota usage<br>
+        <code>quota -v</code> — show your own quota status
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 8 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 9 — BACKUP STRATEGIES
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid-2 section-gap">
+
+  <div class="card orange" id="backup-types">
+    <div class="card-header"><div class="dot"></div><h3>Backup Types</h3></div>
+    <div class="card-body">
+      <div class="label">Physical Dump</div>
+      <p>Copies the disk <strong style="color:var(--osg)">block by block</strong>, starting from block 0, regardless of whether the block belongs to a file. Simple, fast, but cannot skip free blocks or selected directories.</p>
+      <div class="formula">Physical dump sequence:
+  for block = 0 to disk_size/block_size:
+    read block → write to backup medium
+  (includes free blocks, bad blocks, everything)</div>
+      <div class="note">
+        <div class="n-title">Physical Dump Limitations</div>
+        Cannot back up a live (mounted) FS safely — the FS may be mid-write. Usually done from rescue media with the FS unmounted. Cannot easily restore individual files — must restore the whole volume.
+      </div>
+      <hr class="divider">
+      <div class="label">Logical Dump</div>
+      <p>Traverses the <strong style="color:var(--osg)">directory tree</strong> and backs up files selectively. The Unix <code>dump</code> / <code>restore</code> utilities implement this. Skips free blocks and optionally excludes directories.</p>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th></th><th>Full Backup</th><th>Incremental Backup</th></tr>
+        <tr><td><strong>What is saved</strong></td><td>Every file, always</td><td>Only files changed since last backup</td></tr>
+        <tr><td><strong>Storage used</strong></td><td style="color:var(--accent3);">High</td><td style="color:var(--accent2);">Low</td></tr>
+        <tr><td><strong>Backup speed</strong></td><td style="color:var(--accent3);">Slow</td><td style="color:var(--accent2);">Fast</td></tr>
+        <tr><td><strong>Restore speed</strong></td><td style="color:var(--accent2);">Fast (one tape)</td><td style="color:var(--accent3);">Slow (multiple tapes)</td></tr>
+        <tr><td><strong>Restore complexity</strong></td><td style="color:var(--accent2);">Simple</td><td style="color:var(--accent3);">Must apply in order</td></tr>
+      </table>
+      <div class="tip">
+        <div class="t-title">Recommendation</div>
+        Use a <strong>full backup weekly</strong> + <strong>incremental daily</strong>. To restore, apply the last full backup first, then each daily incremental in order. Store backups off-site or on a separate device — a fire that destroys the server also destroys on-site backups.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="backup-considerations">
+    <div class="card-header"><div class="dot"></div><h3>Backup Considerations</h3></div>
+    <div class="card-body">
+      <p>Effective backup requires careful thought about <strong style="color:var(--osg)">what to back up</strong>, <strong style="color:var(--osg)">how to detect changes</strong>, and <strong style="color:var(--osg)">how to restore</strong>.</p>
+      <div class="label">Detecting Changed Files</div>
+      <ul class="items">
+        <li><strong>mtime comparison</strong> — back up if <code>mtime &gt; last_backup_time</code>. Simple but timezone/clock drift causes issues</li>
+        <li><strong>Archive bit</strong> — a flag in each file's metadata, cleared on backup, set on modification (Windows / FAT approach)</li>
+        <li><strong>Checksums</strong> — cryptographic hash of file content; detect changes and corruption but expensive to compute</li>
+        <li><strong>Snapshot (CoW)</strong> — LVM / ZFS / Btrfs take an instant filesystem snapshot; back up the snapshot for a consistent view</li>
+      </ul>
+      <div class="label">Special Files to Handle Carefully</div>
+      <div class="warn">
+        <div class="w-title">Problem Files</div>
+        <strong>Hard links</strong>: multiple names for same inode — dump must not duplicate the data. Dump tracks all backed-up inodes and writes data only once.<br>
+        <strong>Special files</strong> (<code>/dev/*</code>): should never be backed up as data — restore the device node with correct major/minor numbers.<br>
+        <strong>Holes</strong> in sparse files: must be restored as holes, not as actual NUL bytes, or the restored file will be much larger.
+      </div>
+      <div class="formula">Incremental dump levels (traditional UNIX):
+  Level 0: Full dump of entire FS
+  Level 1: All changes since Level 0
+  Level 2: All changes since Level 1
+  ...
+  Level 9: All changes since Level 8
+
+  Restore: apply 0, then 1, 2, ... in sequence</div>
+      <div class="info">
+        <div class="i-title">Modern Tools</div>
+        <code>rsync -avz --link-dest=PREV src/ backup/</code> — incremental with hard-link dedup<br>
+        <code>tar -czf backup.tar.gz --newer=TIMESTAMP dir/</code><br>
+        <code>zfs send</code> / <code>btrfs send</code> — send FS snapshots efficiently
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid-2 Section 9 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     SECTION 10 — UNIX v7 FS & VFS DATA STRUCTURES
+     ═══════════════════════════════════════════════════════════ -->
+<div class="grid section-gap">
+
+  <div class="card blue" id="unix-v7-fs">
+    <div class="card-header"><div class="dot"></div><h3>UNIX v7 File System Layout</h3></div>
+    <div class="card-body">
+      <p>The original <strong style="color:var(--osg)">UNIX v7 FS</strong> (1979) established the disk layout pattern that influenced virtually all subsequent Unix-derived file systems.</p>
+      <div class="formula">Disk partition layout:
+┌─────────────┬────────────┬────────────────┬──────────────────────┐
+│  Boot Block │ Superblock │ I-node Table   │    Data Blocks       │
+│  (1 block)  │ (1 block)  │ (fixed # inod) │  (rest of partition) │
+└─────────────┴────────────┴────────────────┴──────────────────────┘
+
+Boot Block:    may contain bootstrap loader or be empty
+Superblock:    FS size, inode count, free block list head,
+               magic number, mount state
+I-node table:  fixed array; inode 1 = bad blocks, 2 = root dir
+Data Blocks:   actual file content + directory content</div>
+      <table class="tbl">
+        <tr><th>Component</th><th>Size</th><th>Purpose</th></tr>
+        <tr><td>Boot block</td><td>512 B</td><td>OS bootstrap code (or unused)</td></tr>
+        <tr><td>Superblock</td><td>512 B</td><td>FS global metadata + free list</td></tr>
+        <tr><td>Inode table</td><td>N × 64 B</td><td>Fixed at mkfs; inode #1 = bad, #2 = root</td></tr>
+        <tr><td>Data blocks</td><td>Remainder</td><td>File data + directory data</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">UNIX v7 Inode Size</div>
+        The original v7 inode was <strong>64 bytes</strong> with 13 block pointers: 10 direct + 1 single indirect + 1 double indirect + 1 triple indirect. With 512-byte blocks and 16-bit addresses, max file size ≈ 1 GB.
+      </div>
+      <div class="info">
+        <div class="i-title">Evolution</div>
+        BSD FFS (1984) added block groups, larger blocks (up to 8 KB), fragments for tail packing. ext2 (1993) added 32-bit block numbers. ext4 (2008) added extents, 48-bit block numbers, and delayed allocation.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="vfs-objects">
+    <div class="card-header"><div class="dot"></div><h3>VFS Data Structures</h3></div>
+    <div class="card-body">
+      <p>Linux VFS defines four primary in-kernel objects. Each has an <strong style="color:var(--osg)">operations table</strong> (vtable of function pointers) that concrete FS drivers fill in.</p>
+      <table class="tbl" style="margin-bottom:8px;">
+        <tr><th>Object</th><th>Struct</th><th>Contents</th><th>Key Ops Table</th></tr>
+        <tr><td><strong>Superblock</strong></td><td><code>super_block</code></td><td>Device, block size, dirty flag, FS type, root dentry, quota info</td><td><code>super_operations</code>: alloc_inode, write_super, statfs, remount_fs</td></tr>
+        <tr><td><strong>Inode</strong></td><td><code>inode</code></td><td>ino, mode, uid, gid, size, atime, mtime, ctime, nlink, blocks, i_op, i_fop</td><td><code>inode_operations</code>: create, lookup, link, unlink, mkdir, rename, permission</td></tr>
+        <tr><td><strong>Dentry</strong></td><td><code>dentry</code></td><td>Name, parent dentry, child inodes, LRU list, usage count, flags</td><td><code>dentry_operations</code>: d_compare, d_hash, d_delete, d_iput</td></tr>
+        <tr><td><strong>File</strong></td><td><code>file</code></td><td>dentry, vfsmount, f_pos (offset), f_flags, f_mode, f_count, f_owner</td><td><code>file_operations</code>: read, write, llseek, mmap, fsync, ioctl, release</td></tr>
+      </table>
+      <div class="formula">/* How read() flows through VFS */
+sys_read(fd, buf, count)
+  → fdget(fd)              /* fd → file* */
+  → file→f_op→read(...)   /* FS-specific */
+    → ext4_file_read_iter()
+      → generic_file_read_iter()
+        → page_cache_sync_ra() /* page cache */
+          → ext4_readpages()  /* disk I/O    */</div>
+    </div>
+  </div>
+
+  <div class="card red" id="fd-table-chain">
+    <div class="card-header"><div class="dot"></div><h3>File Descriptor Table Chain</h3></div>
+    <div class="card-body">
+      <p>Each <code>open()</code> call threads through three kernel tables. Understanding this chain is essential for <code>fork()</code>, <code>dup()</code>, and <code>close()</code> semantics.</p>
+      <div class="formula">Per-process FD table (in task_struct.files):
+  fd[0] → [open file entry A]  ← stdin
+  fd[1] → [open file entry B]  ← stdout
+  fd[2] → [open file entry C]  ← stderr
+  fd[3] → [open file entry D]  ← user file
+
+System-wide Open File Table:
+  entry A: f_pos=0, f_flags=O_RDONLY, f_count=1, *vnode→inode X
+  entry D: f_pos=512, f_flags=O_RDWR, f_count=1, *vnode→inode Y
+
+Vnode / In-memory Inode Table:
+  inode X: disk inode 42, ref_count=1, dirty=0, ...
+  inode Y: disk inode 87, ref_count=1, dirty=1, ...</div>
+      <ol class="steps">
+        <li><code>fork()</code> — child gets a <strong>copy</strong> of parent's FD table; both FDs point to the <strong>same</strong> open file entry → shared file position. <code>f_count</code> incremented.</li>
+        <li><code>dup(fd)</code> — creates new FD in same process pointing to <strong>same</strong> open file entry → same position. <code>f_count++</code>.</li>
+        <li><code>open()</code> — always creates a <strong>new</strong> open file entry with its own position, even if same file opened twice.</li>
+        <li><code>close(fd)</code> — decrements <code>f_count</code>; entry freed when 0. Inode ref_count decremented; inode freed when 0 AND <code>nlinks==0</code>.</li>
+      </ol>
+      <div class="warn">
+        <div class="w-title">POSIX File Locking Quirk</div>
+        <code>fcntl()</code> advisory locks are per-<strong>process</strong>, not per-FD. If a process opens the same file twice and holds a lock via fd[3], closing fd[4] releases the lock on fd[3] too — a well-known POSIX "surprise".
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid Section 10 -->
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOOTER
+     ═══════════════════════════════════════════════════════════ -->
+<div class="footer">
+  <span>OSG202 — Operating Systems</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<!-- TOC Script -->
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+
+<!-- Prism.js -->
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code = document.createElement('code');
+    code.className = 'language-c';
+    code.textContent = pre.textContent;
+    pre.textContent = '';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

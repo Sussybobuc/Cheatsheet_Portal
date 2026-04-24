@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH06 – Dynamic Routing | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH06 — Dynamic Routing Protocols</h1>
+    <h2>CCNA INTRO · Todd Lammle, Sybex 2006 · Pages 253–288</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">Protocol Types</span>
+      <span class="toc-item">RIP Config</span>
+      <span class="toc-item">RIPv1 vs v2</span>
+      <span class="toc-item">IGRP Config</span>
+      <span class="toc-item">Timers</span>
+      <span class="toc-item">Loop Prevention</span>
+      <span class="toc-item">show ip protocols</span>
+      <span class="toc-item">Debug</span>
+      <span class="toc-item">Verification</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</div>
+
+<!-- ROW 1 — Full-width Protocol Types -->
+<div class="grid">
+  <div class="card blue col-span-3" id="protocol-types">
+    <div class="card-header"><div class="dot"></div><h3>Routing Protocol Types — Comparison</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr>
+          <th>Type</th><th>Algorithm</th><th>Metric</th><th>Updates Sent</th><th>Convergence</th><th>Supports VLSM?</th><th>Protocols</th><th>AD</th>
+        </tr>
+        <tr>
+          <td><span class="tt" data-t="Distance-vector routers share their entire routing table with directly connected neighbors at regular intervals. They know the distance to a destination but not the full topology — 'routing by rumor'.">Distance-Vector</span></td>
+          <td>Bellman-Ford</td>
+          <td>Hop count (RIP) / Composite (IGRP)</td>
+          <td>Full table to neighbors periodically</td>
+          <td>Slow (timers)</td>
+          <td>RIPv1: No · RIPv2: Yes · IGRP: No</td>
+          <td>RIP, IGRP</td>
+          <td>120 / 100</td>
+        </tr>
+        <tr>
+          <td><span class="tt" data-t="Link-state routers flood topology information (LSAs) to ALL routers in the area. Each router builds a complete map and runs Dijkstra's SPF algorithm independently.">Link-State</span></td>
+          <td>Dijkstra SPF</td>
+          <td>Cost (based on bandwidth)</td>
+          <td>LSAs flooded to all routers, triggered updates</td>
+          <td>Fast (triggered)</td>
+          <td>Yes</td>
+          <td>OSPF, IS-IS</td>
+          <td>110 / 115</td>
+        </tr>
+        <tr>
+          <td><span class="tt" data-t="EIGRP is called hybrid because it uses distance-vector principles (shares routes with neighbors) but maintains a topology table like link-state protocols. It uses DUAL algorithm.">Hybrid / Advanced DV</span></td>
+          <td>DUAL</td>
+          <td>Composite: BW + delay (+ load + reliability)</td>
+          <td>Partial updates, only on changes</td>
+          <td>Very fast</td>
+          <td>Yes</td>
+          <td>EIGRP</td>
+          <td>90 (int) / 170 (ext)</td>
+        </tr>
+      </table>
+      <hr class="divider">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:4px;">
+        <div>
+          <div class="label">Distance-Vector Key Characteristics</div>
+          <ul class="items">
+            <li>Sends <strong>full routing table</strong> to directly connected neighbors</li>
+            <li>Uses <strong>periodic updates</strong> on a timer (30s for RIP)</li>
+            <li>No topology map — only knows distance + direction</li>
+            <li><span class="tt" data-t="Routing by rumor: a router only knows what its neighbors told it, not the full network topology.">"Routing by rumor"</span> — trusts neighbor information</li>
+            <li>Prone to routing loops without loop prevention</li>
+            <li>Slower convergence than link-state</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">Link-State Key Characteristics</div>
+          <ul class="items">
+            <li>Floods <span class="tt" data-t="Link State Advertisements — packets describing a router's directly connected links, sent to all routers in the routing domain.">LSAs</span> to ALL routers in the area</li>
+            <li>Each router builds <strong>identical topology database</strong></li>
+            <li>Runs <span class="tt" data-t="Shortest Path First algorithm — calculates the shortest path tree from a root node to all other nodes in the network.">Dijkstra SPF</span> independently</li>
+            <li>Triggered updates — only when topology changes</li>
+            <li>Fast convergence, scalable with areas</li>
+            <li>More CPU/memory intensive</li>
+          </ul>
+        </div>
+        <div>
+          <div class="label">IGP vs EGP</div>
+          <table class="tbl">
+            <tr><th>Type</th><th>Used</th><th>Example</th></tr>
+            <tr><td><span class="tt" data-t="Interior Gateway Protocol — runs within a single autonomous system (AS), typically one organization.">IGP</span></td><td>Inside one AS</td><td>RIP, OSPF, EIGRP</td></tr>
+            <tr><td><span class="tt" data-t="Exterior Gateway Protocol — runs between autonomous systems, typically between ISPs or large organizations.">EGP</span></td><td>Between AS</td><td>BGP</td></tr>
+          </table>
+          <div class="label">Classful vs Classless</div>
+          <table class="tbl">
+            <tr><th>Property</th><th>Classful</th><th>Classless</th></tr>
+            <tr><td>Subnet mask in update?</td><td>No</td><td>Yes</td></tr>
+            <tr><td>VLSM support?</td><td>No</td><td>Yes</td></tr>
+            <tr><td>Examples</td><td>RIPv1, IGRP</td><td>RIPv2, OSPF, EIGRP</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2 -->
+<div class="grid section-gap">
+  <div class="card orange" id="rip-config">
+    <div class="card-header"><div class="dot"></div><h3>RIP Configuration</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="Routing Information Protocol — the oldest standardized dynamic routing protocol. Simple to configure, but limited to 15 hops and slow convergence.">RIP</span> uses <strong>hop count</strong> as its only metric. Maximum 15 hops — hop count 16 = unreachable/infinity.</p>
+      <div class="label">Enable RIP (Version 1 — Classful)</div>
+      <pre>Router(config)# router rip
+Router(config-router)# network 172.16.0.0
+Router(config-router)# network 192.168.1.0
+! Use classful network addresses only (RIPv1)</pre>
+      <div class="label">Enable RIP Version 2 (Classless)</div>
+      <pre>Router(config)# router rip
+Router(config-router)# version 2
+Router(config-router)# network 172.16.0.0
+Router(config-router)# network 192.168.1.0
+! Optional — disable auto-summarization:
+Router(config-router)# no auto-summary</pre>
+      <div class="label">Passive Interface (stop sending updates)</div>
+      <pre>Router(config-router)# passive-interface f0/0
+! Receives RIP on f0/0 but does NOT send updates
+! Use on stub LAN segments (no other routers)</pre>
+      <div class="label">Verification</div>
+      <pre>show ip route             ! R entries = RIP routes
+show ip protocols         ! RIP config, networks, timers
+debug ip rip              ! live RIP update messages
+undebug all               ! stop all debug output</pre>
+      <div class="info">
+        <div class="i-title">network Command</div>
+        The <code>network</code> command in RIP uses <strong>classful</strong> network addresses — it enables RIP on ALL interfaces that fall within that classful range.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple col-span-2" id="rip-comparison">
+    <div class="card-header"><div class="dot"></div><h3>RIPv1 vs RIPv2 Comparison</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Feature</th><th>RIP Version 1</th><th>RIP Version 2</th></tr>
+        <tr><td>RFC</td><td>RFC 1058 (1988)</td><td>RFC 2453 (1998)</td></tr>
+        <tr><td>IP Class</td><td><span class="tt" data-t="Classful — does not include subnet mask in routing updates. Assumes natural class boundaries.">Classful</span></td><td><span class="tt" data-t="Classless — includes subnet mask in routing updates. Supports VLSM (Variable Length Subnet Masking) and CIDR.">Classless</span></td></tr>
+        <tr><td>Subnet mask in update?</td><td style="color:var(--accent3)">No — classful only</td><td style="color:var(--accent2)">Yes — sends mask with route</td></tr>
+        <tr><td>VLSM Support</td><td style="color:var(--accent3)">No</td><td style="color:var(--accent2)">Yes</td></tr>
+        <tr><td>CIDR Support</td><td style="color:var(--accent3)">No</td><td style="color:var(--accent2)">Yes</td></tr>
+        <tr><td>Update Destination</td><td><span class="tt" data-t="Broadcast address 255.255.255.0 — sent to all devices on the segment, including hosts.">Broadcast 255.255.255.255</span></td><td><span class="tt" data-t="Multicast address 224.0.0.9 — only RIPv2-enabled routers process this. Hosts ignore it.">Multicast 224.0.0.9</span></td></tr>
+        <tr><td>Authentication</td><td style="color:var(--accent3)">None</td><td style="color:var(--accent2)">Plain text or MD5</td></tr>
+        <tr><td>Auto-Summarization</td><td>Always on (classful)</td><td>On by default — use <code>no auto-summary</code> to disable</td></tr>
+        <tr><td>Manual Summary</td><td style="color:var(--accent3)">No</td><td style="color:var(--accent2)">Yes — <code>ip summary-address rip</code></td></tr>
+        <tr><td>Next-Hop field</td><td style="color:var(--accent3)">No</td><td style="color:var(--accent2)">Yes</td></tr>
+        <tr><td>Metric</td><td>Hop count (max 15)</td><td>Hop count (max 15)</td></tr>
+        <tr><td>AD</td><td>120</td><td>120</td></tr>
+        <tr><td>Config command</td><td><code>router rip</code></td><td><code>router rip</code> + <code>version 2</code></td></tr>
+      </table>
+      <hr class="divider">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">RIPv2 Authentication (MD5)</div>
+          <pre>interface Serial0/0
+ ip rip authentication mode md5
+ ip rip authentication key-chain RIP-KEY
+
+key chain RIP-KEY
+ key 1
+  key-string MySecretKey</pre>
+        </div>
+        <div>
+          <div class="label">RIPv2 Manual Summarization</div>
+          <pre>interface Serial0/0
+ ip summary-address rip 10.0.0.0 255.0.0.0
+! Sends summary 10.0.0.0/8 out Serial0/0
+! instead of individual /24 subnets</pre>
+          <div class="note">
+            <div class="n-title">no auto-summary Required for VLSM</div>
+            If using discontiguous subnets or VLSM, always configure <code>no auto-summary</code> under <code>router rip</code>. Otherwise RIPv2 will summarize at classful boundaries.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3 -->
+<div class="grid section-gap">
+  <div class="card blue" id="rip-timers">
+    <div class="card-header"><div class="dot"></div><h3>RIP Timers</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Timer</th><th>Default</th><th>Purpose</th></tr>
+        <tr><td><span class="tt" data-t="How often RIP sends its full routing table to neighbors.">Update</span></td><td style="color:var(--nwc)"><strong>30 sec</strong></td><td>Frequency of full routing table broadcasts to neighbors</td></tr>
+        <tr><td><span class="tt" data-t="How long RIP waits before declaring a route invalid if no update is received.">Invalid</span></td><td style="color:var(--yellow)"><strong>180 sec</strong></td><td>Route marked invalid if no update received for 180s (6 updates missed)</td></tr>
+        <tr><td><span class="tt" data-t="After a route goes invalid, the holddown timer prevents the router from accepting new information about that route for this period — prevents routing loops.">Holddown</span></td><td style="color:var(--accent3)"><strong>180 sec</strong></td><td>Ignores new info about failed route — loop prevention</td></tr>
+        <tr><td><span class="tt" data-t="After flush timer expires, the route is removed from the routing table entirely.">Flush</span></td><td style="color:var(--accent3)"><strong>240 sec</strong></td><td>Route removed from table after 240s of no updates</td></tr>
+      </table>
+      <div class="label">Timer Sequence for Failed Route</div>
+      <div class="formula">0s: Update missed → 180s: Invalid → Holddown starts → 240s: Flush → Route removed</div>
+      <div class="label">View and Change Timers</div>
+      <pre>show ip protocols           ! shows current timers
+! Change timers (must match all routers!):
+Router(config-router)# timers basic 30 180 180 240</pre>
+      <div class="warn">
+        <div class="w-title">⚠ Timer Mismatch</div>
+        All RIP routers in the domain must have <strong>identical timer values</strong>. Mismatched timers cause unpredictable behavior and routing instability.
+      </div>
+      <div class="label">RIP Metric Limit</div>
+      <ul class="items">
+        <li>Maximum metric: <strong>15 hops</strong></li>
+        <li>16 hops = <strong>infinity</strong> (network unreachable)</li>
+        <li>Limits RIP to small networks (max 15 router hops end-to-end)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card green" id="igrp-config">
+    <div class="card-header"><div class="dot"></div><h3>IGRP Configuration</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="Interior Gateway Routing Protocol — Cisco proprietary distance-vector protocol. Classful, uses composite metric. Replaced by EIGRP. Still on some legacy CCNA exams.">IGRP</span> is Cisco <strong>proprietary</strong>, <strong>classful</strong>, distance-vector. Uses a composite metric based on bandwidth and delay (primarily).</p>
+      <div class="label">Configure IGRP</div>
+      <pre>! AS number must match all routers in domain
+Router(config)# router igrp 100
+Router(config-router)# network 172.16.0.0
+Router(config-router)# network 192.168.1.0
+
+! Passive interface:
+Router(config-router)# passive-interface f0/0</pre>
+      <div class="label">IGRP Verification</div>
+      <pre>show ip route               ! I entries = IGRP routes
+show ip protocols           ! AS#, networks, timers
+debug ip igrp events        ! summary IGRP activity
+debug ip igrp transactions  ! detailed IGRP updates
+undebug all                 ! stop debug output</pre>
+      <div class="label">IGRP Hop Count Limit</div>
+      <ul class="items">
+        <li>Default maximum: <strong>100 hops</strong></li>
+        <li>Configurable up to <strong>255 hops</strong></li>
+        <li>Much larger than RIP's 15-hop limit</li>
+      </ul>
+      <pre>Router(config-router)# metric maximum-hops 255</pre>
+      <div class="info">
+        <div class="i-title">IGRP AS Number</div>
+        The Autonomous System number in <code>router igrp 100</code> must be the <strong>same on all routers</strong> to exchange routes. Different AS = no route exchange.
+      </div>
+      <div class="tip">
+        <div class="t-title">IGRP in Modern Networks</div>
+        IGRP is deprecated and not supported in IOS 12.3(14)T and later. EIGRP supersedes it. IGRP appears on legacy CCNA exams for comparison.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="igrp-metric">
+    <div class="card-header"><div class="dot"></div><h3>IGRP Composite Metric</h3></div>
+    <div class="card-body">
+      <div class="label">IGRP Metric Formula</div>
+      <div class="formula">Metric = [K1×BW + (K2×BW)/(256-load) + K3×delay] × [K5/(reliability+K4)]</div>
+      <div class="label">Default K-Values</div>
+      <table class="tbl">
+        <tr><th>K-Value</th><th>Component</th><th>Default</th><th>Active?</th></tr>
+        <tr><td><strong>K1</strong></td><td>Bandwidth</td><td>1</td><td style="color:var(--accent2)">Yes</td></tr>
+        <tr><td><strong>K2</strong></td><td>Load</td><td>0</td><td style="color:var(--accent3)">No</td></tr>
+        <tr><td><strong>K3</strong></td><td>Delay</td><td>1</td><td style="color:var(--accent2)">Yes</td></tr>
+        <tr><td><strong>K4</strong></td><td>Reliability</td><td>0</td><td style="color:var(--accent3)">No</td></tr>
+        <tr><td><strong>K5</strong></td><td>Reliability</td><td>0</td><td style="color:var(--accent3)">No</td></tr>
+      </table>
+      <div class="formula" style="margin-top:8px;">Simplified (default K1=1, K3=1):<br>Metric = Bandwidth + Delay</div>
+      <div class="label">IGRP Bandwidth Calculation</div>
+      <ul class="items">
+        <li>BW = 10,000,000 / interface bandwidth (Kbps)</li>
+        <li>Serial 64K → BW component = 10,000,000/64 = 156,250</li>
+        <li>Ethernet 10M → BW component = 10,000,000/10,000 = 1,000</li>
+      </ul>
+      <div class="label">IGRP Timers</div>
+      <table class="tbl">
+        <tr><th>Timer</th><th>Default</th></tr>
+        <tr><td>Update</td><td style="color:var(--nwc)"><strong>90 sec</strong></td></tr>
+        <tr><td>Invalid</td><td><strong>270 sec</strong></td></tr>
+        <tr><td>Holddown</td><td><strong>280 sec</strong></td></tr>
+        <tr><td>Flush</td><td><strong>630 sec</strong></td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4 -->
+<div class="grid section-gap">
+  <div class="card red col-span-2" id="loop-prevention">
+    <div class="card-header"><div class="dot"></div><h3>Loop Prevention Mechanisms</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">1. Maximum Hop Count</div>
+          <div class="rule">RIP: 16 hops = infinity (unreachable)<br>IGRP: 256 hops = infinity (unreachable)</div>
+          <p>Packets looping indefinitely will eventually exceed the maximum metric and be discarded, breaking the loop.</p>
+
+          <div class="label">2. Split Horizon</div>
+          <div class="rule">Never advertise a route back out the interface from which it was learned.</div>
+          <p><span class="tt" data-t="If Router A learned about network X from Router B via interface S0/0, split horizon prevents A from advertising network X back out S0/0 to B.">Split horizon</span> prevents two-node routing loops. If Router A learned a route from Router B, there's no point advertising it back — B already knows.</p>
+          <pre>! Split horizon is ON by default on serial links
+! Disable (frame relay hub-and-spoke):
+Router(config-if)# no ip split-horizon</pre>
+
+          <div class="label">3. Route Poisoning (Poison Reverse)</div>
+          <div class="rule">When a route fails, immediately advertise it with metric = infinity (16 for RIP).</div>
+          <p>Instead of simply removing a failed route, the router <span class="tt" data-t="Poison Reverse: advertise a failed route with infinite metric back to neighbors so they immediately know the route is dead — faster than waiting for timeouts.">poisons</span> it by sending an update with metric=16. This tells neighbors immediately that the network is unreachable, without waiting for timeouts.</p>
+        </div>
+        <div>
+          <div class="label">4. Holddown Timer</div>
+          <div class="rule">After a route fails, ignore any new information about that route for the holddown period.</div>
+          <p>When a route goes bad, the <span class="tt" data-t="Holddown timer prevents the router from accepting new information about a failed route for a set period. This gives the network time to stabilize and prevents bad routes from being re-accepted too quickly.">holddown timer</span> starts. During holddown, the router rejects updates that claim to reach the failed network at a worse metric. This prevents an already-looping bad route from being re-accepted.</p>
+          <ul class="items">
+            <li>RIP Holddown: <strong>180 seconds</strong></li>
+            <li>IGRP Holddown: <strong>280 seconds</strong></li>
+            <li>Router will accept an update with BETTER metric during holddown</li>
+          </ul>
+
+          <div class="label">5. Triggered Updates (Flash Updates)</div>
+          <div class="rule">Send an immediate update when a route change occurs — don't wait for the periodic timer.</div>
+          <p><span class="tt" data-t="When a routing change happens (link goes down), the router immediately sends an update to neighbors rather than waiting for the next 30-second periodic update.">Triggered updates</span> speed up convergence. Instead of waiting 30 seconds for the next RIP update, the router immediately notifies neighbors of the topology change.</p>
+
+          <div class="label">Summary: Loop Prevention Stack</div>
+          <table class="tbl">
+            <tr><th>Mechanism</th><th>Prevents</th><th>How</th></tr>
+            <tr><td>Max hop count</td><td>Infinite loops</td><td>Discards at 16 hops (RIP)</td></tr>
+            <tr><td>Split horizon</td><td>2-node loops</td><td>No readvertise back same interface</td></tr>
+            <tr><td>Route poisoning</td><td>Loop propagation</td><td>Immediate infinity metric</td></tr>
+            <tr><td>Holddown</td><td>Premature re-acceptance</td><td>Ignore bad route updates temporarily</td></tr>
+            <tr><td>Triggered updates</td><td>Slow convergence</td><td>Immediate change notification</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card green" id="ad-recap">
+    <div class="card-header"><div class="dot"></div><h3>AD Recap + RIP vs IGRP</h3></div>
+    <div class="card-body">
+      <div class="label">Simultaneous RIP + IGRP</div>
+      <p>If both RIP and IGRP are running and both know a route, the router uses <strong>Administrative Distance</strong> to choose:</p>
+      <table class="tbl">
+        <tr><th>Protocol</th><th>AD</th><th>Wins?</th></tr>
+        <tr><td>IGRP</td><td style="color:var(--accent2)">100</td><td style="color:var(--accent2)">✓ Yes — lower AD</td></tr>
+        <tr><td>RIP</td><td style="color:var(--accent3)">120</td><td style="color:var(--accent3)">✗ No — higher AD</td></tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">AD Tiebreaker</div>
+        If IGRP and RIP both have routes to 10.0.0.0/8, the IGRP route (AD=100) is installed in the routing table. The RIP route is kept as backup but not used.
+      </div>
+      <div class="label">RIP + IGRP Config Example</div>
+      <pre>router rip
+ version 2
+ network 192.168.1.0
+ network 172.16.0.0
+
+router igrp 100
+ network 192.168.1.0
+ network 172.16.0.0</pre>
+      <div class="note">
+        <div class="n-title">Redistribution</div>
+        By default RIP and IGRP do NOT share routes with each other. Routes must be <strong>redistributed</strong> between protocols to share across protocol boundaries.
+      </div>
+      <div class="label">Manually Set Admin Distance</div>
+      <pre>Router(config-router)# distance 95
+! Changes AD for this routing protocol instance
+! Use carefully — changes which routes are preferred</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5 -->
+<div class="grid section-gap">
+  <div class="card blue col-span-2" id="show-ip-protocols">
+    <div class="card-header"><div class="dot"></div><h3>show ip protocols — Output & Interpretation</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Sample Output (RIPv2)</div>
+          <pre style="font-size:10px;">Router# show ip protocols
+Routing Protocol is "rip"
+  Sending updates every 30 seconds, next due in 12 seconds
+  Invalid after 180 seconds, hold down 180, flushed after 240
+  Outgoing update filter list for all interfaces is not set
+  Incoming update filter list for all interfaces is not set
+  Redistributing: rip
+  Default version control: send version 2, receive version 2
+    Interface        Send  Recv  Triggered RIP  Key-chain
+    FastEthernet0/0  2     2
+    Serial0/0        2     2
+  Automatic network summarization is not in effect
+  Maximum path: 4
+  Routing for Networks:
+    172.16.0.0
+    192.168.1.0
+  Routing Information Sources:
+    Gateway         Distance  Last Update
+    172.16.1.2      120       00:00:17
+  Distance: (default is 120)</pre>
+        </div>
+        <div>
+          <div class="label">show ip protocols — Field Reference</div>
+          <table class="tbl">
+            <tr><th>Field</th><th>Meaning</th></tr>
+            <tr><td>Sending updates every</td><td>Update timer (RIP=30s, IGRP=90s)</td></tr>
+            <tr><td>Invalid after</td><td>Invalid timer</td></tr>
+            <tr><td>hold down</td><td>Holddown timer</td></tr>
+            <tr><td>flushed after</td><td>Flush timer</td></tr>
+            <tr><td>Send version / Recv version</td><td>RIP version per interface</td></tr>
+            <tr><td>Automatic network summarization</td><td>Whether auto-summary is active</td></tr>
+            <tr><td>Maximum path</td><td>Max ECMP paths (load balancing)</td></tr>
+            <tr><td>Routing for Networks</td><td>Networks configured under router rip</td></tr>
+            <tr><td>Routing Information Sources</td><td>Neighbor IPs sending updates + AD</td></tr>
+            <tr><td>Last Update</td><td>Age of last received update from neighbor</td></tr>
+            <tr><td>Distance</td><td>Administrative distance of this protocol</td></tr>
+          </table>
+          <div class="label">Sample IGRP Output</div>
+          <pre style="font-size:10px;">Routing Protocol is "igrp 100"
+  Sending updates every 90 seconds
+  Invalid after 270 seconds, hold down 280,
+  flushed after 630
+  Routing for Networks:
+    172.16.0.0
+  Routing Information Sources:
+    Gateway  Distance  Last Update
+    10.0.0.2  100      00:01:14
+  Distance: (default is 100)</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card orange" id="debug-commands">
+    <div class="card-header"><div class="dot"></div><h3>Debug Commands</h3></div>
+    <div class="card-body">
+      <div class="label">RIP Debug</div>
+      <pre>debug ip rip
+! Shows RIP updates sent and received:
+! RIP: sending v2 update to 224.0.0.9 via Serial0/0
+! RIP: Update contains 3 routes
+! RIP: received v2 update from 172.16.1.2 on S0/0
+!   10.0.0.0/8 via 0.0.0.0 in 1 hops</pre>
+      <div class="label">IGRP Debug</div>
+      <pre>debug ip igrp events
+! Summary: update sent/received, from/to
+
+debug ip igrp transactions
+! Full update details: networks, metrics
+! IGRP: received update from 10.0.0.2 on S0/0
+!   10.1.0.0 255.255.0.0 metric 8476</pre>
+      <div class="label">General IP Debug</div>
+      <pre>debug ip routing          ! route table changes
+debug ip packet           ! per-packet routing
+! WARNING: Very high CPU on busy routers!</pre>
+      <div class="warn">
+        <div class="w-title">⚠ Debug Warning</div>
+        Debug commands on a production router can cause <strong>CPU overload</strong> and service disruption. Always stop debug immediately after use with:
+      </div>
+      <pre>undebug all       ! stop ALL debug output
+no debug all      ! same as undebug all
+no debug ip rip   ! stop specific debug only</pre>
+      <div class="tip">
+        <div class="t-title">Debug on Telnet Sessions</div>
+        Debug output goes to console by default. To see debug on Telnet: <code>terminal monitor</code>. To stop: <code>no terminal monitor</code>.
+      </div>
+      <div class="label">Conditional Debug</div>
+      <pre>debug ip rip
+! Filter to specific IP (IOS 12.3+):
+debug condition interface Serial0/0</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 6 — Full-width Verification Table -->
+<div class="grid section-gap">
+  <div class="card green col-span-3" id="verification-table">
+    <div class="card-header"><div class="dot"></div><h3>Dynamic Routing Verification Commands</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Command</th><th>Protocol</th><th>What It Shows</th><th>Key Things to Look For</th></tr>
+        <tr><td><code>show ip route</code></td><td>All</td><td>Full routing table with source flags, AD, metric, next-hop, exit interface</td><td>R = RIP routes (AD 120), I = IGRP routes (AD 100), timestamp of last update</td></tr>
+        <tr><td><code>show ip route rip</code></td><td>RIP</td><td>Only RIP-learned routes in routing table</td><td>Hop count, next-hop, interface, update age</td></tr>
+        <tr><td><code>show ip route igrp</code></td><td>IGRP</td><td>Only IGRP-learned routes</td><td>Composite metric value, next-hop, interface</td></tr>
+        <tr><td><code>show ip protocols</code></td><td>All</td><td>All active routing protocols: timers, networks, neighbors, version, AD</td><td>Verify: correct networks, version 2 for RIP, correct AS for IGRP, timer values</td></tr>
+        <tr><td><code>show ip interface brief</code></td><td>All</td><td>Interface status, IP addresses — quickly confirm routing is happening on correct interfaces</td><td>All relevant interfaces should be up/up; check IP addresses match design</td></tr>
+        <tr><td><code>debug ip rip</code></td><td>RIP</td><td>Live RIP update messages: routes sent/received, from/to which neighbor, on which interface</td><td>Confirm updates are being sent and received; watch for missing networks; check version</td></tr>
+        <tr><td><code>debug ip igrp events</code></td><td>IGRP</td><td>Summary IGRP activity: update sent, update received, interface, neighbor</td><td>Low-impact debug — use on production when needed</td></tr>
+        <tr><td><code>debug ip igrp transactions</code></td><td>IGRP</td><td>Full IGRP update details: every network in every update with metric</td><td>High output — use briefly in lab environments</td></tr>
+        <tr><td><code>ping [ip]</code></td><td>All</td><td>ICMP echo test — verifies end-to-end Layer 3 reachability</td><td>5 exclamation marks = fully working. Dots = failure. U = destination unreachable</td></tr>
+        <tr><td><code>traceroute [ip]</code></td><td>All</td><td>Path trace showing each hop — identifies where traffic stops</td><td>Each hop should be an adjacent router interface; look for asymmetric routing</td></tr>
+        <tr><td><code>undebug all</code></td><td>All</td><td>Stops all active debug output</td><td>ALWAYS run this when finished debugging to restore normal CPU operation</td></tr>
+      </table>
+      <hr class="divider">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+        <div>
+          <div class="label">RIP show ip route output</div>
+          <pre style="font-size:10px;">R    172.16.2.0/24 [120/1] via 10.1.1.2,
+                   00:00:22, Serial0/0
+R    192.168.3.0/24 [120/2] via 10.1.1.2,
+                   00:00:22, Serial0/0
+! [120/1]: AD=120, metric=1 hop
+! [120/2]: AD=120, metric=2 hops</pre>
+        </div>
+        <div>
+          <div class="label">IGRP show ip route output</div>
+          <pre style="font-size:10px;">I    172.16.0.0/16 [100/8476] via 10.1.1.2,
+                  00:01:05, Serial0/0
+! [100/8476]: AD=100, composite metric=8476
+! Metric is composite (BW+delay), not hops</pre>
+        </div>
+        <div>
+          <div class="label">Troubleshooting Checklist</div>
+          <ul class="items">
+            <li>Both routers have matching RIP version (1 or 2)</li>
+            <li>IGRP AS numbers match on all routers</li>
+            <li><code>network</code> statement covers the interface network</li>
+            <li>Interfaces are <code>up/up</code> (not shutdown)</li>
+            <li>No ACL blocking UDP port 520 (RIP)</li>
+            <li>Passive interfaces not blocking needed updates</li>
+            <li>Check <code>no auto-summary</code> if using VLSM with RIPv2</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>NWC204 · CH06 — Dynamic Routing Protocols · Pages 253–288</span>
+  <span>CCNA INTRO · Todd Lammle · Sybex 2006</span>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

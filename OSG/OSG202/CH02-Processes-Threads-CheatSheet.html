@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH02 – Processes &amp; Threads | OSG202</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH02 — Processes &amp; Threads</h1>
+    <h2>OSG202 · Modern Operating Systems 4th Ed. · Tanenbaum · Ch. 2</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">Process Model</span>
+      <span class="toc-item">Creation &amp; Termination</span>
+      <span class="toc-item">IPC</span>
+      <span class="toc-item">Race Conditions</span>
+      <span class="toc-item">Mutual Exclusion</span>
+      <span class="toc-item">Semaphores</span>
+      <span class="toc-item">Classic Problems</span>
+      <span class="toc-item">Scheduling</span>
+      <span class="toc-item">Threads</span>
+    </div>
+  </div>
+  <div><span class="badge">OSG202</span></div>
+</div>
+
+<!-- ROW 1: Process Model -->
+<div class="grid" id="process-model">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Process Model &amp; PCB</h3></div>
+    <div class="card-body">
+      <div class="rule">Process = Program in Execution. One CPU → many processes via multiprogramming illusion.</div>
+      <div class="label">Process Control Block (PCB)</div>
+      <p>The <strong style="color:var(--osg)">PCB</strong> (process table entry) stores all info needed to restart a suspended process:</p>
+      <table class="tbl">
+        <tr><th>PCB Field</th><th>Contents</th></tr>
+        <tr><td>Process state</td><td>Running / Ready / Blocked</td></tr>
+        <tr><td>Program Counter</td><td>Address of next instruction</td></tr>
+        <tr><td>CPU registers</td><td>All register values at suspension</td></tr>
+        <tr><td>Memory info</td><td>Base/limit regs, page table ptr</td></tr>
+        <tr><td>Scheduling info</td><td>Priority, quantum used, arrival time</td></tr>
+        <tr><td>I/O status</td><td>Open files, pending I/O operations</td></tr>
+        <tr><td>Accounting</td><td>CPU time used, wall time</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">Core Image</div>
+        A suspended process = its <strong>core image</strong> (address space snapshot) + its <strong>PCB</strong>. The OS saves PCB in the process table (array of PCBs, one per process).
+      </div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Process States &amp; Transitions</h3></div>
+    <div class="card-body">
+      <div class="label">Three Core States</div>
+      <table class="tbl">
+        <tr><th>State</th><th>Meaning</th></tr>
+        <tr><td><strong style="color:var(--accent2)">Running</strong></td><td>Currently using the CPU</td></tr>
+        <tr><td><strong style="color:var(--accent)">Ready</strong></td><td>Runnable, waiting for CPU</td></tr>
+        <tr><td><strong style="color:var(--accent3)">Blocked</strong></td><td>Waiting for I/O or event — cannot run even if CPU free</td></tr>
+      </table>
+      <div class="label">State Transitions (4 possible)</div>
+      <ol class="steps">
+        <li><strong>Running → Blocked</strong>: process requests I/O or waits for event (<code>read()</code>, <code>wait()</code>)</li>
+        <li><strong>Running → Ready</strong>: scheduler preempts process (quantum expired)</li>
+        <li><strong>Ready → Running</strong>: scheduler picks this process (dispatched)</li>
+        <li><strong>Blocked → Ready</strong>: I/O completes, event occurs — process becomes runnable again</li>
+      </ol>
+      <div class="warn" style="margin-top:6px;">
+        <div class="w-title">⚠ Note</div>
+        A blocked process can <strong>never</strong> go directly Running → it must go Blocked → Ready → Running.
+      </div>
+      <div class="formula">Running ↔ Ready ↔ Blocked (Blocked→Ready only when event fires)</div>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>Process Creation &amp; Termination</h3></div>
+    <div class="card-body">
+      <div class="label">Process Creation — fork() + exec()</div>
+      <pre><code class="language-c">pid_t pid = fork();
+/* fork() returns TWICE:
+   - in parent: returns child's PID (>0)
+   - in child:  returns 0
+   Both share identical copy of parent's address space (copy-on-write) */
+
+if (pid == 0) {
+    /* child */
+    execve("/usr/bin/gcc", args, env);
+} else {
+    /* parent */
+    int status;
+    waitpid(pid, &amp;status, 0);
+}</code></pre>
+      <div class="label">Termination Causes</div>
+      <ul class="items">
+        <li><strong>Normal exit</strong>: <code>exit(0)</code> — voluntary, task complete</li>
+        <li><strong>Error exit</strong>: <code>exit(1)</code> — voluntary, error detected</li>
+        <li><strong>Fatal error</strong>: divide by zero, segfault → OS kills process</li>
+        <li><strong>Killed by another</strong>: <code>kill(pid, SIGKILL)</code></li>
+      </ul>
+      <div class="note">
+        <div class="n-title">Zombie &amp; Orphan</div>
+        <strong>Zombie</strong>: child exited but parent hasn't called <code>wait()</code>. <strong>Orphan</strong>: parent died first — orphan adopted by <code>init</code> (PID 1).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: IPC -->
+<div class="grid section-gap" id="ipc">
+  <div class="card orange col-span-2">
+    <div class="card-header"><div class="dot"></div><h3>Interprocess Communication (IPC)</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">IPC Mechanisms Compared</div>
+          <table class="tbl">
+            <tr><th>Method</th><th>Description</th><th>Speed</th></tr>
+            <tr><td><strong style="color:var(--osg)">Shared Memory</strong></td><td>Processes map same physical pages; communicate by read/write</td><td>Fastest</td></tr>
+            <tr><td><strong style="color:var(--osg)">Pipes</strong></td><td>Unidirectional byte stream; <code>pipe(fd)</code>; buffered in kernel</td><td>Fast</td></tr>
+            <tr><td><strong style="color:var(--osg)">Named Pipes (FIFO)</strong></td><td>Like pipe but has a filesystem name; unrelated processes can use</td><td>Fast</td></tr>
+            <tr><td><strong style="color:var(--osg)">Message Passing</strong></td><td><code>send(dest, msg)</code> / <code>receive(src, &amp;msg)</code>; OS copies data</td><td>Slower</td></tr>
+            <tr><td><strong style="color:var(--osg)">Sockets</strong></td><td>Network or local (Unix domain); bidirectional; works across machines</td><td>Slowest</td></tr>
+            <tr><td><strong style="color:var(--osg)">Signals</strong></td><td>Async notification; no data; only integer signal number</td><td>N/A</td></tr>
+          </table>
+          <div class="formula" style="margin-top:8px;">Shared Memory &gt; Pipe ≈ FIFO &gt; Message Queue &gt; Socket</div>
+        </div>
+        <div>
+          <div class="label">Pipe Example</div>
+          <pre><code class="language-c">int fd[2];
+pipe(fd);       /* fd[0]=read end, fd[1]=write end */
+if (fork() == 0) {
+    /* child writes */
+    close(fd[0]);
+    write(fd[1], "hello", 5);
+    exit(0);
+} else {
+    /* parent reads */
+    close(fd[1]);
+    char buf[10];
+    read(fd[0], buf, 5);
+    printf("%s\n", buf);
+}</code></pre>
+          <div class="label">Message Passing Semantics</div>
+          <ul class="items">
+            <li><strong>Blocking send</strong>: sender waits until message delivered</li>
+            <li><strong>Non-blocking send</strong>: sender continues immediately</li>
+            <li><strong>Blocking receive</strong>: receiver waits for message (<code>mailbox</code>)</li>
+            <li><strong>Rendezvous</strong>: both sender and receiver must be ready</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>Race Conditions</h3></div>
+    <div class="card-body">
+      <div class="rule">Race Condition: final result depends on exact timing/order of concurrent processes.</div>
+      <div class="label">Classic Example — Print Spooler</div>
+      <ol class="steps">
+        <li>Process A reads <code>in</code> pointer = 7 (next free slot)</li>
+        <li>Clock interrupt → scheduler switches to Process B</li>
+        <li>B also reads <code>in</code> = 7, stores its file name in slot 7, sets <code>in</code> = 8</li>
+        <li>A resumes, writes its filename to slot 7 (overwrites B!), sets <code>in</code> = 8</li>
+        <li>B's file is lost — B never gets printed</li>
+      </ol>
+      <div class="warn">
+        <div class="w-title">⚠ Why Races Are Insidious</div>
+        Race conditions are <strong>nondeterministic</strong>: they appear rarely, are hard to reproduce, and almost impossible to debug by inspection. They become <em>more common</em> as CPU core counts increase.
+      </div>
+      <div class="label">Four Conditions for a Good Solution</div>
+      <ol class="steps">
+        <li>No two processes simultaneously in their <strong style="color:var(--osg)">critical region</strong></li>
+        <li>No assumptions about CPU speed or number of CPUs</li>
+        <li>No process outside critical region may block another</li>
+        <li>No process waits forever to enter critical region (no starvation)</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: Mutual Exclusion -->
+<div class="grid section-gap" id="mutual-exclusion">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Busy Waiting Solutions</h3></div>
+    <div class="card-body">
+      <div class="label">Strict Alternation (Fails condition 3)</div>
+      <pre><code class="language-c">/* Process 0: */
+while (TRUE) {
+    while (turn != 0);  /* spin wait */
+    critical_region();
+    turn = 1;
+    noncritical_region();
+}
+/* Problem: if P0 is fast and P1 slow,
+   P0 must wait even though P1 is in
+   NON-critical region. Violates #3. */</code></pre>
+      <div class="label">Peterson's Algorithm (Correct!)</div>
+      <pre><code class="language-c">#define N 2
+int turn, interested[N];  /* all init 0 */
+
+void enter_region(int process) {
+    int other = 1 - process;
+    interested[process] = TRUE;
+    turn = process;
+    /* wait if other wants in AND it's their turn */
+    while (turn == process &amp;&amp;
+           interested[other] == TRUE);
+}
+void leave_region(int process) {
+    interested[process] = FALSE;
+}</code></pre>
+      <div class="tip">
+        <div class="t-title">Why Peterson Works</div>
+        If both call <code>enter_region</code> simultaneously, last write to <code>turn</code> wins — that process waits, giving the other access. Satisfies all 4 conditions.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Hardware Solutions: TSL &amp; XCHG</h3></div>
+    <div class="card-body">
+      <div class="rule">TSL = Test and Set Lock — atomic read-modify-write instruction</div>
+      <div class="label">TSL Instruction</div>
+      <pre><code class="language-c">/* TSL RX, LOCK:
+   Atomically: RX = LOCK; LOCK = 1
+   Locks memory bus during execution — no other
+   CPU can access LOCK between read and write */
+
+enter_region:
+    TSL REGISTER, LOCK  ; copy lock to reg, set lock=1
+    CMP REGISTER, #0    ; was lock zero?
+    JNE enter_region    ; if not, loop (spin)
+    RET                 ; in critical region
+
+leave_region:
+    MOVE LOCK, #0       ; set lock to 0
+    RET</code></pre>
+      <div class="label">XCHG Alternative (x86)</div>
+      <pre><code class="language-c">/* XCHG atomically swaps register with memory */
+enter_region:
+    MOVE REGISTER, #1   ; set register to 1
+    XCHG REGISTER, LOCK ; swap (atomic)
+    CMP REGISTER, #0    ; old value = 0?
+    JNE enter_region    ; no: spin
+    RET</code></pre>
+      <div class="warn">
+        <div class="w-title">⚠ Busy Waiting Wastes CPU</div>
+        Spin locks waste CPU time. Only acceptable when: (1) expected wait is very short, (2) on multiprocessor where another CPU holds the lock. Use <code>sleep/wakeup</code> for longer waits.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>Sleep/Wakeup &amp; Semaphores</h3></div>
+    <div class="card-body">
+      <div class="label">Sleep &amp; Wakeup Primitives</div>
+      <p><strong style="color:var(--osg)">sleep()</strong> blocks the calling process until another calls <strong style="color:var(--osg)">wakeup()</strong> on it.</p>
+      <div class="warn">
+        <div class="w-title">⚠ Lost Wakeup Problem</div>
+        If <code>wakeup()</code> arrives <em>before</em> <code>sleep()</code>, the signal is lost and the process sleeps forever. This race condition motivated semaphores.
+      </div>
+      <div class="label">Semaphore (Dijkstra, 1965)</div>
+      <div class="rule">Semaphore = integer counter + sleeping queue. Two atomic ops: P() (down/wait) and V() (up/signal)</div>
+      <pre><code class="language-c">/* Semaphore operations — MUST be atomic */
+void down(semaphore *s) {   /* P() / wait() */
+    s->count--;
+    if (s->count &lt; 0) {
+        /* add to sleep queue, block */
+        sleep();
+    }
+}
+void up(semaphore *s) {     /* V() / signal() */
+    s->count++;
+    if (s->count &lt;= 0) {
+        /* wake one sleeping process */
+        wakeup(s->queue.front());
+    }
+}</code></pre>
+      <div class="label">Semaphore Types</div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Init Value</th><th>Use</th></tr>
+        <tr><td><strong>Binary (Mutex)</strong></td><td>1</td><td>Mutual exclusion</td></tr>
+        <tr><td><strong>Counting</strong></td><td>N</td><td>Count available resources</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4: Mutex & Monitor -->
+<div class="grid-2 section-gap" id="mutex-monitor">
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>Mutex &amp; Monitor</h3></div>
+    <div class="card-body">
+      <div class="label">Mutex (Binary Semaphore Simplified)</div>
+      <pre><code class="language-c">/* POSIX mutex */
+pthread_mutex_t mtx = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_mutex_lock(&amp;mtx);   /* acquire — blocks if held */
+    /* critical section */
+pthread_mutex_unlock(&amp;mtx); /* release */
+
+/* Condition variable (used WITH mutex) */
+pthread_cond_t cv = PTHREAD_COND_INITIALIZER;
+pthread_cond_wait(&amp;cv, &amp;mtx);  /* atomically release mtx + sleep */
+pthread_cond_signal(&amp;cv);       /* wake one waiter */
+pthread_cond_broadcast(&amp;cv);    /* wake all waiters */</code></pre>
+      <div class="label">Monitor (High-Level Construct)</div>
+      <p>A <strong style="color:var(--osg)">monitor</strong> is a programming language construct that bundles data + procedures + automatic mutual exclusion. Only one process can be active inside the monitor at a time.</p>
+      <ul class="items">
+        <li>Used in Java (<code>synchronized</code> methods) and C# (<code>lock</code>)</li>
+        <li>Condition variables: <code>wait()</code> releases monitor + sleeps; <code>signal()</code> wakes one waiter</li>
+        <li>Automatic unlock eliminates many semaphore bugs (forgotten V)</li>
+      </ul>
+      <div class="tip">
+        <div class="t-title">Monitor vs Semaphore</div>
+        Semaphores are error-prone (easy to forget V, call P twice). Monitors make synchronization automatic and harder to misuse.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>Classical Synchronization Problems</h3></div>
+    <div class="card-body">
+      <div class="label">1. Producer-Consumer (Bounded Buffer)</div>
+      <pre><code class="language-c">/* semaphore full=0, empty=N, mutex=1 */
+/* Producer: */
+down(&amp;empty);   /* wait for free slot */
+down(&amp;mutex);   /* lock buffer */
+insert_item();
+up(&amp;mutex);
+up(&amp;full);      /* signal item available */
+
+/* Consumer: */
+down(&amp;full);    /* wait for item */
+down(&amp;mutex);
+remove_item();
+up(&amp;mutex);
+up(&amp;empty);     /* signal slot freed */</code></pre>
+      <div class="label">2. Dining Philosophers (Deadlock Avoidance)</div>
+      <p>5 philosophers sit at round table. Each needs <strong>2 forks</strong> to eat. Between each pair: 1 fork (semaphore). Naive solution deadlocks when all pick up left fork simultaneously.</p>
+      <div class="formula">Solution: at most 4 philosophers allowed to sit simultaneously<br>OR: pick up both forks atomically (monitor)<br>OR: odd philosophers pick left first, even pick right first</div>
+      <div class="label">3. Readers-Writers Problem</div>
+      <ul class="items">
+        <li>Multiple <strong>readers</strong> can read simultaneously (no conflict)</li>
+        <li>A <strong>writer</strong> needs exclusive access (blocks all others)</li>
+        <li><strong>Reader preference</strong>: writers may starve (new readers keep arriving)</li>
+        <li><strong>Writer preference</strong>: readers may starve</li>
+        <li>Fair solution: use queue to alternate access</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5: Scheduling -->
+<div class="grid section-gap" id="scheduling">
+  <div class="card orange col-span-3">
+    <div class="card-header"><div class="dot"></div><h3>CPU Scheduling Algorithms</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="label">Scheduling Algorithm Comparison</div>
+          <table class="tbl">
+            <tr><th>Algorithm</th><th>Mode</th><th>Pro</th><th>Con</th></tr>
+            <tr><td><strong style="color:var(--osg)">FCFS / FIFO</strong></td><td>Non-preemptive</td><td>Simple, fair</td><td>Convoy effect; long jobs delay all</td></tr>
+            <tr><td><strong style="color:var(--osg)">SJF</strong></td><td>Non-preemptive</td><td>Optimal avg wait time</td><td>Needs burst time prediction; starvation</td></tr>
+            <tr><td><strong style="color:var(--osg)">SRTN</strong></td><td>Preemptive</td><td>Best avg response</td><td>Preempts on new arrival; starvation risk</td></tr>
+            <tr><td><strong style="color:var(--osg)">Round Robin</strong></td><td>Preemptive</td><td>Fair; good for interactive</td><td>High overhead if quantum too small</td></tr>
+            <tr><td><strong style="color:var(--osg)">Priority</strong></td><td>Both</td><td>Important jobs run first</td><td>Starvation of low-priority; priority inversion</td></tr>
+            <tr><td><strong style="color:var(--osg)">Multilevel Queue</strong></td><td>Both</td><td>Separate queues per class</td><td>Inflexible between queues</td></tr>
+            <tr><td><strong style="color:var(--osg)">MLQ Feedback</strong></td><td>Preemptive</td><td>Adapts; favors short jobs</td><td>Complex; possible starvation</td></tr>
+          </table>
+          <div class="note" style="margin-top:8px;">
+            <div class="n-title">Preemptive vs Non-Preemptive</div>
+            <strong>Preemptive</strong>: OS can forcibly take CPU from running process (timer interrupt). <strong>Non-preemptive</strong>: process runs until it voluntarily yields or blocks.
+          </div>
+        </div>
+        <div>
+          <div class="label">Round Robin Details</div>
+          <p>Each process gets a fixed <strong style="color:var(--osg)">time quantum</strong> (10–100ms). At end of quantum, process preempted and moved to back of ready queue.</p>
+          <div class="formula">Quantum too short → too many context switches (overhead)<br>Quantum too long → poor response for interactive users<br>Optimal: slightly longer than typical CPU burst</div>
+          <div class="label">Multilevel Feedback Queue</div>
+          <ul class="items">
+            <li>Multiple queues with different priorities and quantum sizes</li>
+            <li>New processes start in highest-priority queue</li>
+            <li>If process uses full quantum → demoted to lower queue</li>
+            <li>If process blocks before quantum → stays or promoted</li>
+            <li>Effectively separates CPU-bound from I/O-bound processes</li>
+          </ul>
+          <div class="label">Scheduling Goals by System Type</div>
+          <table class="tbl">
+            <tr><th>System</th><th>Goal</th></tr>
+            <tr><td>Batch</td><td>Throughput, turnaround time, CPU utilization</td></tr>
+            <tr><td>Interactive</td><td>Response time, proportionality (user expectation)</td></tr>
+            <tr><td>Real-time</td><td>Meet deadlines, predictability</td></tr>
+          </table>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="label">Key Scheduling Metrics</div>
+      <div class="formula">
+        Turnaround Time = Completion Time − Arrival Time<br>
+        Waiting Time = Turnaround Time − Burst Time<br>
+        Response Time = Time of first CPU use − Arrival Time<br>
+        CPU Utilization = (CPU busy time / Total time) × 100%<br>
+        Throughput = Number of processes completed per unit time
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 6: Threads -->
+<div class="grid section-gap" id="threads">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Thread Model</h3></div>
+    <div class="card-body">
+      <div class="rule">Thread = Lightweight Process. Threads share address space; each has own stack and registers.</div>
+      <div class="label">Process vs Thread</div>
+      <table class="tbl">
+        <tr><th>Resource</th><th>Process</th><th>Thread</th></tr>
+        <tr><td>Address space</td><td>Private</td><td>Shared with all threads in process</td></tr>
+        <tr><td>Global variables</td><td>Private</td><td>Shared</td></tr>
+        <tr><td>Open files</td><td>Private</td><td>Shared</td></tr>
+        <tr><td>Stack</td><td>Private</td><td>Private (per thread)</td></tr>
+        <tr><td>Registers</td><td>Private</td><td>Private (per thread)</td></tr>
+        <tr><td>Child threads</td><td>N/A</td><td>Shared</td></tr>
+        <tr><td>Creation cost</td><td>High (new address space)</td><td>Low (10–100x faster)</td></tr>
+        <tr><td>Context switch</td><td>Expensive</td><td>Cheap (same page table)</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">Why Threads?</div>
+        Web server: one thread per request — all share connection pool and cache. Without threads, need multiple processes (expensive) or complex event-driven code.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>User-Level vs Kernel-Level Threads</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Property</th><th>User-Level Threads</th><th>Kernel-Level Threads</th></tr>
+        <tr><td>Who manages</td><td>Runtime library (e.g., GNU Pth)</td><td>OS kernel</td></tr>
+        <tr><td>Thread switch</td><td>No system call — very fast</td><td>Requires syscall — slower</td></tr>
+        <tr><td>Blocking syscall</td><td>Blocks entire process!</td><td>Only blocks that thread</td></tr>
+        <tr><td>Parallelism (SMP)</td><td>No — only 1 CPU at a time</td><td>Yes — multiple CPUs</td></tr>
+        <tr><td>Examples</td><td>GNU Pth, old Java green threads</td><td>Linux pthreads, Windows threads</td></tr>
+      </table>
+      <div class="warn" style="margin-top:8px;">
+        <div class="w-title">⚠ User-Level Thread Problem</div>
+        If one user-level thread makes a blocking syscall (e.g., <code>read()</code>), the kernel blocks the <em>entire process</em>, starving all other threads. Solution: jacketing — wrap blocking calls with non-blocking versions.
+      </div>
+      <div class="info">
+        <div class="i-title">Hybrid Threading (M:N Model)</div>
+        Map M user threads onto N kernel threads (N &lt; M). Gets benefits of both: fast switching for most threads, true parallelism when needed. Used in Solaris.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>POSIX pthreads API</h3></div>
+    <div class="card-body">
+      <div class="label">Essential pthread Functions</div>
+      <table class="tbl">
+        <tr><th>Function</th><th>Description</th></tr>
+        <tr><td><code>pthread_create()</code></td><td>Create a new thread</td></tr>
+        <tr><td><code>pthread_exit()</code></td><td>Terminate calling thread</td></tr>
+        <tr><td><code>pthread_join()</code></td><td>Wait for thread to finish</td></tr>
+        <tr><td><code>pthread_yield()</code></td><td>Voluntarily give up CPU</td></tr>
+        <tr><td><code>pthread_self()</code></td><td>Get own thread ID</td></tr>
+        <tr><td><code>pthread_mutex_lock()</code></td><td>Acquire mutex (blocking)</td></tr>
+        <tr><td><code>pthread_mutex_unlock()</code></td><td>Release mutex</td></tr>
+        <tr><td><code>pthread_cond_wait()</code></td><td>Wait on condition variable</td></tr>
+        <tr><td><code>pthread_cond_signal()</code></td><td>Signal condition variable</td></tr>
+      </table>
+      <div class="label">Thread Creation Example</div>
+      <pre><code class="language-c">#include &lt;pthread.h&gt;
+
+void *worker(void *arg) {
+    int id = *(int*)arg;
+    printf("Thread %d running\n", id);
+    return NULL;
+}
+
+int main() {
+    pthread_t tid;
+    int arg = 42;
+    pthread_create(&amp;tid, NULL, worker, &amp;arg);
+    pthread_join(tid, NULL);  /* wait */
+    return 0;
+}</code></pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 7: Deadlock intro & Thread issues -->
+<div class="grid-2 section-gap" id="thread-issues">
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>Thread Safety &amp; Common Pitfalls</h3></div>
+    <div class="card-body">
+      <div class="label">Shared Global State Problem</div>
+      <pre><code class="language-c">/* DANGER: errno is global in old C libraries */
+/* Thread 1 calls access() → errno = EACCES */
+/* Context switch! */
+/* Thread 2 calls open() → errno = ENOENT (overwrites!) */
+/* Thread 1 reads wrong errno */
+
+/* SOLUTION: Thread-Local Storage (TLS) */
+__thread int errno;  /* each thread has own copy */
+</code></pre>
+      <div class="label">Non-Reentrant Library Functions</div>
+      <p>Functions like <code>strtok()</code>, <code>gethostbyname()</code> use internal static buffers — calling from multiple threads corrupts state.</p>
+      <div class="tip">
+        <div class="t-title">Reentrant-Safe Functions</div>
+        Use <code>strtok_r()</code>, <code>gethostbyname_r()</code> (reentrant variants). Always check if a library function is thread-safe before using in multithreaded code.
+      </div>
+      <div class="label">Stack Overflow Risk</div>
+      <p>Each thread has its own stack (typically 1-8MB). Kernel auto-grows process stack; does <strong>NOT</strong> auto-grow thread stacks. Stack overflow in a thread = crash.</p>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>Pop-Up Threads &amp; IPC Summary</h3></div>
+    <div class="card-body">
+      <div class="label">Pop-Up Threads</div>
+      <p>When a message arrives, the system <strong style="color:var(--osg)">automatically creates a new thread</strong> to handle it — called a <strong>pop-up thread</strong>. Key advantages:</p>
+      <ul class="items">
+        <li>No history to restore (no saved registers/stack)</li>
+        <li>Very fast creation → low message-handling latency</li>
+        <li>Ideal for network servers handling bursts of requests</li>
+      </ul>
+      <div class="label">IPC Decision Guide</div>
+      <table class="tbl">
+        <tr><th>Scenario</th><th>Best IPC</th></tr>
+        <tr><td>Same machine, large data</td><td>Shared memory</td></tr>
+        <tr><td>Same machine, simple flow</td><td>Pipe or FIFO</td></tr>
+        <tr><td>Parent-child one-way</td><td>Pipe</td></tr>
+        <tr><td>Across network</td><td>Socket</td></tr>
+        <tr><td>Async notification only</td><td>Signal</td></tr>
+        <tr><td>Complex structured msgs</td><td>Message queue</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Key Chapter Formula</div>
+        <strong>Correct concurrent programs</strong> require: (1) mutual exclusion for shared data, (2) avoid deadlock, (3) avoid starvation, (4) progress guarantee.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>OSG202 — Operating Systems · Modern OS 4th Ed. · Tanenbaum</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<script>
+function toggleTOC(){
+  var t=document.getElementById('page-toc');
+  t.classList.toggle('toc-collapsed');
+  t.classList.toggle('toc-open');
+}
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  toc.classList.add('toc-open');
+  var sections=[
+    {id:'process-model',label:'Process Model'},
+    {id:'ipc',label:'IPC'},
+    {id:'mutual-exclusion',label:'Mutual Exclusion'},
+    {id:'mutex-monitor',label:'Mutex &amp; Classic Problems'},
+    {id:'scheduling',label:'Scheduling'},
+    {id:'threads',label:'Threads'},
+    {id:'thread-issues',label:'Thread Issues'}
+  ];
+  sections.forEach(function(s){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+s.id;
+    a.innerHTML=s.label;
+    body.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  var domSections=sections.map(function(s){return document.getElementById(s.id);});
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    domSections.forEach(function(s,i){
+      if(s&&s.offsetTop<=pos){
+        links.forEach(function(l){l.classList.remove('active');});
+        if(links[i])links[i].classList.add('active');
+      }
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code=document.createElement('code');
+    code.className='language-c';
+    code.textContent=pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

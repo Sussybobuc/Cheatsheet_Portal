@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH03 – Fundamental Programming Structures | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr">On This Page <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>Fundamental Programming Structures — Chapter 3</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">§Data Types</span>
+      <span class="toc-item">§Variables</span>
+      <span class="toc-item">§Type Conversion</span>
+      <span class="toc-item">§Operators</span>
+      <span class="toc-item">§Math</span>
+      <span class="toc-item">§Switch</span>
+      <span class="toc-item">§Strings</span>
+      <span class="toc-item">§I/O</span>
+      <span class="toc-item">§Control Flow</span>
+      <span class="toc-item">§Arrays</span>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0;">
+    <span class="badge">PRO192</span>
+    <span class="badge">CH03</span>
+  </div>
+</div>
+
+<!-- ROW 1: 3 cols -->
+<div class="grid">
+
+  <!-- Card 1: Primitive Data Types -->
+  <div class="card yellow" id="data-types">
+    <div class="card-header"><div class="dot"></div><h3>Primitive Data Types</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Type</th><th>Size</th><th>Range</th><th>Default</th><th>Example</th></tr>
+        <tr><td><code>byte</code></td><td>8-bit</td><td>-128 to 127</td><td>0</td><td><code>byte b = 42;</code></td></tr>
+        <tr><td><code>short</code></td><td>16-bit</td><td>-32,768 to 32,767</td><td>0</td><td><code>short s = 1000;</code></td></tr>
+        <tr><td><code>int</code></td><td>32-bit</td><td>-2³¹ to 2³¹-1 (~2.1B)</td><td>0</td><td><code>int n = 42;</code></td></tr>
+        <tr><td><code>long</code></td><td>64-bit</td><td>-2⁶³ to 2⁶³-1</td><td>0L</td><td><code>long l = 42L;</code></td></tr>
+        <tr><td><code>float</code></td><td>32-bit</td><td>~±3.4×10³⁸, 7 digits</td><td>0.0f</td><td><code>float f = 3.14f;</code></td></tr>
+        <tr><td><code>double</code></td><td>64-bit</td><td>~±1.8×10³⁰⁸, 15 digits</td><td>0.0</td><td><code>double d = 3.14;</code></td></tr>
+        <tr><td><code>char</code></td><td>16-bit</td><td>0 to 65,535 (Unicode)</td><td>'\u0000'</td><td><code>char c = 'A';</code></td></tr>
+        <tr><td><code>boolean</code></td><td>1-bit</td><td>true / false</td><td>false</td><td><code>boolean b = true;</code></td></tr>
+      </table>
+      <div class="warn" style="margin-top:8px;">
+        <div class="w-title">⚠ Floating-Point Warning</div>
+        <code>float</code>/<code>double</code> are <strong>not exact</strong> for monetary calculations! Use <code>BigDecimal</code> for financial math.
+      </div>
+      <div class="note">
+        <div class="n-title">📌 Literal Suffixes</div>
+        <code>42L</code> = long · <code>3.14f</code> = float · <code>3.14</code> = double (default) · <code>0xFF</code> = hex int · <code>0b1010</code> = binary int
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 2: Variables & Constants -->
+  <div class="card blue" id="variables">
+    <div class="card-header"><div class="dot"></div><h3>Variables &amp; Constants</h3></div>
+    <div class="card-body">
+      <div class="label">Declaration &amp; Initialization</div>
+      <pre>int x;            // declaration (uninitialized)
+int y = 10;       // declaration + initialization
+var z = 3.14;     // type inference (Java 10+, local vars only)</pre>
+      <div class="label">Variable Kinds</div>
+      <table class="tbl">
+        <tr><th>Kind</th><th>Where</th><th>Lifetime</th><th>Default Init?</th></tr>
+        <tr><td><strong>Local</strong></td><td>Inside method/block</td><td>Method scope</td><td>No — must init before use</td></tr>
+        <tr><td><strong>Instance</strong></td><td>In class body (non-static)</td><td>Object lifetime</td><td>Yes (0 / null / false)</td></tr>
+        <tr><td><strong>Static/Class</strong></td><td>In class, <code>static</code> keyword</td><td>JVM lifetime</td><td>Yes (0 / null / false)</td></tr>
+      </table>
+      <div class="label">Constants (final)</div>
+      <pre>final double PI = 3.14159;      // local constant
+static final int MAX = 100;     // class constant
+// Convention: UPPER_SNAKE_CASE for constants</pre>
+      <div class="tip">
+        <div class="t-title">💡 var Inference (Java 10+)</div>
+        Use <code>var</code> only when the type is <em>obvious</em> from the right side:<br>
+        ✅ <code>var list = new ArrayList&lt;String&gt;()</code><br>
+        ❌ <code>var x = getValue()</code> — type not obvious
+      </div>
+      <div class="label">Naming Rules</div>
+      <ul class="items">
+        <li>Must start with letter, <code>$</code>, or <code>_</code> (not a digit)</li>
+        <li>Case-sensitive: <code>myVar</code> ≠ <code>myvar</code></li>
+        <li>Convention: <code>camelCase</code> for variables, <code>PascalCase</code> for classes</li>
+        <li>Cannot use reserved words: <code>int</code>, <code>class</code>, <code>if</code>, etc.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 3: Type Conversions -->
+  <div class="card green" id="type-conversions">
+    <div class="card-header"><div class="dot"></div><h3>Type Conversions</h3></div>
+    <div class="card-body">
+      <div class="label">Widening (automatic, safe — no data loss)</div>
+      <div class="formula">byte → short → int → long → float → double</div>
+      <pre>int i = 42;
+long l = i;     // widening: automatic, safe
+double d = l;   // widening: automatic</pre>
+      <div class="label">Narrowing (explicit cast — may lose data)</div>
+      <pre>double d = 9.99;
+int i = (int) d;     // i = 9  (truncated, NOT rounded!)
+long big = 123456789012L;
+int n = (int) big;   // may overflow!</pre>
+      <div class="warn">
+        <div class="w-title">⚠ Truncation, Not Rounding</div>
+        <code>(int)9.9</code> gives <strong>9</strong>, not 10. Cast cuts the decimal part, it does not round.
+      </div>
+      <div class="label">Numeric Promotion in Expressions</div>
+      <ul class="items">
+        <li><code>byte</code>/<code>short</code>/<code>char</code> auto-promoted to <code>int</code> in expressions</li>
+        <li>If either operand is <code>long</code> → result is <code>long</code></li>
+        <li>If either operand is <code>float</code> → result is <code>float</code></li>
+        <li>If either operand is <code>double</code> → result is <code>double</code></li>
+      </ul>
+      <div class="label">Wrapper Conversion Methods</div>
+      <pre>int i    = Integer.parseInt("42");
+double d = Double.parseDouble("3.14");
+String s = Integer.toString(42);
+String h = Integer.toHexString(255);  // "ff"
+int max  = Integer.MAX_VALUE;         // 2147483647
+int min  = Integer.MIN_VALUE;         // -2147483648</pre>
+    </div>
+  </div>
+
+</div><!-- /grid row 1 -->
+
+<!-- ROW 2: 3 cols -->
+<div class="grid section-gap">
+
+  <!-- Card 4: Operators -->
+  <div class="card purple" id="operators">
+    <div class="card-header"><div class="dot"></div><h3>Operators</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Category</th><th>Operators</th><th>Notes</th></tr>
+        <tr><td><strong>Arithmetic</strong></td><td><code>+ - * / %</code></td><td><code>/</code> is integer division if both operands are int</td></tr>
+        <tr><td><strong>Increment/Dec</strong></td><td><code>++ --</code></td><td>Prefix: change then use; Postfix: use then change</td></tr>
+        <tr><td><strong>Relational</strong></td><td><code>== != &lt; &gt; &lt;= &gt;=</code></td><td><code>==</code> compares values (primitives) or references (objects)</td></tr>
+        <tr><td><strong>Logical</strong></td><td><code>&amp;&amp; || !</code></td><td>Short-circuit: <code>&amp;&amp;</code> stops if left is false; <code>||</code> stops if left is true</td></tr>
+        <tr><td><strong>Bitwise</strong></td><td><code>&amp; | ^ ~ &lt;&lt; &gt;&gt; &gt;&gt;&gt;</code></td><td>Operate on integer types bit by bit</td></tr>
+        <tr><td><strong>Assignment</strong></td><td><code>= += -= *= /= %= &amp;= |= ^= &lt;&lt;= &gt;&gt;= &gt;&gt;&gt;=</code></td><td>Compound assignment ops</td></tr>
+        <tr><td><strong>Conditional</strong></td><td><code>?:</code></td><td><code>cond ? valIfTrue : valIfFalse</code></td></tr>
+        <tr><td><strong>instanceof</strong></td><td><code>instanceof</code></td><td><code>obj instanceof String</code> → boolean</td></tr>
+      </table>
+      <div class="label">Prefix vs Postfix Increment</div>
+      <pre>int a = 5;
+int b = ++a; // a=6, b=6  (prefix: increment first)
+int c = a++; // c=6, a=7  (postfix: use first, then increment)</pre>
+      <div class="label">Operator Precedence (high → low, simplified)</div>
+      <ul class="items">
+        <li><code>()</code> — parentheses (always first)</li>
+        <li><code>++ -- ~ !</code> — unary operators</li>
+        <li><code>* / %</code> — multiplicative</li>
+        <li><code>+ -</code> — additive</li>
+        <li><code>&lt;&lt; &gt;&gt; &gt;&gt;&gt;</code> — shift</li>
+        <li><code>&lt; &gt; &lt;= &gt;= instanceof</code> — relational</li>
+        <li><code>== !=</code> — equality</li>
+        <li><code>&amp; ^ |</code> — bitwise</li>
+        <li><code>&amp;&amp; ||</code> — logical</li>
+        <li><code>?:</code> — conditional (ternary)</li>
+        <li><code>= += -=</code> etc. — assignment (lowest)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 5: Mathematical Functions -->
+  <div class="card orange" id="math">
+    <div class="card-header"><div class="dot"></div><h3>Mathematical Functions</h3></div>
+    <div class="card-body">
+      <p><code>import java.lang.Math;</code> — auto-imported from <code>java.lang</code></p>
+      <table class="tbl">
+        <tr><th>Method</th><th>Returns</th><th>Example</th></tr>
+        <tr><td><code>Math.abs(x)</code></td><td>absolute value</td><td><code>Math.abs(-5)</code> = 5</td></tr>
+        <tr><td><code>Math.sqrt(x)</code></td><td>square root</td><td><code>Math.sqrt(16)</code> = 4.0</td></tr>
+        <tr><td><code>Math.pow(a,b)</code></td><td>a raised to b</td><td><code>Math.pow(2,10)</code> = 1024.0</td></tr>
+        <tr><td><code>Math.max(a,b)</code></td><td>larger of two</td><td><code>Math.max(3,7)</code> = 7</td></tr>
+        <tr><td><code>Math.min(a,b)</code></td><td>smaller of two</td><td><code>Math.min(3,7)</code> = 3</td></tr>
+        <tr><td><code>Math.round(x)</code></td><td>nearest integer (long)</td><td><code>Math.round(3.6)</code> = 4</td></tr>
+        <tr><td><code>Math.floor(x)</code></td><td>round down</td><td><code>Math.floor(3.9)</code> = 3.0</td></tr>
+        <tr><td><code>Math.ceil(x)</code></td><td>round up</td><td><code>Math.ceil(3.1)</code> = 4.0</td></tr>
+        <tr><td><code>Math.random()</code></td><td>[0.0, 1.0) double</td><td><code>Math.random()</code></td></tr>
+        <tr><td><code>Math.PI</code></td><td>π constant</td><td>3.141592653589793</td></tr>
+        <tr><td><code>Math.E</code></td><td>e constant</td><td>2.718281828459045</td></tr>
+        <tr><td><code>Math.log(x)</code></td><td>natural logarithm</td><td><code>Math.log(Math.E)</code> = 1.0</td></tr>
+        <tr><td><code>Math.log10(x)</code></td><td>base-10 logarithm</td><td><code>Math.log10(100)</code> = 2.0</td></tr>
+        <tr><td><code>Math.sin/cos/tan(x)</code></td><td>trig functions (radians)</td><td><code>Math.sin(Math.PI/2)</code> = 1.0</td></tr>
+      </table>
+      <div class="tip" style="margin-top:8px;">
+        <div class="t-title">💡 Random Integer in Range</div>
+        <code>int n = (int)(Math.random() * 10);</code> → random int in [0, 9]<br>
+        Or use: <code>new Random().nextInt(10)</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 6: Switch -->
+  <div class="card blue" id="switch">
+    <div class="card-header"><div class="dot"></div><h3>Switch Statement &amp; Expression</h3></div>
+    <div class="card-body">
+      <div class="label">Traditional Switch (Statement)</div>
+      <pre>int day = 3;
+switch (day) {
+    case 1: System.out.println("Mon"); break;
+    case 2: System.out.println("Tue"); break;
+    case 3: System.out.println("Wed"); break;
+    default: System.out.println("Other");
+}</pre>
+      <div class="warn">
+        <div class="w-title">⚠ Fall-Through Trap</div>
+        Forgetting <code>break</code> causes <strong>fall-through</strong> — execution continues into the next case!
+      </div>
+      <div class="label">Switch Expression (Java 14+) — No Fall-Through</div>
+      <pre>String result = switch (day) {
+    case 1 -&gt; "Monday";
+    case 2 -&gt; "Tuesday";
+    case 3 -&gt; "Wednesday";
+    case 4, 5 -&gt; "Thurs or Fri";  // multiple labels
+    default -&gt; "Weekend";
+};</pre>
+      <div class="label">Switch Expression with Block (yield)</div>
+      <pre>String label = switch (score) {
+    case 10 -&gt; "Perfect";
+    default -&gt; {
+        String grade = score &gt;= 5 ? "Pass" : "Fail";
+        yield grade + " (" + score + ")";  // yield returns value
+    }
+};</pre>
+      <div class="tip">
+        <div class="t-title">💡 Best Practice</div>
+        Prefer <strong>switch expressions</strong> with <code>-&gt;</code> arrows — no fall-through risk, no <code>break</code> needed, can return a value.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 2 -->
+
+<!-- ROW 3: Full-width Strings card -->
+<div class="card yellow section-gap" id="strings">
+  <div class="card-header"><div class="dot"></div><h3>Strings</h3></div>
+  <div class="card-body">
+    <div class="grid-2">
+
+      <!-- Left column -->
+      <div>
+        <div class="label">String Basics</div>
+        <pre>String s = "Hello";           // string literal (immutable)
+String s2 = new String("Hi"); // new object (avoid this form)
+char c = s.charAt(0);         // 'H'
+int len = s.length();         // 5
+String upper = s.toUpperCase(); // "HELLO"</pre>
+        <div class="label">Common String Methods</div>
+        <table class="tbl">
+          <tr><th>Method</th><th>Returns</th><th>Example</th></tr>
+          <tr><td><code>s.length()</code></td><td>int</td><td>"Hello".length() = 5</td></tr>
+          <tr><td><code>s.charAt(i)</code></td><td>char</td><td>"Hi".charAt(1) = 'i'</td></tr>
+          <tr><td><code>s.substring(i)</code></td><td>String</td><td>"Hello".substring(2) = "llo"</td></tr>
+          <tr><td><code>s.substring(i,j)</code></td><td>String</td><td>"Hello".substring(1,3) = "el"</td></tr>
+          <tr><td><code>s.indexOf("l")</code></td><td>int</td><td>"Hello".indexOf("l") = 2</td></tr>
+          <tr><td><code>s.lastIndexOf("l")</code></td><td>int</td><td>"Hello".lastIndexOf("l") = 3</td></tr>
+          <tr><td><code>s.toUpperCase()</code></td><td>String</td><td>"hi".toUpperCase() = "HI"</td></tr>
+          <tr><td><code>s.toLowerCase()</code></td><td>String</td><td>"HI".toLowerCase() = "hi"</td></tr>
+          <tr><td><code>s.trim()</code></td><td>String</td><td>" hi ".trim() = "hi"</td></tr>
+          <tr><td><code>s.strip()</code></td><td>String</td><td>Like trim, Unicode-aware (Java 11+)</td></tr>
+          <tr><td><code>s.replace(a,b)</code></td><td>String</td><td>"hello".replace("l","r") = "herro"</td></tr>
+          <tr><td><code>s.contains("ell")</code></td><td>boolean</td><td>"hello".contains("ell") = true</td></tr>
+          <tr><td><code>s.startsWith("He")</code></td><td>boolean</td><td>"Hello".startsWith("He") = true</td></tr>
+          <tr><td><code>s.endsWith("lo")</code></td><td>boolean</td><td>"Hello".endsWith("lo") = true</td></tr>
+          <tr><td><code>s.isEmpty()</code></td><td>boolean</td><td>"".isEmpty() = true</td></tr>
+          <tr><td><code>s.isBlank()</code></td><td>boolean</td><td>"  ".isBlank() = true (Java 11+)</td></tr>
+          <tr><td><code>s.split(",")</code></td><td>String[]</td><td>"a,b,c".split(",") → ["a","b","c"]</td></tr>
+          <tr><td><code>String.join("-",arr)</code></td><td>String</td><td>String.join("-","a","b") = "a-b"</td></tr>
+          <tr><td><code>String.format(fmt)</code></td><td>String</td><td>String.format("%d+%d=%d",1,2,3) = "1+2=3"</td></tr>
+          <tr><td><code>s.chars()</code></td><td>IntStream</td><td>Stream of char values (Java 8+)</td></tr>
+        </table>
+      </div>
+
+      <!-- Right column -->
+      <div>
+        <div class="warn">
+          <div class="w-title">⚠ Strings Are IMMUTABLE</div>
+          Every "modification" (toUpperCase, replace, trim, etc.) creates a <strong>new</strong> String object. The original is never changed.
+        </div>
+        <div class="label">String Equality — CRITICAL</div>
+        <pre>String a = "hello";
+String b = "hello";
+String c = new String("hello");
+
+a == b         // true  (same string pool reference)
+a == c         // false (different objects in memory!)
+a.equals(c)    // true  (compares content — ALWAYS use this)
+a.equalsIgnoreCase(c)  // true (case-insensitive)</pre>
+        <div class="warn">
+          <div class="w-title">⚠ NEVER use == for String content!</div>
+          Always use <code>.equals()</code> to compare String content. <code>==</code> compares object references, not values.
+        </div>
+        <div class="label">StringBuilder — Mutable String</div>
+        <pre>StringBuilder sb = new StringBuilder();
+sb.append("Hello");
+sb.append(", ");
+sb.append("World");
+String result = sb.toString(); // "Hello, World"
+
+// Method chaining:
+String r = new StringBuilder()
+    .append("a").append("b").append("c")
+    .toString(); // "abc"
+
+// Other useful methods:
+sb.insert(5, "!");      // insert at index
+sb.delete(2, 4);        // delete range
+sb.reverse();           // reverse content
+sb.length();            // current length</pre>
+        <div class="tip">
+          <div class="t-title">💡 StringBuilder vs String</div>
+          Use <strong>StringBuilder</strong> in loops — string concatenation with <code>+</code> inside a loop creates a new String object each iteration → O(n²) performance!
+        </div>
+        <div class="label">Text Blocks (Java 15+)</div>
+        <pre>String html = """
+    &lt;html&gt;
+        &lt;body&gt;Hello&lt;/body&gt;
+    &lt;/html&gt;
+    """;
+
+String json = """
+    {
+        "name": "Java",
+        "version": 21
+    }
+    """;</pre>
+        <div class="note">
+          <div class="n-title">📌 String Interning</div>
+          String literals are stored in a <strong>string pool</strong>. <code>new String()</code> bypasses the pool, creating a new heap object — avoid this form unless specifically needed.
+        </div>
+      </div>
+
+    </div><!-- /grid-2 -->
+  </div><!-- /card-body -->
+</div><!-- /strings card -->
+
+<!-- ROW 4: 3 cols -->
+<div class="grid section-gap">
+
+  <!-- Card 7: Input & Output -->
+  <div class="card green" id="io">
+    <div class="card-header"><div class="dot"></div><h3>Input &amp; Output</h3></div>
+    <div class="card-body">
+      <div class="label">Console Output</div>
+      <pre>System.out.println("Hello");     // print + newline
+System.out.print("No newline");  // print only
+System.out.printf("%.2f%n", 3.14159); // formatted + newline
+System.err.println("Error!");    // stderr stream</pre>
+      <div class="label">Formatted Output (printf / format) Specifiers</div>
+      <table class="tbl">
+        <tr><th>Specifier</th><th>Meaning</th><th>Example → Output</th></tr>
+        <tr><td><code>%d</code></td><td>integer (decimal)</td><td><code>printf("%d", 42)</code> → "42"</td></tr>
+        <tr><td><code>%f</code></td><td>float/double</td><td><code>printf("%.2f", 3.14159)</code> → "3.14"</td></tr>
+        <tr><td><code>%s</code></td><td>String</td><td><code>printf("%s", "hi")</code> → "hi"</td></tr>
+        <tr><td><code>%c</code></td><td>char</td><td><code>printf("%c", 'A')</code> → "A"</td></tr>
+        <tr><td><code>%b</code></td><td>boolean</td><td><code>printf("%b", true)</code> → "true"</td></tr>
+        <tr><td><code>%n</code></td><td>platform newline</td><td>use instead of \n in printf</td></tr>
+        <tr><td><code>%10d</code></td><td>right-aligned, width 10</td><td>"        42"</td></tr>
+        <tr><td><code>%-10d</code></td><td>left-aligned, width 10</td><td>"42        "</td></tr>
+        <tr><td><code>%05d</code></td><td>zero-padded, width 5</td><td>"00042"</td></tr>
+        <tr><td><code>%e</code></td><td>scientific notation</td><td><code>printf("%e", 123456.0)</code> → "1.23456e+05"</td></tr>
+      </table>
+      <div class="label">Console Input (Scanner)</div>
+      <pre>import java.util.Scanner;
+Scanner scanner = new Scanner(System.in);
+
+int n      = scanner.nextInt();       // read int
+double d   = scanner.nextDouble();    // read double
+String line = scanner.nextLine();     // read full line
+String word = scanner.next();         // read one token
+boolean ok  = scanner.hasNextInt();   // check before reading
+
+scanner.close(); // release resources when done</pre>
+      <div class="warn">
+        <div class="w-title">⚠ Scanner Newline Trap</div>
+        After <code>nextInt()</code>, call <code>nextLine()</code> once to consume the leftover newline before reading another full line.
+      </div>
+    </div>
+  </div>
+
+  <!-- Card 8: Control Flow -->
+  <div class="card blue" id="control-flow">
+    <div class="card-header"><div class="dot"></div><h3>Control Flow</h3></div>
+    <div class="card-body">
+      <div class="label">if / else if / else</div>
+      <pre>if (x &gt; 0) {
+    System.out.println("positive");
+} else if (x &lt; 0) {
+    System.out.println("negative");
+} else {
+    System.out.println("zero");
+}
+
+// Ternary shorthand
+String sign = x &gt; 0 ? "positive" : (x &lt; 0 ? "negative" : "zero");</pre>
+      <div class="label">Loops</div>
+      <pre>// while — check condition first
+int i = 0;
+while (i &lt; 5) { System.out.println(i); i++; }
+
+// do-while — always executes at least once
+do { i++; } while (i &lt; 10);
+
+// for — classic counted loop
+for (int j = 0; j &lt; 10; j++) {
+    System.out.println(j);
+}
+
+// for-each (enhanced for) — iterate collections/arrays
+int[] arr = {1, 2, 3};
+for (int val : arr) {
+    System.out.println(val);
+}</pre>
+      <div class="label">Break, Continue &amp; Labels</div>
+      <table class="tbl">
+        <tr><th>Keyword</th><th>Effect</th></tr>
+        <tr><td><code>break</code></td><td>Exit current loop or switch immediately</td></tr>
+        <tr><td><code>continue</code></td><td>Skip rest of loop body; jump to next iteration</td></tr>
+        <tr><td><code>break label</code></td><td>Exit a named outer loop</td></tr>
+        <tr><td><code>return</code></td><td>Exit the current method (optionally with value)</td></tr>
+      </table>
+      <pre>// Labeled break to exit outer loop:
+outer:
+for (int i = 0; i &lt; 5; i++) {
+    for (int j = 0; j &lt; 5; j++) {
+        if (i == 2 &amp;&amp; j == 3) break outer;
+    }
+}</pre>
+    </div>
+  </div>
+
+  <!-- Card 9: Arrays -->
+  <div class="card yellow" id="arrays">
+    <div class="card-header"><div class="dot"></div><h3>Arrays</h3></div>
+    <div class="card-body">
+      <div class="label">Declaration &amp; Creation</div>
+      <pre>int[] nums = new int[5];           // 5 zeros (default)
+int[] nums2 = {1, 2, 3, 4, 5};    // array literal
+String[] words = {"a", "b", "c"};  // String array
+
+int[][] matrix = new int[3][4];    // 2D: 3 rows, 4 cols
+int[][] jagged = {{1,2},{3,4,5},{6}}; // jagged (rows differ)</pre>
+      <div class="label">Accessing &amp; Modifying</div>
+      <pre>nums.length          // 5  (field, NOT a method!)
+nums[0] = 10;        // set element at index 0
+int val = nums[0];   // get element at index 0
+// Valid indices: 0 to length-1</pre>
+      <div class="label">Arrays Utility (java.util.Arrays)</div>
+      <pre>import java.util.Arrays;
+
+// Copy
+int[] copy  = Arrays.copyOf(nums, nums.length);
+int[] range = Arrays.copyOfRange(nums, 1, 3); // [1,3)
+
+// Sort (ascending, in-place)
+Arrays.sort(nums);
+
+// Binary search (array must be sorted first)
+int idx = Arrays.binarySearch(nums, 3);
+
+// Fill all elements with a value
+Arrays.fill(nums, 0);
+
+// Print arrays
+System.out.println(Arrays.toString(nums));
+System.out.println(Arrays.deepToString(matrix)); // 2D
+
+// Compare
+boolean equal = Arrays.equals(nums, copy);</pre>
+      <div class="warn">
+        <div class="w-title">⚠ ArrayIndexOutOfBoundsException</div>
+        Thrown if index &lt; 0 or index &gt;= length. Always validate indices or use for-each.
+      </div>
+      <div class="tip">
+        <div class="t-title">💡 Dynamic Sizing</div>
+        For resizable arrays, use <code>ArrayList&lt;Integer&gt;</code> instead. Arrays have <strong>fixed size</strong> once created.
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid row 4 -->
+
+<!-- FOOTER -->
+<div class="footer">
+  <a href="../PRO192.html">← PRO192 Index</a>
+  <span>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell</span>
+  <span>CH03 / 09</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  function toggleTOC(){open=!open;toc.className=open?'toc-open':'toc-collapsed';}
+  document.querySelector('.toc-hdr').addEventListener('click',toggleTOC);
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

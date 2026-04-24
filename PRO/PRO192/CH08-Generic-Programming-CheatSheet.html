@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH08 – Generic Programming | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Generic Programming — Chapter 8</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+  </div>
+  <div>
+    <div class="badge">PRO192</div>
+    <div class="toc" style="margin-top:8px;">
+      <span class="toc-item">§Why Generics</span>
+      <span class="toc-item">§Generic Classes</span>
+      <span class="toc-item">§Generic Methods</span>
+      <span class="toc-item">§Bounds</span>
+      <span class="toc-item">§Wildcards</span>
+      <span class="toc-item">§Type Erasure</span>
+      <span class="toc-item">§Restrictions</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROW 1 ── -->
+<div class="grid">
+
+  <div class="card yellow" id="why-generics">
+    <div class="card-header"><div class="dot"></div><h3>Why Generic Programming</h3></div>
+    <div class="card-body">
+      <div class="formula">Generics = type-safe, reusable code. Write once, work with any type. Errors caught at compile time.</div>
+      <div class="label">Without generics (pre-Java 5)</div>
+      <pre>// Old way — Object-based (unsafe)
+ArrayList list = new ArrayList();
+list.add("Hello");
+list.add(42);           // accidentally mixed types!
+String s = (String) list.get(0);  // cast needed
+String s2 = (String) list.get(1); // ClassCastException at runtime!</pre>
+      <div class="label">With generics</div>
+      <pre>// Type-safe
+ArrayList&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("Hello");
+// list.add(42);  // COMPILE ERROR — caught early!
+String s = list.get(0);  // no cast needed</pre>
+      <div class="tip"><div class="t-title">Tip</div>Generics shift type errors from runtime to compile time — far better!</div>
+    </div>
+  </div>
+
+  <div class="card blue" id="generic-classes">
+    <div class="card-header"><div class="dot"></div><h3>Generic Classes</h3></div>
+    <div class="card-body">
+      <pre>// Generic class definition
+public class Pair&lt;T, U&gt; {
+    private T first;
+    private U second;
+
+    public Pair(T first, U second) {
+        this.first = first;
+        this.second = second;
+    }
+
+    public T getFirst() { return first; }
+    public U getSecond() { return second; }
+
+    @Override
+    public String toString() {
+        return "(" + first + ", " + second + ")";
+    }
+}
+
+// Usage
+Pair&lt;String, Integer&gt; p = new Pair&lt;&gt;("Alice", 30);
+String name = p.getFirst();  // no cast!
+int age = p.getSecond();
+
+// Common type parameter names (convention):
+// T = Type, E = Element, K = Key, V = Value, R = Result
+// N = Number, S,U,V = extra types</pre>
+    </div>
+  </div>
+
+  <div class="card green" id="generic-methods">
+    <div class="card-header"><div class="dot"></div><h3>Generic Methods</h3></div>
+    <div class="card-body">
+      <pre>public class ArrayUtil {
+    // Generic method — type param before return type
+    public static &lt;T&gt; T getMiddle(T[] array) {
+        return array[array.length / 2];
+    }
+
+    // Multiple type bounds
+    public static &lt;T extends Comparable&lt;T&gt;&gt; T min(T[] array) {
+        T min = array[0];
+        for (T item : array) {
+            if (item.compareTo(min) &lt; 0) min = item;
+        }
+        return min;
+    }
+
+    // Generic method returning generic type
+    public static &lt;T&gt; List&lt;T&gt; listOf(T... elements) {
+        return Arrays.asList(elements);
+    }
+}
+
+// Usage
+String mid = ArrayUtil.getMiddle(new String[]{"a","b","c"});
+int minimum = ArrayUtil.min(new Integer[]{3,1,4,1,5});</pre>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── ROW 2 ── -->
+<div class="grid section-gap">
+
+  <div class="card purple" id="bounds">
+    <div class="card-header"><div class="dot"></div><h3>Bounded Type Parameters</h3></div>
+    <div class="card-body">
+      <div class="label">Upper bound (extends)</div>
+      <pre>// T must be Comparable or subclass
+public &lt;T extends Comparable&lt;T&gt;&gt; T max(T a, T b) {
+    return a.compareTo(b) &gt;= 0 ? a : b;
+}
+
+// T must implement both interfaces
+public &lt;T extends Serializable &amp; Comparable&lt;T&gt;&gt; void sort(T[] arr) {
+    Arrays.sort(arr);
+}
+
+// Multiple bounds — class must come first, interfaces after
+// &lt;T extends ClassName &amp; Interface1 &amp; Interface2&gt;
+
+// Restricting to Number and subclasses
+public &lt;T extends Number&gt; double sum(List&lt;T&gt; list) {
+    double total = 0;
+    for (T n : list) total += n.doubleValue();
+    return total;
+}</pre>
+      <div class="warn"><div class="w-title">Warning</div>In Java, generic type erasure means &lt;T extends Foo&gt; is upper-bounded — no lower bound for type parameters (use wildcards for that)</div>
+    </div>
+  </div>
+
+  <div class="card orange" id="wildcards">
+    <div class="card-header"><div class="dot"></div><h3>Wildcards</h3></div>
+    <div class="card-body">
+      <div class="formula">Wildcards = ? = unknown type. More flexible than concrete type params.</div>
+      <div class="label">Unbounded wildcard <code>?</code></div>
+      <pre>// Accept any List regardless of element type
+public void printList(List&lt;?&gt; list) {
+    for (Object elem : list) System.out.println(elem);
+}
+printList(new ArrayList&lt;String&gt;());
+printList(new ArrayList&lt;Integer&gt;());</pre>
+      <div class="label">Upper bounded <code>? extends T</code> (read-only / producer)</div>
+      <pre>// Can read Numbers (Integer, Double, etc.)
+public double sumList(List&lt;? extends Number&gt; list) {
+    double sum = 0;
+    for (Number n : list) sum += n.doubleValue();
+    return sum;  // can read but NOT add items
+}
+sumList(new ArrayList&lt;Integer&gt;());  // works!
+sumList(new ArrayList&lt;Double&gt;());   // works!</pre>
+      <div class="label">Lower bounded <code>? super T</code> (write-only / consumer)</div>
+      <pre>// Can add Integers (or supertypes accept them)
+public void addIntegers(List&lt;? super Integer&gt; list) {
+    list.add(1); list.add(2);  // can add
+}
+addIntegers(new ArrayList&lt;Integer&gt;());  // works
+addIntegers(new ArrayList&lt;Number&gt;());   // works
+addIntegers(new ArrayList&lt;Object&gt;());   // works</pre>
+      <div class="tip"><div class="t-title">Tip</div>PECS — Producer Extends, Consumer Super: if list PRODUCES items you read: use extends. If list CONSUMES items you add: use super.</div>
+    </div>
+  </div>
+
+  <div class="card red" id="type-erasure">
+    <div class="card-header"><div class="dot"></div><h3>Type Erasure</h3></div>
+    <div class="card-body">
+      <div class="formula">At runtime, all generic types are ERASED. List&lt;String&gt; becomes List. The compiler adds casts.</div>
+      <pre>// What you write:
+List&lt;String&gt; list = new ArrayList&lt;&gt;();
+list.add("hello");
+String s = list.get(0);
+
+// What the compiler generates (approximately):
+List list = new ArrayList();
+list.add("hello");
+String s = (String) list.get(0);  // cast inserted</pre>
+      <div class="label">Consequences of erasure</div>
+      <ul class="items">
+        <li>Cannot do <code>new T()</code> — T is erased at runtime</li>
+        <li>Cannot do <code>instanceof List&lt;String&gt;</code> — only <code>instanceof List</code></li>
+        <li>Cannot create generic arrays: <code>new T[10]</code> is illegal</li>
+        <li>Static fields cannot be type parameters</li>
+        <li>Overloading: <code>void foo(List&lt;String&gt;)</code> and <code>void foo(List&lt;Integer&gt;)</code> — COMPILE ERROR, both erase to same</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── GENERICS IN PRACTICE (full-width) ── -->
+<div class="card yellow section-gap" id="generics-advanced">
+  <div class="card-header"><div class="dot"></div><h3>Generics in Practice</h3></div>
+  <div class="card-body">
+    <div class="grid-2">
+      <div>
+        <div class="label">Generic Interface Implementation</div>
+        <pre>public interface Comparable&lt;T&gt; {
+    int compareTo(T other);
+}
+
+public class Student implements Comparable&lt;Student&gt; {
+    private double gpa;
+
+    @Override
+    public int compareTo(Student other) {
+        return Double.compare(this.gpa, other.gpa);
+    }
+}</pre>
+        <div class="label">Generic Stack example</div>
+        <pre>public class Stack&lt;E&gt; {
+    private List&lt;E&gt; elements = new ArrayList&lt;&gt;();
+
+    public void push(E item) { elements.add(item); }
+
+    public E pop() {
+        if (isEmpty()) throw new EmptyStackException();
+        return elements.remove(elements.size() - 1);
+    }
+
+    public E peek() {
+        if (isEmpty()) throw new EmptyStackException();
+        return elements.get(elements.size() - 1);
+    }
+
+    public boolean isEmpty() { return elements.isEmpty(); }
+    public int size() { return elements.size(); }
+}
+
+Stack&lt;String&gt; stack = new Stack&lt;&gt;();
+stack.push("Hello");
+String top = stack.pop(); // "Hello"</pre>
+      </div>
+      <div>
+        <div class="label">Restrictions on Generics</div>
+        <table class="tbl">
+          <tr><th>Cannot</th><th>Reason</th></tr>
+          <tr><td><code>new T()</code></td><td>T erased, no constructor</td></tr>
+          <tr><td><code>new T[10]</code></td><td>Generic arrays forbidden</td></tr>
+          <tr><td><code>instanceof List&lt;String&gt;</code></td><td>Type erased at runtime</td></tr>
+          <tr><td><code>static T field</code></td><td>One copy shared, type unknown</td></tr>
+          <tr><td><code>catch (T e)</code></td><td>Catch generic exception invalid</td></tr>
+          <tr><td><code>throws T</code></td><td>Throw generic exception invalid</td></tr>
+        </table>
+        <div class="label">Raw Types (avoid!)</div>
+        <pre>// Raw type — avoid in new code
+List rawList = new ArrayList();  // raw
+rawList.add("anything");
+// No compile warning suppression — get unchecked warnings
+
+// Always prefer parameterized:
+List&lt;String&gt; typedList = new ArrayList&lt;&gt;();</pre>
+        <div class="warn"><div class="w-title">Warning</div>Raw types exist for backward compatibility only. Always use parameterized types in new code.</div>
+        <div class="label">Diamond Operator</div>
+        <pre>// Java 7+: diamond infers type from left side
+Map&lt;String, List&lt;Integer&gt;&gt; map = new HashMap&lt;&gt;();
+// Instead of: new HashMap&lt;String, List&lt;Integer&gt;&gt;()</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>PRO192 · Chapter 8 · Core Java Vol I, 12th Ed.</span>
+  <span>Horstmann &amp; Cornell</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  window.toggleTOC=function(){open=!open;toc.className=open?'toc-open':'toc-collapsed';};
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

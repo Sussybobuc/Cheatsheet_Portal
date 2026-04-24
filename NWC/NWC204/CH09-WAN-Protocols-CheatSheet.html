@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH09 - WAN Protocols | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">&#9662;</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+<header class="header">
+  <div class="header-left">
+    <h1>CH09 &#8211; Wide Area Networking Protocols</h1>
+    <h2>NWC204 &middot; CCNA Intro &#8212; Todd Lammle, Sybex 2006 &middot; pp. 377&#8211;400</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">WAN Overview</span>
+      <span class="toc-item">DTE vs DCE</span>
+      <span class="toc-item">WAN Terms</span>
+      <span class="toc-item">Connection Types</span>
+      <span class="toc-item">HDLC</span>
+      <span class="toc-item">PPP</span>
+      <span class="toc-item">PAP vs CHAP</span>
+      <span class="toc-item">Frame Relay</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</header>
+
+<div class="grid">
+  <div class="card blue" id="wan-overview">
+    <div class="card-header"><span class="dot"></span><h3>WAN Overview</h3></div>
+    <div class="card-body">
+      <div class="label">What Is a WAN?</div>
+      <p>A Wide Area Network connects geographically dispersed LANs across large distances using service provider infrastructure. Unlike LANs (which you own), WAN links are typically <strong>leased from carriers</strong> (telcos, ISPs).</p>
+      <div class="label">Common WAN Devices</div>
+      <table class="tbl">
+        <tr><th>Device</th><th>Role</th></tr>
+        <tr><td><strong>Router</strong></td><td>DTE device; connects customer LAN to WAN link; Layer 3 forwarding</td></tr>
+        <tr><td><strong>CSU/DSU</strong></td><td>Channel Service Unit / Data Service Unit; converts router serial signal to line signal; typically DCE device</td></tr>
+        <tr><td><strong>Modem</strong></td><td>Modulates/demodulates digital-to-analog signal; used for dial-up and DSL</td></tr>
+        <tr><td><strong>WAN Switch</strong></td><td>Service provider equipment in the CO; switches packets/cells across provider network</td></tr>
+        <tr><td><strong>ISDN TA</strong></td><td>Terminal Adapter; connects non-ISDN devices to ISDN network</td></tr>
+      </table>
+      <div class="tip">
+        <div class="t-title">Layer 2 Protocols</div>
+        WAN protocols operate at <strong>Layer 2</strong> (Data Link). Common WAN Layer 2 protocols: HDLC, PPP, Frame Relay, ISDN, ATM.
+      </div>
+    </div>
+  </div>
+
+  <div class="card orange" id="dte-dce">
+    <div class="card-header"><span class="dot"></span><h3>DTE vs DCE</h3></div>
+    <div class="card-body">
+      <div class="label">Definitions</div>
+      <table class="tbl">
+        <tr><th>Term</th><th>Full Name</th><th>Role</th></tr>
+        <tr><td><strong>DTE</strong></td><td>Data Terminal Equipment</td><td>Customer side device (router); <em>receives</em> clock signal from DCE; connects to local loop</td></tr>
+        <tr><td><strong>DCE</strong></td><td>Data Circuit-terminating Equipment</td><td>Service provider side (CSU/DSU); <em>provides</em> clock signal; sets line speed</td></tr>
+      </table>
+      <div class="formula">DTE (Router) &#8212; serial cable &#8212; DCE (CSU/DSU) &#8212; WAN &#8212; DCE &#8212; DTE</div>
+      <div class="label">Back-to-Back Serial (Lab Only)</div>
+      <p>When connecting two routers directly with a serial cable in a lab, one router acts as DCE and must provide the clock:</p>
+      <pre>Router(config-if)# clock rate 64000
+! Only required on the DCE side of back-to-back serial
+! Use: show controllers serial 0/0 to verify DTE/DCE role</pre>
+      <div class="info">
+        <div class="i-title">Identifying DTE vs DCE</div>
+        <code>show controllers serial 0/0</code> &#8212; if output says "DTE" the router expects clock from CSU/DSU. If "DCE", this end must set <code>clock rate</code>.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="wan-terminology">
+    <div class="card-header"><span class="dot"></span><h3>WAN Terminology</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Term</th><th>Definition</th></tr>
+        <tr><td><strong>CPE</strong></td><td>Customer Premises Equipment &#8212; devices at customer site (router, CSU/DSU, switches); customer-owned or leased from provider</td></tr>
+        <tr><td><strong>CO</strong></td><td>Central Office &#8212; telco switching facility nearest the customer; houses provider's WAN switches</td></tr>
+        <tr><td><strong>Local Loop</strong></td><td>Physical connection from CO to customer CPE; also called "last mile"; typically copper or fiber</td></tr>
+        <tr><td><strong>Demarcation (Demarc)</strong></td><td>Physical boundary point between provider responsibility and customer responsibility; usually at CPE entrance (NID/NIU box)</td></tr>
+        <tr><td><strong>PVC</strong></td><td>Permanent Virtual Circuit &#8212; logically permanent connection through packet-switched network (Frame Relay, ATM)</td></tr>
+        <tr><td><strong>SVC</strong></td><td>Switched Virtual Circuit &#8212; dynamically established circuit (like a phone call); less common</td></tr>
+        <tr><td><strong>DLCI</strong></td><td>Data Link Connection Identifier &#8212; local Frame Relay circuit ID; has local significance only</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="card green section-gap" id="wan-connection-types">
+  <div class="card-header"><span class="dot"></span><h3>WAN Connection Types</h3></div>
+  <div class="card-body" style="display:grid;grid-template-columns:2fr 1fr;gap:16px;">
+    <div>
+      <table class="tbl">
+        <tr><th>Type</th><th>Examples</th><th>Characteristics</th></tr>
+        <tr><td><strong>Dedicated Leased Line</strong></td><td>T1 (1.544 Mbps), T3 (44.7 Mbps), E1 (2.048 Mbps), E3 (34 Mbps)</td><td>Point-to-point; always-on; dedicated bandwidth; most expensive; no setup time</td></tr>
+        <tr><td><strong>Circuit-Switched</strong></td><td>ISDN BRI, ISDN PRI, Dial-up POTS</td><td>Dedicated path established per call; bandwidth available only during call; pay-per-use</td></tr>
+        <tr><td><strong>Packet-Switched</strong></td><td>Frame Relay, X.25, MPLS</td><td>Shared carrier network; virtual circuits; variable bandwidth; cost-effective for bursty traffic</td></tr>
+        <tr><td><strong>Cell-Switched</strong></td><td>ATM (Asynchronous Transfer Mode)</td><td>Fixed 53-byte cells (5-byte header + 48-byte payload); consistent latency; good for voice/video QoS</td></tr>
+        <tr><td><strong>Broadband</strong></td><td>DSL, Cable, Fiber</td><td>High-bandwidth always-on; shared medium (cable); distance-limited (DSL)</td></tr>
+      </table>
+    </div>
+    <div>
+      <div class="label">ISDN Channel Types</div>
+      <ul class="items">
+        <li><strong>BRI</strong> = 2B+D = 2 × 64 Kbps bearer + 16 Kbps delta = <strong>128 Kbps</strong> data</li>
+        <li><strong>PRI (US)</strong> = 23B+D = 23 × 64 Kbps + 64 Kbps = <strong>1.544 Mbps</strong> (T1)</li>
+        <li><strong>PRI (EU)</strong> = 30B+D = 30 × 64 Kbps + 64 Kbps = <strong>2.048 Mbps</strong> (E1)</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2 section-gap">
+  <div class="card purple" id="wan-protocols">
+    <div class="card-header"><span class="dot"></span><h3>WAN Protocols Supported on Cisco</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Protocol</th><th>Type</th><th>Standard</th><th>Key Facts</th></tr>
+        <tr><td><strong>HDLC</strong></td><td>Point-to-point</td><td>Cisco proprietary</td><td>Default on Cisco serial interfaces; not interoperable with non-Cisco</td></tr>
+        <tr><td><strong>PPP</strong></td><td>Point-to-point</td><td>Open (RFC 1661)</td><td>Multi-vendor; supports auth (PAP/CHAP); multilink; compression</td></tr>
+        <tr><td><strong>Frame Relay</strong></td><td>Packet-switched</td><td>ITU / ANSI</td><td>PVCs with DLCIs; partial mesh; cost-effective; uses LMI</td></tr>
+        <tr><td><strong>ISDN</strong></td><td>Circuit-switched</td><td>ITU-T</td><td>BRI or PRI; dial-on-demand; used as backup WAN</td></tr>
+        <tr><td><strong>ATM</strong></td><td>Cell-switched</td><td>ITU-T</td><td>53-byte cells; QoS; used in service provider backbones</td></tr>
+        <tr><td><strong>DSL / Cable</strong></td><td>Broadband</td><td>Various</td><td>Asymmetric speeds; PPPoE often used with DSL</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Default Encapsulation</div>
+        Cisco serial interfaces default to <strong>HDLC</strong>. Use <code>show interfaces serial 0/0</code> to see encapsulation type. Change with <code>encapsulation ppp</code> (or <code>frame-relay</code>).
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="hdlc">
+    <div class="card-header"><span class="dot"></span><h3>HDLC</h3></div>
+    <div class="card-body">
+      <div class="label">High-Level Data Link Control</div>
+      <ul class="items">
+        <li>Cisco's <strong>default</strong> WAN encapsulation on serial interfaces</li>
+        <li><strong>Cisco proprietary</strong> &#8212; Cisco added a proprietary Type field to standard HDLC to support multiple Layer 3 protocols; NOT interoperable with other vendors</li>
+        <li>Synchronous serial only; point-to-point</li>
+        <li>Lightweight &#8212; no authentication, no compression</li>
+      </ul>
+      <div class="warn">
+        <div class="w-title">Vendor Interoperability</div>
+        Cisco HDLC cannot connect to a non-Cisco router. If connecting to another vendor, use <strong>PPP</strong> (open standard) instead.
+      </div>
+      <div class="label">Commands</div>
+      <pre>encapsulation hdlc               ! restore default on serial interface
+show interfaces serial 0/0       ! verify: "Encapsulation HDLC"
+show interfaces serial 0/0       ! check line/protocol status</pre>
+      <div class="label">Verification Output</div>
+      <pre>Serial0/0 is up, line protocol is up
+  Encapsulation HDLC, loopback not set</pre>
+    </div>
+  </div>
+</div>
+
+<div class="grid section-gap">
+  <div class="card blue col-span-2" id="ppp-overview">
+    <div class="card-header"><span class="dot"></span><h3>PPP &#8212; Point-to-Point Protocol</h3></div>
+    <div class="card-body">
+      <div class="label">Overview</div>
+      <ul class="items">
+        <li>Open standard &#8212; RFC 1661; works across all vendors</li>
+        <li>Supports multiple Layer 3 protocols (IP, IPX, AppleTalk) simultaneously via NCP</li>
+        <li>Supports authentication: <strong>PAP</strong> (clear-text) and <strong>CHAP</strong> (MD5 challenge)</li>
+        <li>Supports multilink (bundle multiple physical links), compression, error detection</li>
+      </ul>
+      <div class="label">PPP Sub-Protocols</div>
+      <table class="tbl">
+        <tr><th>Sub-Protocol</th><th>Full Name</th><th>Function</th></tr>
+        <tr><td><strong>LCP</strong></td><td>Link Control Protocol</td><td>Establish, configure, test, maintain, and terminate the PPP link. Negotiates: authentication, compression, multilink, error detection (magic number)</td></tr>
+        <tr><td><strong>NCP</strong></td><td>Network Control Protocol</td><td>Negotiates upper-layer (Layer 3) protocols. IPCP for IP, IPXCP for IPX, etc. Multiple NCPs can run simultaneously.</td></tr>
+      </table>
+      <div class="label">PPP Session Establishment</div>
+      <ol class="steps">
+        <li><strong>LCP Open</strong> &#8212; LCP negotiates link parameters (MRU, auth method, compression, magic number)</li>
+        <li><strong>Authentication</strong> &#8212; if configured: PAP (2-way handshake) or CHAP (3-way challenge/response)</li>
+        <li><strong>NCP Negotiation</strong> &#8212; IPCP negotiates IP addresses and compression for IP layer</li>
+        <li><strong>Link Up</strong> &#8212; data transfer begins; LCP monitors link health</li>
+      </ol>
+      <div class="label">Verification</div>
+      <pre>show interfaces serial 0/0
+! Look for: "Encapsulation PPP, LCP Open, multilink Open"
+! IPCP Open = IP negotiated successfully
+! Line protocol down = auth failed or LCP negotiation failed</pre>
+    </div>
+  </div>
+
+  <div class="card green" id="ppp-config">
+    <div class="card-header"><span class="dot"></span><h3>PPP Configuration</h3></div>
+    <div class="card-body">
+      <div class="label">Enable PPP Encapsulation</div>
+      <pre>interface serial 0/0
+  encapsulation ppp</pre>
+      <div class="label">Configure CHAP Authentication</div>
+      <pre>! On BOTH routers (passwords must match):
+username RouterB password cisco   ! remote router's hostname + shared secret
+interface serial 0/0
+  encapsulation ppp
+  ppp authentication chap</pre>
+      <div class="label">Configure PAP Authentication</div>
+      <pre>interface serial 0/0
+  encapsulation ppp
+  ppp authentication pap
+  ppp pap sent-username RouterA password cisco</pre>
+      <div class="label">Optional PPP Features</div>
+      <pre>ppp authentication chap pap      ! try CHAP first, fallback to PAP
+ppp multilink                    ! enable multilink PPP (bundle links)
+ppp compress predictor           ! enable compression</pre>
+      <div class="tip">
+        <div class="t-title">CHAP Username Rule</div>
+        The <code>username</code> must match the <strong>hostname</strong> of the remote router exactly (case-sensitive). The password must be <strong>identical</strong> on both ends. CHAP uses MD5 hash &#8212; password never sent in clear text.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="grid-2 section-gap">
+  <div class="card orange" id="pap-vs-chap">
+    <div class="card-header"><span class="dot"></span><h3>PAP vs CHAP Comparison</h3></div>
+    <div class="card-body">
+      <table class="tbl">
+        <tr><th>Feature</th><th>PAP</th><th>CHAP</th></tr>
+        <tr><td>Security level</td><td>Low</td><td>High</td></tr>
+        <tr><td>Password transmission</td><td>Clear text in packet</td><td>MD5 hash only; password never sent</td></tr>
+        <tr><td>Handshake type</td><td>2-way: username + password sent once</td><td>3-way: challenge &#8594; response &#8594; accept/reject</td></tr>
+        <tr><td>Authentication timing</td><td>Only at link establishment</td><td>At startup + periodically during session</td></tr>
+        <tr><td>IOS keyword</td><td><code>pap</code></td><td><code>chap</code></td></tr>
+        <tr><td>RFC</td><td>RFC 1334</td><td>RFC 1994</td></tr>
+        <tr><td>Who initiates auth</td><td>Peer sends credentials</td><td>Authenticator sends challenge</td></tr>
+        <tr><td>Vulnerable to</td><td>Packet sniffing, replay attacks</td><td>Much harder to attack (hash + challenge)</td></tr>
+      </table>
+      <div class="formula">CHAP Challenge: Authenticator sends random challenge &rarr; Peer MD5(challenge+password) &rarr; Authenticator verifies</div>
+      <div class="note">
+        <div class="n-title">Exam Rule</div>
+        CHAP is always preferred over PAP. Use CHAP unless the remote device does not support it.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple" id="frame-relay-basics">
+    <div class="card-header"><span class="dot"></span><h3>Frame Relay &amp; WAN Exam Rules</h3></div>
+    <div class="card-body">
+      <div class="label">Frame Relay Key Concepts</div>
+      <ul class="items">
+        <li><strong>Packet-switched</strong> &#8212; frames routed through shared provider network via virtual circuits</li>
+        <li><strong>PVC</strong> (Permanent Virtual Circuit) &#8212; logically permanent; provisioned by provider; most common</li>
+        <li><strong>SVC</strong> (Switched Virtual Circuit) &#8212; dynamically established; rare</li>
+        <li><strong>DLCI</strong> (Data Link Connection Identifier) &#8212; 10-bit number identifying a VC; <em>locally significant only</em></li>
+        <li><strong>LMI</strong> (Local Management Interface) &#8212; signaling standard between router and Frame Relay switch; types: Cisco, ANSI, Q.933a</li>
+        <li><strong>CIR</strong> (Committed Information Rate) &#8212; guaranteed bandwidth on a PVC</li>
+      </ul>
+      <div class="label">WAN Exam Key Rules</div>
+      <div class="rule">HDLC = Cisco default on serial; proprietary; no auth</div>
+      <div class="rule">PPP = open standard; use between different vendors</div>
+      <div class="rule">CHAP = MD5, 3-way handshake; preferred over PAP</div>
+      <div class="rule">PAP = clear text; 2-way; less secure</div>
+      <div class="rule">DCE provides clock; DTE receives clock</div>
+      <div class="rule">clock rate required on DCE side of back-to-back serial</div>
+      <div class="rule">Frame Relay = packet-switched; DLCI = local circuit ID</div>
+      <div class="rule">ATM = 53-byte fixed cells (5 header + 48 payload)</div>
+      <div class="rule">ISDN BRI = 2B+D = 128 Kbps user data</div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <span>NWC204 &middot; CH09 &middot; Wide Area Networking Protocols &middot; pp. 377&#8211;400</span>
+  <span>CCNA Intro &#8212; Todd Lammle, Sybex 2006</span>
+</footer>
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH03 – Memory Management | OSG202</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --osg:#56d3c8;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--osg);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--osg);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--osg);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--osg);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(86,211,200,0.07);border:1px solid rgba(86,211,200,0.25);border-left:3px solid var(--osg);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--osg);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--osg);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--osg);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--osg);border-left-color:var(--osg);background:rgba(86,211,200,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-c,code.language-bash{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}
+.token.function{color:#d2a8ff!important;}
+.token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#ffa657!important;}
+.token.punctuation{color:#e6edf3!important;}
+.token.macro,.token.preprocessor,.token.directive{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH03 — Memory Management</h1>
+    <h2>OSG202 · Modern Operating Systems 4th Ed. · Tanenbaum · Ch. 3</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">Address Spaces</span>
+      <span class="toc-item">Virtual Memory</span>
+      <span class="toc-item">Paging</span>
+      <span class="toc-item">Page Tables</span>
+      <span class="toc-item">TLB</span>
+      <span class="toc-item">Page Replacement</span>
+      <span class="toc-item">Segmentation</span>
+      <span class="toc-item">Allocation</span>
+      <span class="toc-item">Thrashing</span>
+    </div>
+  </div>
+  <div><span class="badge">OSG202</span></div>
+</div>
+
+<!-- ROW 1: Address Spaces & Base/Limit -->
+<div class="grid" id="address-spaces">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>No Memory Abstraction → Address Spaces</h3></div>
+    <div class="card-body">
+      <div class="label">No Memory Abstraction (Early Systems)</div>
+      <p>Earliest systems: programs access <strong style="color:var(--osg)">physical memory</strong> directly. Address in instruction = real RAM address.</p>
+      <div class="warn">
+        <div class="w-title">⚠ Problems with No Abstraction</div>
+        If two programs run simultaneously, they can overwrite each other's memory. Program 1 jumps to address 28 — it might land inside Program 2's code!
+      </div>
+      <div class="label">Base &amp; Limit Registers</div>
+      <p>First solution: each process gets two hardware registers:</p>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Base register</strong>: physical start address of process in RAM</li>
+        <li><strong style="color:var(--osg)">Limit register</strong>: size of process's address space</li>
+        <li>Every memory access: <code>physical = virtual + base</code></li>
+        <li>If <code>virtual ≥ limit</code>: hardware trap → OS kills process</li>
+      </ul>
+      <div class="formula">Physical Address = Virtual Address + Base<br>Check: Virtual Address &lt; Limit  (else → SIGSEGV)</div>
+      <div class="tip">
+        <div class="t-title">Base/Limit Drawback</div>
+        Requires copying entire process to contiguous memory block. As processes come and go, memory becomes fragmented with unusable holes.
+      </div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Swapping</h3></div>
+    <div class="card-body">
+      <div class="rule">Swapping = move entire process between RAM and disk to share limited memory.</div>
+      <div class="label">Swapping Process</div>
+      <ol class="steps">
+        <li>OS needs memory for new/runnable process</li>
+        <li>Select victim process (blocked, lowest priority)</li>
+        <li>Write victim's entire address space to <strong style="color:var(--osg)">swap partition</strong> on disk</li>
+        <li>Load target process into freed RAM</li>
+        <li>Update base/limit registers for loaded process</li>
+      </ol>
+      <div class="label">Memory Compaction</div>
+      <p>After many swap-ins/outs, RAM has many <strong style="color:var(--osg)">holes</strong> between processes. <strong>Compaction</strong> moves all processes down to close holes — but it's expensive (copying gigabytes).</p>
+      <div class="label">Memory Allocation Strategies</div>
+      <table class="tbl">
+        <tr><th>Strategy</th><th>Method</th><th>Result</th></tr>
+        <tr><td><strong>First Fit</strong></td><td>First hole big enough</td><td>Fast; creates small holes at start</td></tr>
+        <tr><td><strong>Best Fit</strong></td><td>Smallest hole that fits</td><td>Slow search; many tiny unusable holes</td></tr>
+        <tr><td><strong>Worst Fit</strong></td><td>Largest hole</td><td>Leaves largest remaining hole; rarely used</td></tr>
+        <tr><td><strong>Next Fit</strong></td><td>First fit from last position</td><td>Faster than first fit; spreads allocation</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>Fragmentation</h3></div>
+    <div class="card-body">
+      <div class="rule">Fragmentation = wasted memory that cannot be used for new allocations.</div>
+      <div class="label">External Fragmentation</div>
+      <p>Free memory exists in many <strong style="color:var(--osg)">small holes</strong> scattered across RAM. Total free space is enough, but no single contiguous block is available for the new process.</p>
+      <div class="formula">Total Free = Σ(all holes) ≥ Request → but fragmented!</div>
+      <div class="label">Internal Fragmentation</div>
+      <p>Memory <strong style="color:var(--osg)">allocated is larger than what was requested</strong> (e.g., allocate in fixed 64-byte chunks, process needs 50 bytes → 14 bytes wasted inside the block).</p>
+      <table class="tbl">
+        <tr><th>Type</th><th>Location</th><th>Cause</th><th>Solution</th></tr>
+        <tr><td>External</td><td>Between allocated blocks</td><td>Variable-size allocation</td><td>Compaction, paging</td></tr>
+        <tr><td>Internal</td><td>Inside allocated block</td><td>Fixed-size allocation</td><td>Smaller block size</td></tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">Paging Solves External Fragmentation</div>
+        By dividing memory into fixed-size pages, there's never external fragmentation — any free page frame fits any needed page. Only internal fragmentation remains (last page of process may be partially used).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2: Virtual Memory & Paging -->
+<div class="grid section-gap" id="virtual-memory">
+  <div class="card orange col-span-2">
+    <div class="card-header"><div class="dot"></div><h3>Virtual Memory &amp; Paging Mechanics</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Core Concept</div>
+          <div class="rule">Virtual Memory = process sees large contiguous address space; OS/MMU maps pages to physical frames on demand.</div>
+          <p>The <strong style="color:var(--osg)">MMU</strong> (Memory Management Unit) is hardware that translates virtual addresses to physical addresses on every memory access, using the <strong style="color:var(--osg)">page table</strong>.</p>
+          <div class="label">Address Translation</div>
+          <div class="formula">Virtual Address: [page number (p) | offset (d)]<br>Physical Address: [frame number (f) | offset (d)]<br>page_table[p] → f   (if present bit = 1)<br>Physical = f × page_size + d</div>
+          <div class="label">Typical Sizes (32-bit)</div>
+          <table class="tbl">
+            <tr><th>Parameter</th><th>Typical</th></tr>
+            <tr><td>Page size</td><td>4 KB (2¹² = 4096 bytes)</td></tr>
+            <tr><td>Virtual address</td><td>32 bits → 4 GB address space</td></tr>
+            <tr><td>Page number bits</td><td>20 bits → 2²⁰ = 1M pages</td></tr>
+            <tr><td>Offset bits</td><td>12 bits (log₂(4096))</td></tr>
+            <tr><td>Page table size</td><td>1M entries × 4 bytes = 4 MB</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">Page Table Entry (PTE) Fields</div>
+          <table class="tbl">
+            <tr><th>Bit</th><th>Name</th><th>Meaning</th></tr>
+            <tr><td><code>P</code></td><td>Present</td><td>1=in RAM, 0=on disk (page fault)</td></tr>
+            <tr><td><code>R</code></td><td>Referenced</td><td>Set on any access; cleared by OS periodically</td></tr>
+            <tr><td><code>M</code></td><td>Modified/Dirty</td><td>Set on write; page must be saved before eviction</td></tr>
+            <tr><td><code>Caching</code></td><td>Cache disable</td><td>For memory-mapped I/O registers</td></tr>
+            <tr><td><code>Prot</code></td><td>Protection</td><td>read/write/execute permission bits</td></tr>
+            <tr><td><code>Frame #</code></td><td>Physical frame</td><td>Points to physical page frame</td></tr>
+          </table>
+          <div class="label">Page Fault Handling — Step by Step</div>
+          <ol class="steps">
+            <li>CPU references virtual address; MMU checks PTE — <code>P=0</code> → hardware trap</li>
+            <li>OS saves faulting process state (registers, PC)</li>
+            <li>OS finds physical address on disk (swap space or file)</li>
+            <li>OS selects victim frame (using replacement algorithm)</li>
+            <li>If victim is dirty (<code>M=1</code>): write victim page to disk</li>
+            <li>Read faulting page from disk into frame</li>
+            <li>Update page table: set <code>P=1</code>, <code>frame#</code> for faulted page; invalidate victim's PTE</li>
+            <li>Restart faulting instruction</li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>Demand Paging</h3></div>
+    <div class="card-body">
+      <div class="rule">Demand Paging = load pages into RAM only when they are first referenced (not at process startup).</div>
+      <div class="label">Why Demand Paging?</div>
+      <ul class="items">
+        <li>Process may need only a fraction of its address space</li>
+        <li>Allows more processes in memory simultaneously</li>
+        <li>Faster startup — no need to load entire program</li>
+        <li>Programs can have address spaces larger than physical RAM</li>
+      </ul>
+      <div class="label">Locality of Reference</div>
+      <p>Programs exhibit <strong style="color:var(--osg)">temporal locality</strong> (recently used pages likely used again soon) and <strong style="color:var(--osg)">spatial locality</strong> (pages near recently used pages likely used). This makes demand paging effective.</p>
+      <div class="tip">
+        <div class="t-title">Copy-on-Write (COW)</div>
+        After <code>fork()</code>, parent and child share all pages (read-only). When either writes a page, a private copy is made. Avoids copying GB of memory on fork — critical optimization.
+      </div>
+      <div class="formula">COW: fork() = O(1); actual copy happens lazily on first write to shared page</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3: Page Table Structures & TLB -->
+<div class="grid section-gap" id="page-tables">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Page Table Structures</h3></div>
+    <div class="card-body">
+      <div class="label">Problem: Page Table Size</div>
+      <p>64-bit address space with 4KB pages → 2⁵² page table entries → impossibly large. Solutions:</p>
+      <div class="label">1. Multi-Level Page Tables</div>
+      <p>Split page number into multiple levels. <strong style="color:var(--osg)">Two-level paging</strong> (x86-32): 10 bits → page directory, 10 bits → page table, 12 bits → offset.</p>
+      <div class="formula">Virtual: [dir(10) | table(10) | offset(12)]<br>Look up: PD[dir] → PT[table] → frame → frame×4K + offset</div>
+      <ul class="items">
+        <li>Only allocated page directory/table entries exist in memory</li>
+        <li>Unused regions: no page table allocated — saves memory</li>
+        <li>x86-64 uses 4-level page tables (PML4 → PDP → PD → PT)</li>
+      </ul>
+      <div class="label">2. Inverted Page Table</div>
+      <p>One entry per <strong>physical frame</strong> (not per virtual page). Size ∝ physical RAM, not address space. Used in IBM POWER, some 64-bit systems.</p>
+      <ul class="items">
+        <li>Entry: (PID, virtual page number) → physical frame</li>
+        <li><strong>Cons:</strong> lookup requires search (use hash table); slower</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>TLB — Translation Lookaside Buffer</h3></div>
+    <div class="card-body">
+      <div class="rule">TLB = small, fast hardware cache of recent virtual→physical translations (associative memory).</div>
+      <div class="label">TLB Operation</div>
+      <ol class="steps">
+        <li>CPU generates virtual address, extracts page number <code>p</code></li>
+        <li>TLB checked for page <code>p</code> — all entries checked in parallel</li>
+        <li><strong>TLB Hit</strong>: frame number found instantly → fast address translation</li>
+        <li><strong>TLB Miss</strong>: must walk page table in RAM → slow; update TLB with new entry</li>
+        <li>If TLB full: evict one entry (LRU or random)</li>
+      </ol>
+      <div class="formula">Effective Access Time =<br>  h × TLB_time + (1-h) × (TLB_time + Memory_time)<br>where h = hit ratio (typically 0.98 - 0.999)</div>
+      <div class="label">TLB Performance Example</div>
+      <pre><code class="language-c">/* TLB hit time: 2ns, Memory access: 100ns */
+/* h = 0.98 */
+/* EAT = 0.98*(2) + 0.02*(2+100) = 1.96 + 2.04 = 4ns */
+/* vs no TLB: 100+100 = 200ns for each page walk */</code></pre>
+      <div class="label">TLB &amp; Context Switch</div>
+      <div class="warn">
+        <div class="w-title">⚠ TLB Flush on Context Switch</div>
+        When switching processes, old TLB entries are invalid! Must flush entire TLB (expensive) OR tag each entry with an ASID (Address Space ID) — avoids flush.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>Page Table Entry Details</h3></div>
+    <div class="card-body">
+      <div class="label">x86-32 PTE Layout (32 bits)</div>
+      <pre><code class="language-c">/* Bits 31-12: frame number (20 bits = 2^20 frames × 4KB = 4GB)
+   Bit 11-9:  OS/software use (free for OS)
+   Bit  8:    Global (don't flush on context switch)
+   Bit  7:    Page Size (0=4KB, 1=4MB huge page)
+   Bit  6:    Dirty (modified bit, M)
+   Bit  5:    Accessed (referenced bit, R)
+   Bit  4:    Cache Disable
+   Bit  3:    Write-Through
+   Bit  2:    User/Supervisor (0=kernel only)
+   Bit  1:    Read/Write (0=read-only, 1=r/w)
+   Bit  0:    Present (P) */</code></pre>
+      <div class="label">Huge Pages</div>
+      <p><strong style="color:var(--osg)">Huge pages</strong> (2MB or 1GB) reduce TLB pressure: a single TLB entry covers 2MB instead of 4KB. Useful for databases, HPC. Linux: <code>mmap(MAP_HUGETLB)</code>.</p>
+      <div class="note">
+        <div class="n-title">NX/XD Bit</div>
+        Modern CPUs add an <strong>NX (No-Execute)</strong> or <strong>XD (Execute Disable)</strong> bit to PTEs. Marks stack/data pages as non-executable — prevents code injection attacks.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4: Page Replacement Algorithms -->
+<div class="grid section-gap" id="page-replacement">
+  <div class="card purple col-span-3">
+    <div class="card-header"><div class="dot"></div><h3>Page Replacement Algorithms — Complete Comparison</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="label">Algorithm Summary Table</div>
+          <table class="tbl">
+            <tr><th>Algorithm</th><th>Policy</th><th>Implementable?</th><th>Quality</th></tr>
+            <tr><td><strong style="color:var(--osg)">Optimal (OPT/MIN)</strong></td><td>Evict page used furthest in future</td><td>No (needs future knowledge)</td><td>Best possible — benchmark only</td></tr>
+            <tr><td><strong style="color:var(--osg)">NRU</strong></td><td>Evict random page from lowest class (R,M bits)</td><td>Yes</td><td>Crude; adequate</td></tr>
+            <tr><td><strong style="color:var(--osg)">FIFO</strong></td><td>Evict oldest-loaded page</td><td>Yes</td><td>Poor; Bélády's anomaly</td></tr>
+            <tr><td><strong style="color:var(--osg)">Second Chance</strong></td><td>FIFO + check R bit; spare if R=1</td><td>Yes</td><td>Better than FIFO</td></tr>
+            <tr><td><strong style="color:var(--osg)">Clock</strong></td><td>Second chance with circular list + hand</td><td>Yes</td><td>Same as 2nd chance, faster</td></tr>
+            <tr><td><strong style="color:var(--osg)">LRU</strong></td><td>Evict least recently used page</td><td>Expensive hardware needed</td><td>Excellent approximation to OPT</td></tr>
+            <tr><td><strong style="color:var(--osg)">NFU</strong></td><td>Evict least-frequently used (sw counter)</td><td>Yes (software)</td><td>Crude; forgets nothing</td></tr>
+            <tr><td><strong style="color:var(--osg)">Aging</strong></td><td>NFU + shift right + insert R at left</td><td>Yes (software)</td><td>Good LRU approximation</td></tr>
+            <tr><td><strong style="color:var(--osg)">Working Set</strong></td><td>Evict page not in working set</td><td>Yes (costly)</td><td>Excellent; prevents thrashing</td></tr>
+            <tr><td><strong style="color:var(--osg)">WSClock</strong></td><td>Clock + working set info</td><td>Yes</td><td>Excellent; widely used</td></tr>
+          </table>
+        </div>
+        <div>
+          <div class="label">NRU — Four Page Classes</div>
+          <p>At each clock interrupt, OS clears <code>R</code> bits. On page fault, classify all pages and evict random from lowest nonempty class:</p>
+          <table class="tbl">
+            <tr><th>Class</th><th>R</th><th>M</th><th>Meaning</th></tr>
+            <tr><td>0</td><td>0</td><td>0</td><td>Not referenced, not modified — best to evict</td></tr>
+            <tr><td>1</td><td>0</td><td>1</td><td>Not referenced, but dirty — must write to disk</td></tr>
+            <tr><td>2</td><td>1</td><td>0</td><td>Referenced, clean — recently used</td></tr>
+            <tr><td>3</td><td>1</td><td>1</td><td>Referenced and dirty — most expensive to evict</td></tr>
+          </table>
+          <div class="label">Clock Algorithm</div>
+          <p>All frames in <strong style="color:var(--osg)">circular list</strong>. Hand sweeps clockwise on page fault:</p>
+          <ul class="items">
+            <li>If <code>R=0</code>: evict page, insert new page, advance hand</li>
+            <li>If <code>R=1</code>: clear R, advance hand (second chance given)</li>
+          </ul>
+          <div class="label">Aging Algorithm (LRU Approximation)</div>
+          <pre><code class="language-c">/* Each page has 8-bit counter, initially 0 */
+/* On each clock tick, for each page:
+   counter >>= 1;        // shift right
+   counter |= (R &lt;&lt; 7); // add R to MSB
+   R = 0;                // clear R bit */
+/* On page fault: evict page with lowest counter */
+/* Example after 5 ticks:
+   Page 0: 11110000 (recently used heavily)
+   Page 3: 00100000 (used 3 ticks ago, not since)
+   → Evict Page 3 */</code></pre>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="formula">Bélády's Anomaly (FIFO only): more physical frames → MORE page faults in some cases. Does NOT affect LRU or OPT.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5: Segmentation -->
+<div class="grid-2 section-gap" id="segmentation">
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>Segmentation</h3></div>
+    <div class="card-body">
+      <div class="rule">Segmentation = variable-size logical units matching programmer's view (code, data, stack).</div>
+      <div class="label">Segmented Address</div>
+      <div class="formula">Virtual Address = (segment number s, offset d)<br>Physical = segment_table[s].base + d<br>Check: d &lt; segment_table[s].limit</div>
+      <div class="label">Segmentation vs Paging</div>
+      <table class="tbl">
+        <tr><th>Property</th><th>Paging</th><th>Segmentation</th></tr>
+        <tr><td>Unit size</td><td>Fixed (e.g., 4KB)</td><td>Variable (user-defined)</td></tr>
+        <tr><td>External fragmentation</td><td>None</td><td>Yes (holes between segments)</td></tr>
+        <tr><td>Internal fragmentation</td><td>Yes (last page partial)</td><td>None</td></tr>
+        <tr><td>Programmer visible</td><td>No (transparent)</td><td>Yes (segment:offset)</td></tr>
+        <tr><td>Address space size</td><td>Limited by virtual bits</td><td>Can exceed physical RAM</td></tr>
+        <tr><td>Sharing</td><td>Share individual pages</td><td>Share entire segments (code)</td></tr>
+        <tr><td>Protection</td><td>Per-page bits</td><td>Per-segment bits (natural)</td></tr>
+        <tr><td>Used in</td><td>Modern OSes (Linux, Windows)</td><td>Multics; x86 (limited mode)</td></tr>
+      </table>
+      <div class="tip">
+        <div class="t-title">Paged Segmentation (Best of Both)</div>
+        Multics: each segment is paged internally. Gets variable-size logical units WITHOUT external fragmentation. Complex but powerful.
+      </div>
+    </div>
+  </div>
+
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Memory Allocation — Heap &amp; Free Lists</h3></div>
+    <div class="card-body">
+      <div class="label">Dynamic Memory Allocation</div>
+      <p>The OS maintains a <strong style="color:var(--osg)">free list</strong> (linked list of free memory holes). When a process requests memory, OS searches free list and splits a hole.</p>
+      <div class="label">First Fit vs Best Fit vs Worst Fit</div>
+      <pre><code class="language-c">/* Free list: [10KB] [4KB] [20KB] [18KB] */
+/* Request: 12KB */
+
+/* First Fit: scan from start → use 20KB hole */
+/*   → hole becomes [8KB] (20-12=8) */
+
+/* Best Fit: find smallest hole ≥ 12KB → 20KB hole */
+/*   → leaves 8KB (same here, but generally wastes less) */
+
+/* Worst Fit: largest hole → 20KB */
+/*   → leaves 8KB (bad: destroys large holes) */</code></pre>
+      <div class="label">Buddy System</div>
+      <p>Memory divided into blocks of size 2^k. When splitting, always create two equal-size <strong style="color:var(--osg)">buddies</strong>. When freeing, if buddy is also free, merge back up.</p>
+      <div class="formula">Buddy of block at addr x of size s: x XOR s</div>
+      <ul class="items">
+        <li>Fast allocation and deallocation (O(log n))</li>
+        <li>Internal fragmentation: request 65 → allocate 128</li>
+        <li>Used in Linux kernel: <code>__get_free_pages()</code></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 6: Working Set & Thrashing -->
+<div class="grid section-gap" id="thrashing">
+  <div class="card red col-span-2">
+    <div class="card-header"><div class="dot"></div><h3>Working Set Model &amp; Thrashing</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Working Set Definition</div>
+          <div class="rule">Working Set W(k,t) = set of pages referenced by process in the k most recent memory references at time t.</div>
+          <p>The <strong style="color:var(--osg)">working set</strong> is the set of pages a process is actively using. If entire working set is in RAM → few page faults. If not enough frames → thrashing.</p>
+          <div class="label">Thrashing</div>
+          <p><strong style="color:var(--osg)">Thrashing</strong> occurs when a process does not have enough frames to hold its working set. It page faults constantly, spending more time doing page I/O than actual computation.</p>
+          <div class="warn">
+            <div class="w-title">⚠ Thrashing Cascade</div>
+            OS sees low CPU utilization → adds more processes → each gets fewer frames → all thrash → CPU utilization drops further → vicious cycle. Solution: reduce degree of multiprogramming (fewer active processes).
+          </div>
+          <div class="formula">
+            If Σ(working sets) > Physical RAM → thrashing!<br>
+            Detection: page fault rate spikes, CPU utilization drops
+          </div>
+        </div>
+        <div>
+          <div class="label">Working Set Algorithm</div>
+          <p>Track pages used in the last τ seconds of virtual time. On page fault, evict any page NOT in working set.</p>
+          <pre><code class="language-c">/* Working Set algorithm (simplified) */
+/* For each page table entry: */
+if (R == 1) {
+    /* page referenced this tick */
+    last_use = current_virtual_time;
+    R = 0;
+} else {
+    age = current_virtual_time - last_use;
+    if (age > tau)
+        /* evict: not in working set */
+        evict_page();
+    else
+        /* spare: still in working set */
+        remember_oldest();
+}</code></pre>
+          <div class="label">WSClock (Working Set + Clock)</div>
+          <ul class="items">
+            <li>Circular list of frames with Time-of-Last-Use field</li>
+            <li>On page fault: inspect page at hand</li>
+            <li>If <code>R=1</code>: clear R, update time, advance hand</li>
+            <li>If <code>R=0</code> and age &gt; τ: evict (not in working set)</li>
+            <li>If <code>R=0</code> and age ≤ τ: spare (still in working set)</li>
+            <li>Widely used — good performance, efficient</li>
+          </ul>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="label">Prepaging vs Pure Demand Paging</div>
+      <table class="tbl">
+        <tr><th></th><th>Pure Demand Paging</th><th>Prepaging</th></tr>
+        <tr><td>When pages loaded</td><td>Only on fault</td><td>Load predicted pages in advance</td></tr>
+        <tr><td>Startup cost</td><td>High (many faults)</td><td>Lower (fewer faults)</td></tr>
+        <tr><td>Wasted I/O</td><td>None</td><td>Some (unused prepaged pages)</td></tr>
+        <tr><td>Approach</td><td>Reactive</td><td>Proactive (uses working set model)</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>Global vs Local Allocation</h3></div>
+    <div class="card-body">
+      <div class="label">Frame Allocation Policies</div>
+      <table class="tbl">
+        <tr><th>Policy</th><th>Description</th><th>Risk</th></tr>
+        <tr><td><strong style="color:var(--osg)">Local</strong></td><td>Each process has fixed number of frames; replaces only its own pages</td><td>Underuse if process doesn't need all frames</td></tr>
+        <tr><td><strong style="color:var(--osg)">Global</strong></td><td>Process can take frame from any other process</td><td>Greedy process can starve others</td></tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">Global Often Better in Practice</div>
+        Global replacement results in better overall throughput because frames flow to processes that need them. But one badly-behaving process can degrade all others.
+      </div>
+      <div class="label">Page Fault Frequency (PFF) Control</div>
+      <p>OS monitors each process's page fault rate:</p>
+      <ul class="items">
+        <li>Fault rate <strong>too high</strong> → process needs more frames → give it one</li>
+        <li>Fault rate <strong>too low</strong> → process has excess frames → take one back</li>
+        <li>If total frames insufficient → suspend a process (swap out)</li>
+      </ul>
+      <div class="formula">Target: keep page fault rate in [low_threshold, high_threshold]</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 7: mmap and implementation -->
+<div class="grid-2 section-gap" id="implementation">
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>Memory-Mapped Files &amp; mmap()</h3></div>
+    <div class="card-body">
+      <div class="label">Memory-Mapped Files</div>
+      <p><code>mmap()</code> maps a file (or anonymous memory) into the process's address space. Reads/writes to memory automatically read/write the file. Used for:</p>
+      <ul class="items">
+        <li><strong style="color:var(--osg)">Shared libraries</strong>: <code>.so</code>/<code>.dll</code> files mapped into each process (shared read-only pages)</li>
+        <li><strong style="color:var(--osg)">Shared memory IPC</strong>: two processes map same file; communicate via memory</li>
+        <li><strong>Large file I/O</strong>: OS handles paging automatically</li>
+        <li><code>malloc()</code> internally uses <code>mmap()</code> for large allocations</li>
+      </ul>
+      <pre><code class="language-c">/* Map file into address space */
+int fd = open("data.bin", O_RDWR);
+char *mem = mmap(NULL, file_size,
+                 PROT_READ | PROT_WRITE,
+                 MAP_SHARED, fd, 0);
+mem[100] = 'X';   /* writes directly to file */
+munmap(mem, file_size);
+close(fd);</code></pre>
+      <div class="tip">
+        <div class="t-title">Shared Library Efficiency</div>
+        <code>libc.so</code> is mapped into every process. Since pages are read-only, they are shared — only one copy in RAM for all processes using it.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>Memory Management Key Formulas &amp; Quick Reference</h3></div>
+    <div class="card-body">
+      <div class="label">Address Translation Formula</div>
+      <div class="formula">
+        Page Number (p) = virtual_addr / page_size<br>
+        Offset (d)      = virtual_addr mod page_size<br>
+        Frame (f)       = page_table[p]<br>
+        Physical Addr   = f * page_size + d
+      </div>
+      <div class="label">TLB Effective Access Time</div>
+      <div class="formula">
+        EAT = h*(t_TLB) + (1-h)*(t_TLB + t_mem)<br>
+        h = hit ratio, t_TLB ≈ 2-5ns, t_mem ≈ 100ns
+      </div>
+      <div class="label">Quick Recall — What Each Does</div>
+      <table class="tbl">
+        <tr><th>Concept</th><th>One-Line Summary</th></tr>
+        <tr><td><code>MMU</code></td><td>Hardware: translates virtual→physical</td></tr>
+        <tr><td><code>TLB</code></td><td>Cache of recent page table lookups</td></tr>
+        <tr><td><code>PTE</code></td><td>Entry: frame#, P, R, M, protection bits</td></tr>
+        <tr><td><code>Page fault</code></td><td>P=0 in PTE → load page from disk</td></tr>
+        <tr><td><code>Swap</code></td><td>Move process/page between RAM↔disk</td></tr>
+        <tr><td><code>Thrashing</code></td><td>Fault rate so high, no real work done</td></tr>
+        <tr><td><code>Working set</code></td><td>Pages actively used; must be in RAM</td></tr>
+        <tr><td><code>WSClock</code></td><td>Best practical page replacement</td></tr>
+        <tr><td><code>COW</code></td><td>Share pages after fork; copy on write</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Page Size Trade-offs</div>
+        <strong>Small pages</strong>: less internal fragmentation, larger page tables, more TLB misses.<br>
+        <strong>Large pages</strong>: smaller page tables, fewer TLB misses, more internal fragmentation.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>OSG202 — Operating Systems · Modern OS 4th Ed. · Tanenbaum</span>
+  <a href="../OSG202.html">← Back to OSG202</a>
+</div>
+
+<script>
+function toggleTOC(){
+  var t=document.getElementById('page-toc');
+  t.classList.toggle('toc-collapsed');
+  t.classList.toggle('toc-open');
+}
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  toc.classList.add('toc-open');
+  var sections=[
+    {id:'address-spaces',label:'Address Spaces'},
+    {id:'virtual-memory',label:'Virtual Memory'},
+    {id:'page-tables',label:'Page Tables &amp; TLB'},
+    {id:'page-replacement',label:'Page Replacement'},
+    {id:'segmentation',label:'Segmentation'},
+    {id:'thrashing',label:'Working Set &amp; Thrashing'},
+    {id:'implementation',label:'mmap &amp; Formulas'}
+  ];
+  sections.forEach(function(s){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+s.id;
+    a.innerHTML=s.label;
+    body.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  var domSections=sections.map(function(s){return document.getElementById(s.id);});
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    domSections.forEach(function(s,i){
+      if(s&&s.offsetTop<=pos){
+        links.forEach(function(l){l.classList.remove('active');});
+        if(links[i])links[i].classList.add('active');
+      }
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code=document.createElement('code');
+    code.className='language-c';
+    code.textContent=pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

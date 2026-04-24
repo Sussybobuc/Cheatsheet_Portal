@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NWC204 — Computer Networking | NWC Study Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.5;padding:0;min-height:100vh;}
+
+  /* ── Hero ── */
+  .hero{
+    background:linear-gradient(160deg,#0d1117 0%,#161b22 60%,#1a1e20 100%);
+    border-bottom:1px solid var(--border);
+    padding:60px 40px 48px;
+    position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 700px 400px at 70% 50%, rgba(255,166,87,0.06) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-inner{max-width:1200px;margin:0 auto;position:relative;}
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    color:var(--nwc);letter-spacing:1px;text-transform:uppercase;
+    background:rgba(255,166,87,0.1);border:1px solid rgba(255,166,87,0.25);
+    border-radius:4px;padding:4px 10px;margin-bottom:20px;
+  }
+  .hero-eyebrow::before{content:'◈';font-size:10px;}
+  .hero h1{
+    font-family:'IBM Plex Sans Condensed',sans-serif;
+    font-size:clamp(32px,5vw,56px);font-weight:700;
+    color:var(--text);letter-spacing:-1.5px;line-height:1.05;margin-bottom:12px;
+  }
+  .hero h1 span{color:var(--nwc);}
+  .hero-subtitle{font-size:16px;color:var(--text-muted);font-weight:300;margin-bottom:24px;letter-spacing:0.2px;}
+  .hero-subtitle strong{color:var(--text);font-weight:600;}
+  .hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+  .hero-stat{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-muted);}
+  .hero-stat .dot{width:6px;height:6px;border-radius:50%;background:var(--nwc);flex-shrink:0;}
+  .hero-stat.r .dot{background:var(--accent3);}
+  .hero-stat.p .dot{background:var(--accent4);}
+
+  /* ── Search bar ── */
+  .search-wrap{padding:0 40px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .search-box{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:10px 0;}
+  .search-prompt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--nwc);flex-shrink:0;}
+  .search-label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;flex-shrink:0;margin-right:4px;}
+  .search-input{flex:1;background:none;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text);caret-color:var(--nwc);}
+  .search-input::placeholder{color:var(--text-dim);}
+  .search-clear{background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:16px;padding:0 2px;display:none;line-height:1;transition:color .15s;}
+  .search-clear:hover{color:var(--text-muted);}
+  .search-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);white-space:nowrap;}
+  .no-results{text-align:center;padding:32px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);display:none;}
+
+  /* ── Main ── */
+  .main{max-width:1200px;margin:0 auto;padding:40px 40px 60px;}
+
+  /* ── Part sections ── */
+  .part{margin-bottom:48px;}
+  .part-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .part-bar{width:4px;height:36px;border-radius:2px;flex-shrink:0;}
+  .part-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+  .part-title{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.3px;color:var(--text);}
+  .part-count{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:3px 8px;white-space:nowrap;}
+
+  /* Part color themes */
+  .part-orange .part-bar{background:var(--nwc);}
+  .part-orange .part-label{color:var(--nwc);}
+  .part-blue .part-bar{background:var(--accent);}
+  .part-blue .part-label{color:var(--accent);}
+  .part-green .part-bar{background:var(--accent2);}
+  .part-green .part-label{color:var(--accent2);}
+
+  /* ── Chapter cards grid ── */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.cards{grid-template-columns:1fr;}.hero{padding:40px 20px 36px;}.main{padding:28px 20px 48px;}.search-wrap{padding:0 20px;}}
+
+  /* ── Chapter card ── */
+  .chapter-card{
+    display:block;text-decoration:none;color:inherit;
+    background:var(--surface);border:1px solid var(--border);
+    border-radius:8px;overflow:hidden;
+    transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease;
+    position:relative;
+  }
+  .part-orange .chapter-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);border-color:rgba(255,166,87,0.6);}
+  .part-blue .chapter-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);border-color:rgba(88,166,255,0.6);}
+  .part-green .chapter-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);border-color:rgba(63,185,80,0.6);}
+
+  .card-accent{height:3px;width:100%;}
+  .part-orange .card-accent{background:var(--nwc);}
+  .part-blue .card-accent{background:var(--accent);}
+  .part-green .card-accent{background:var(--accent2);}
+
+  .card-inner{padding:14px 16px 16px;}
+  .card-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px;}
+  .ch-num{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;border:1px solid;border-radius:4px;padding:3px 7px;white-space:nowrap;flex-shrink:0;margin-top:1px;letter-spacing:0.5px;}
+  .part-orange .ch-num{color:var(--nwc);border-color:rgba(255,166,87,0.3);background:rgba(255,166,87,0.08);}
+  .part-blue .ch-num{color:var(--accent);border-color:rgba(88,166,255,0.3);background:rgba(88,166,255,0.08);}
+  .part-green .ch-num{color:var(--accent2);border-color:rgba(63,185,80,0.3);background:rgba(63,185,80,0.08);}
+
+  .card-title{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--text);line-height:1.25;letter-spacing:-0.2px;}
+  .card-desc{font-size:12px;color:var(--text-muted);line-height:1.5;}
+  .card-arrow{position:absolute;bottom:14px;right:14px;font-size:13px;color:var(--text-dim);transition:color 0.18s ease,transform 0.18s ease;}
+  .chapter-card:hover .card-arrow{color:var(--text-muted);transform:translate(2px,-1px);}
+  .chapter-card.hidden{display:none;}
+  .part.hidden{display:none;}
+  .search-highlight{background:rgba(227,179,65,0.25);color:#e3b341;border-radius:2px;padding:0 1px;}
+
+  /* ── Footer ── */
+  .footer{border-top:1px solid var(--border);background:var(--surface);padding:20px 40px;}
+  .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer-inner a{color:var(--nwc);text-decoration:none;}
+  .footer-inner span:first-child{color:var(--text-muted);}
+</style>
+</head>
+<body>
+
+<!-- ═══ HERO ═══ -->
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">NWC204 · CCNA INTRO · Study Reference</div>
+    <h1>Computer <span>Networking</span></h1>
+    <p class="hero-subtitle"><strong>CCNA INTRO Study Guide — Todd Lammle · Sybex 2006</strong> &nbsp;·&nbsp; Complete Cheatsheet Collection</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="dot"></div>9 Chapters Covered</div>
+      <div class="hero-stat r"><div class="dot"></div>3 Topic Groups</div>
+      <div class="hero-stat p"><div class="dot"></div>Quick-Reference Format</div>
+    </div>
+  </div>
+</header>
+
+<!-- ── Search bar ── -->
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-prompt">❯</span>
+    <span class="search-label">search</span>
+    <input class="search-input" id="searchInput" type="search" placeholder="filter chapters, topics…" autocomplete="off" spellcheck="false">
+    <span class="search-count" id="searchCount"></span>
+    <button class="search-clear" id="searchClear" title="Clear">✕</button>
+  </div>
+</div>
+<div class="no-results" id="noResults">No chapters match "<span id="noResultsQuery"></span>"</div>
+
+<!-- ═══ MAIN ═══ -->
+<main class="main">
+
+  <!-- ━━━ PART 1: Fundamentals ━━━ -->
+  <section class="part part-orange">
+    <div class="part-header">
+      <div class="part-bar"></div>
+      <div class="part-header-text">
+        <div class="part-label">Part 1</div>
+        <div class="part-title">Network Fundamentals &amp; Addressing</div>
+      </div>
+      <div class="part-count">3 chapters</div>
+    </div>
+    <div class="cards">
+
+      <a class="chapter-card" href="NWC204/CH01-Internetworking-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH01</span>
+            <span class="card-title">Internetworking</span>
+          </div>
+          <div class="card-desc">OSI 7-layer model, TCP vs UDP, Ethernet, data encapsulation, cabling types, Cisco 3-layer hierarchy, hubs/switches/routers, collision &amp; broadcast domains.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+      <a class="chapter-card" href="NWC204/CH02-Internet-Protocols-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH02</span>
+            <span class="card-title">Internet Protocols</span>
+          </div>
+          <div class="card-desc">DoD/TCP-IP model, application protocols (FTP, SMTP, DNS, DHCP), TCP 3-way handshake, UDP, ICMP, ARP, IP address classes, private ranges.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+      <a class="chapter-card" href="NWC204/CH03-IP-Subnetting-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH03</span>
+            <span class="card-title">IP Subnetting &amp; VLSMs</span>
+          </div>
+          <div class="card-desc">Subnet masks, CIDR notation, Class A/B/C subnetting tables, fast subnetting method, Variable Length Subnet Masks, troubleshooting IP addressing.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ━━━ PART 2: Cisco IOS & Routing ━━━ -->
+  <section class="part part-blue">
+    <div class="part-header">
+      <div class="part-bar"></div>
+      <div class="part-header-text">
+        <div class="part-label">Part 2</div>
+        <div class="part-title">Cisco IOS &amp; Routing</div>
+      </div>
+      <div class="part-count">3 chapters</div>
+    </div>
+    <div class="cards">
+
+      <a class="chapter-card" href="NWC204/CH04-Cisco-IOS-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH04</span>
+            <span class="card-title">Introduction to Cisco IOS</span>
+          </div>
+          <div class="card-desc">CLI modes, editing shortcuts, hostname/banner/password config, interface setup, show commands, saving/erasing configurations, router boot process.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+      <a class="chapter-card" href="NWC204/CH05-IP-Routing-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH05</span>
+            <span class="card-title">IP Routing</span>
+          </div>
+          <div class="card-desc">Routing process walkthrough, routing table flags, static routes, default routes, administrative distance table, route selection logic, show ip route.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+      <a class="chapter-card" href="NWC204/CH06-Dynamic-Routing-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH06</span>
+            <span class="card-title">Dynamic Routing Protocols</span>
+          </div>
+          <div class="card-desc">Distance-vector vs link-state, RIP v1/v2 config &amp; timers, IGRP config &amp; metrics, loop prevention, debug commands, show ip protocols.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ━━━ PART 3: Switching & WAN ━━━ -->
+  <section class="part part-green">
+    <div class="part-header">
+      <div class="part-bar"></div>
+      <div class="part-header-text">
+        <div class="part-label">Part 3</div>
+        <div class="part-title">Switching, Management &amp; WAN</div>
+      </div>
+      <div class="part-count">3 chapters</div>
+    </div>
+    <div class="cards">
+
+      <a class="chapter-card" href="NWC204/CH07-Layer2-Switching-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH07</span>
+            <span class="card-title">Layer 2 Switching</span>
+          </div>
+          <div class="card-desc">Switch functions (learning/forwarding/loop avoidance), MAC table, STP root election, port states, RSTP, switch types (cut-through, store-and-forward).</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+      <a class="chapter-card" href="NWC204/CH08-Managing-Cisco-Internetwork-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH08</span>
+            <span class="card-title">Managing a Cisco Internetwork</span>
+          </div>
+          <div class="card-desc">Router memory types, boot sequence, config register, password recovery, IOS backup/restore via TFTP, CDP, Telnet sessions, hostname resolution, ping/traceroute.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+      <a class="chapter-card" href="NWC204/CH09-WAN-Protocols-CheatSheet.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="ch-num">CH09</span>
+            <span class="card-title">WAN Protocols</span>
+          </div>
+          <div class="card-desc">WAN terms (DTE/DCE, CO, local loop), connection types, HDLC (Cisco default), PPP (LCP/NCP), PAP vs CHAP authentication, Frame Relay, ISDN overview.</div>
+        </div>
+        <span class="card-arrow">↗</span>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<!-- ═══ FOOTER ═══ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span>NWC204 — Computer Networking</span>
+    <a href="../index.html">← Back to Portal</a>
+    <span>CCNA INTRO · Lammle · Sybex 2006</span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var input = document.getElementById('searchInput');
+  var clearBtn = document.getElementById('searchClear');
+  var countEl = document.getElementById('searchCount');
+  var noResults = document.getElementById('noResults');
+  var noResultsQuery = document.getElementById('noResultsQuery');
+
+  function highlight(text, query) {
+    if (!query) return text;
+    var escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return text.replace(new RegExp('(' + escaped + ')', 'gi'), '<span class="search-highlight">$1</span>');
+  }
+
+  function doSearch(query) {
+    var q = query.trim().toLowerCase();
+    var cards = document.querySelectorAll('.chapter-card');
+    var parts = document.querySelectorAll('.part');
+    var visible = 0;
+
+    cards.forEach(function(card) {
+      var titleEl = card.querySelector('.card-title');
+      var descEl = card.querySelector('.card-desc');
+      var numEl = card.querySelector('.ch-num');
+      var titleText = titleEl ? titleEl.getAttribute('data-orig') || titleEl.textContent : '';
+      var descText = descEl ? descEl.getAttribute('data-orig') || descEl.textContent : '';
+      var numText = numEl ? numEl.textContent : '';
+
+      if (!titleEl.getAttribute('data-orig')) { titleEl.setAttribute('data-orig', titleEl.textContent); }
+      if (descEl && !descEl.getAttribute('data-orig')) { descEl.setAttribute('data-orig', descEl.textContent); }
+
+      var match = !q || titleText.toLowerCase().includes(q) || descText.toLowerCase().includes(q) || numText.toLowerCase().includes(q);
+      card.classList.toggle('hidden', !match);
+      if (match) {
+        visible++;
+        if (q) {
+          titleEl.innerHTML = highlight(titleText, query);
+          if (descEl) descEl.innerHTML = highlight(descText, query);
+        } else {
+          titleEl.textContent = titleText;
+          if (descEl) descEl.textContent = descText;
+        }
+      }
+    });
+
+    parts.forEach(function(part) {
+      var anyVisible = Array.from(part.querySelectorAll('.chapter-card')).some(function(c) { return !c.classList.contains('hidden'); });
+      part.classList.toggle('hidden', !anyVisible);
+    });
+
+    countEl.textContent = q ? visible + ' result' + (visible !== 1 ? 's' : '') : '';
+    noResults.style.display = (q && visible === 0) ? 'block' : 'none';
+    if (noResultsQuery) noResultsQuery.textContent = query;
+    clearBtn.style.display = q ? 'block' : 'none';
+  }
+
+  input.addEventListener('input', function() { doSearch(this.value); });
+  clearBtn.addEventListener('click', function() { input.value = ''; doSearch(''); input.focus(); });
+  doSearch('');
+})();
+</script>
+</body>
+</html>

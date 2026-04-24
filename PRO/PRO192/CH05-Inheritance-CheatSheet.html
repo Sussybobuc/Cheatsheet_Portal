@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH05 – Inheritance | PRO192</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --pro:#e3b341;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--pro);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--pro);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--pro);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:0.85em;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--pro);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-left:3px solid var(--pro);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--pro);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--pro);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--pro);border-left-color:var(--pro);background:rgba(227,179,65,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Prism overrides — match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;overflow-x:auto!important;}
+code.language-java{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:11px!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.comment,.token.prolog,.token.cdata{color:#8b949e!important;font-style:italic;}
+.token.keyword,.token.boolean,.token.null,.token.constant{color:#ff7b72!important;}
+.token.string,.token.char{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;}
+.token.class-name{color:#ffa657!important;}
+.token.function{color:#d2a8ff!important;}
+.token.annotation{color:#3fb950!important;}
+.token.operator{color:#ff7b72!important;}
+.token.punctuation{color:#8b949e!important;}
+.token.namespace{opacity:.8;}
+</style>
+</head>
+<body>
+
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>Inheritance — Chapter 5</h1>
+    <h2>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell · PRO192 — Object-Oriented Programming</h2>
+  </div>
+  <div>
+    <div class="badge">PRO192</div>
+    <div class="toc" style="margin-top:8px;">
+      <span class="toc-item">§Extends</span>
+      <span class="toc-item">§super</span>
+      <span class="toc-item">§Method Override</span>
+      <span class="toc-item">§Abstract</span>
+      <span class="toc-item">§Polymorphism</span>
+      <span class="toc-item">§Casting</span>
+      <span class="toc-item">§Object Class</span>
+      <span class="toc-item">§Sealed</span>
+    </div>
+  </div>
+</div>
+
+<!-- ── ROW 1 ─────────────────────────────────────────────────────────────── -->
+<div class="grid">
+
+  <!-- Card 1: Inheritance Basics -->
+  <div class="card yellow" id="inheritance-basics">
+    <div class="card-header"><div class="dot"></div><h3>Inheritance Basics</h3></div>
+    <div class="card-body">
+      <div class="formula">Subclass extends Superclass → inherits all non-private fields/methods</div>
+      <pre>// Superclass
+public class Animal {
+    private String name;
+    protected int age;  // protected = subclass can access
+
+    public Animal(String name, int age) {
+        this.name = name;
+        this.age = age;
+    }
+
+    public String getName() { return name; }
+
+    public String describe() {
+        return name + " (age " + age + ")";
+    }
+}
+
+// Subclass
+public class Dog extends Animal {
+    private String breed;
+
+    public Dog(String name, int age, String breed) {
+        super(name, age);  // MUST call super constructor first
+        this.breed = breed;
+    }
+
+    @Override
+    public String describe() {
+        return super.describe() + " [" + breed + "]";
+    }
+
+    public void bark() { System.out.println("Woof!"); }
+}</pre>
+      <ul class="items">
+        <li><code>extends</code> = inheritance keyword, Java supports single inheritance only</li>
+        <li><code>super</code> = reference to superclass</li>
+        <li>Subclass constructor MUST call <code>super(...)</code> as first statement</li>
+        <li>If omitted → implicit <code>super()</code> called (requires no-arg constructor in parent)</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 2: Method Overriding -->
+  <div class="card blue" id="overriding">
+    <div class="card-header"><div class="dot"></div><h3>Method Overriding</h3></div>
+    <div class="card-body">
+      <div class="label">Rules for Override</div>
+      <ul class="items">
+        <li>Same method name, same parameter types</li>
+        <li>Same or covariant return type</li>
+        <li>Access modifier same or wider (can't reduce visibility)</li>
+        <li>Must NOT be <code>final</code> or <code>static</code> in parent</li>
+      </ul>
+      <pre>public class Shape {
+    public double area() { return 0; }
+    public String toString() { return "Shape"; }
+}
+
+public class Circle extends Shape {
+    private double radius;
+
+    public Circle(double radius) { this.radius = radius; }
+
+    @Override  // annotation catches mistakes at compile time
+    public double area() {
+        return Math.PI * radius * radius;
+    }
+}</pre>
+      <div class="label">Override vs Overload</div>
+      <table class="tbl">
+        <tr><th></th><th>Override</th><th>Overload</th></tr>
+        <tr><td>Same method sig</td><td>✓</td><td>✗ (different params)</td></tr>
+        <tr><td>Different class</td><td>✓ (child/parent)</td><td>Same or diff</td></tr>
+        <tr><td>Runtime dispatch</td><td>✓</td><td>✗ (compile-time)</td></tr>
+        <tr><td>@Override needed</td><td>Yes</td><td>Not applicable</td></tr>
+      </table>
+      <div class="warn"><div class="w-title">Warning</div>@Override annotation is optional but highly recommended — catches typos and wrong signatures at compile time</div>
+    </div>
+  </div>
+
+  <!-- Card 3: super Keyword -->
+  <div class="card green" id="super-keyword">
+    <div class="card-header"><div class="dot"></div><h3>super Keyword</h3></div>
+    <div class="card-body">
+      <div class="label">Uses of super</div>
+      <pre>public class Manager extends Employee {
+    private double bonus;
+
+    public Manager(String name, double salary, double bonus) {
+        super(name, salary);  // 1. Call parent constructor (must be 1st)
+        this.bonus = bonus;
+    }
+
+    @Override
+    public double getSalary() {
+        return super.getSalary() + bonus;  // 2. Call parent method
+    }
+
+    // Access parent field (if protected):
+    // super.fieldName
+}</pre>
+      <div class="formula">super(args) → calls parent constructor (only in constructor, must be 1st line)</div>
+      <div class="formula">super.method() → calls parent's version of overridden method</div>
+      <div class="warn"><div class="w-title">Warning</div>Cannot use <code>super.super.method()</code> — Java only allows one level up</div>
+    </div>
+  </div>
+
+</div><!-- end row 1 -->
+
+<!-- ── ROW 2 ─────────────────────────────────────────────────────────────── -->
+<div class="grid section-gap">
+
+  <!-- Card 4: Abstract Classes -->
+  <div class="card red" id="abstract-classes">
+    <div class="card-header"><div class="dot"></div><h3>Abstract Classes</h3></div>
+    <div class="card-body">
+      <div class="formula">Abstract class = cannot be instantiated; may have abstract methods (no body)</div>
+      <pre>public abstract class Shape {
+    private String color;
+
+    public Shape(String color) { this.color = color; }
+
+    // Abstract method - subclass MUST implement
+    public abstract double area();
+    public abstract double perimeter();
+
+    // Concrete method - subclass can use/override
+    public String getColor() { return color; }
+
+    public void printInfo() {
+        System.out.printf("%s: area=%.2f%n", color, area());
+    }
+}
+
+public class Rectangle extends Shape {
+    private double width, height;
+
+    public Rectangle(String color, double w, double h) {
+        super(color);
+        this.width = w; this.height = h;
+    }
+
+    @Override public double area() { return width * height; }
+    @Override public double perimeter() { return 2 * (width + height); }
+}</pre>
+      <div class="label">Abstract vs Concrete</div>
+      <table class="tbl">
+        <tr><th></th><th>Abstract</th><th>Concrete</th></tr>
+        <tr><td><code>new</code> allowed</td><td>✗</td><td>✓</td></tr>
+        <tr><td>Abstract methods</td><td>✓</td><td>✗</td></tr>
+        <tr><td>Concrete methods</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Fields</td><td>✓</td><td>✓</td></tr>
+        <tr><td>Constructors</td><td>✓ (for subclasses)</td><td>✓</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- Card 5: Polymorphism -->
+  <div class="card purple" id="polymorphism">
+    <div class="card-header"><div class="dot"></div><h3>Polymorphism</h3></div>
+    <div class="card-body">
+      <div class="formula">Polymorphism = same interface, different implementations; method called depends on ACTUAL runtime type</div>
+      <pre>Shape[] shapes = {
+    new Circle("red", 5),
+    new Rectangle("blue", 3, 4),
+    new Triangle("green", 3, 4, 5)
+};
+
+for (Shape s : shapes) {
+    System.out.println(s.area());  // Calls correct subclass area()!
+    // At runtime: Circle.area(), Rectangle.area(), Triangle.area()
+}</pre>
+      <div class="label">Dynamic Dispatch</div>
+      <ul class="items">
+        <li>JVM looks up actual object type at runtime</li>
+        <li>Calls the most specific method available</li>
+        <li>This is the core of polymorphism in Java</li>
+        <li>Makes code extensible without modifying existing code (Open/Closed Principle)</li>
+      </ul>
+      <div class="tip"><div class="t-title">Tip</div>Key insight: You can add new Shape subclasses without changing the loop above — that's the power of polymorphism</div>
+    </div>
+  </div>
+
+  <!-- Card 6: Type Casting & instanceof -->
+  <div class="card orange" id="casting">
+    <div class="card-header"><div class="dot"></div><h3>Type Casting &amp; instanceof</h3></div>
+    <div class="card-body">
+      <div class="label">Upcasting (always safe)</div>
+      <pre>Dog dog = new Dog("Rex", 3, "Husky");
+Animal animal = dog;  // implicit upcast (always safe)
+// animal.bark();  // ERROR: Animal doesn't know bark()</pre>
+      <div class="label">Downcasting (can fail — use instanceof check)</div>
+      <pre>Animal a = new Dog("Rex", 3, "Husky");
+
+// Old way (pre-Java 16)
+if (a instanceof Dog) {
+    Dog d = (Dog) a;  // explicit downcast
+    d.bark();
+}
+
+// Pattern matching instanceof (Java 16+) — PREFERRED
+if (a instanceof Dog d) {
+    d.bark();  // d is already cast and in scope
+}
+
+// ClassCastException if wrong:
+Animal cat = new Cat("Whiskers");
+Dog d = (Dog) cat;  // Throws ClassCastException at runtime!</pre>
+      <div class="warn"><div class="w-title">Warning</div>Always check instanceof before downcasting, or use pattern matching instanceof (Java 16+)</div>
+    </div>
+  </div>
+
+</div><!-- end row 2 -->
+
+<!-- ── ROW 3: Full-width Sealed / Advanced ───────────────────────────────── -->
+<div class="card yellow section-gap" id="inheritance-advanced">
+  <div class="card-header"><div class="dot"></div><h3>Sealed Classes, Final &amp; Inheritance Hierarchy</h3></div>
+  <div class="card-body">
+    <div class="grid-2">
+
+      <div>
+        <div class="label">final Keyword (prevents extension/override)</div>
+        <pre>public final class String { ... }
+// Cannot extend String!
+
+public class Base {
+    public final void cannotOverride() { ... }
+    // Subclass cannot @Override this method
+}</pre>
+        <div class="label">Sealed Classes (Java 17+)</div>
+        <pre>// Only permitted classes can extend Shape
+public sealed class Shape
+    permits Circle, Rectangle, Triangle { }
+
+public final class Circle extends Shape { }
+public final class Rectangle extends Shape { }
+public non-sealed class Triangle extends Shape { }
+// non-sealed allows further subclassing</pre>
+        <div class="tip"><div class="t-title">Tip</div>Sealed classes + pattern matching = exhaustive type checking at compile time</div>
+      </div>
+
+      <div>
+        <div class="label">Inheritance Chain Example</div>
+        <pre>Object
+  └── Animal
+        ├── Dog  (extends Animal)
+        │     ├── Poodle (extends Dog)
+        │     └── Husky  (extends Dog)
+        └── Cat  (extends Animal)</pre>
+        <div class="label">Object Class (Root of All)</div>
+        <table class="tbl">
+          <tr><th>Method</th><th>Default Behavior</th></tr>
+          <tr><td>toString()</td><td>"ClassName@hashcode"</td></tr>
+          <tr><td>equals(Object)</td><td>Reference equality (==)</td></tr>
+          <tr><td>hashCode()</td><td>Memory address-based</td></tr>
+          <tr><td>getClass()</td><td>Runtime class info</td></tr>
+          <tr><td>clone()</td><td>Shallow copy (needs Cloneable)</td></tr>
+          <tr><td>wait/notify/notifyAll</td><td>Thread synchronization</td></tr>
+        </table>
+        <div class="warn"><div class="w-title">Warning</div>Java uses single inheritance for classes but multiple inheritance through interfaces</div>
+        <div class="label">When to use Abstract vs Interface</div>
+        <table class="tbl">
+          <tr><th>Use</th><th>When</th></tr>
+          <tr><td>Abstract class</td><td>Sharing code among related classes; need constructors/fields; "is-a" with shared state</td></tr>
+          <tr><td>Interface</td><td>Defining a capability contract; multiple types; "can-do" behavior</td></tr>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div><!-- end row 3 -->
+
+<!-- ── ROW 4: 2 cols ─────────────────────────────────────────────────────── -->
+<div class="grid-2 section-gap">
+
+  <!-- Card 7: Design Principles -->
+  <div class="card blue" id="design-principles">
+    <div class="card-header"><div class="dot"></div><h3>Inheritance Design Principles</h3></div>
+    <div class="card-body">
+      <div class="label">Liskov Substitution Principle (LSP)</div>
+      <div class="formula">If S extends P, then objects of type P can be replaced with objects of type S without breaking behavior</div>
+      <ul class="items">
+        <li>Subclass should NOT weaken preconditions (caller promises less)</li>
+        <li>Subclass should NOT strengthen postconditions (caller gets less)</li>
+        <li>Override methods should maintain same contract as parent</li>
+      </ul>
+      <div class="warn"><div class="w-title">Warning</div>Violating LSP: Square extends Rectangle but setWidth() breaks rectangle invariant (w≠h)</div>
+      <div class="label">Composition over Inheritance</div>
+      <pre>// Prefer composition when "has-a" relationship
+public class Car {
+    private Engine engine;      // HAS-A engine
+    private Transmission trans; // HAS-A transmission
+
+    public Car() {
+        engine = new Engine();
+        trans = new Transmission();
+    }
+}
+// vs. fragile: class Car extends Engine (wrong: car IS-NOT an engine)</pre>
+    </div>
+  </div>
+
+  <!-- Card 8: Inheritance Patterns -->
+  <div class="card green" id="inheritance-patterns">
+    <div class="card-header"><div class="dot"></div><h3>Common Inheritance Patterns</h3></div>
+    <div class="card-body">
+      <div class="label">Template Method Pattern</div>
+      <pre>abstract class DataProcessor {
+    // Template method (defines skeleton)
+    public final void process() {
+        readData();    // implemented here
+        processData(); // abstract - subclass implements
+        writeData();   // implemented here
+    }
+    protected abstract void processData();
+    private void readData() { /* ... */ }
+    private void writeData() { /* ... */ }
+}
+
+class CSVProcessor extends DataProcessor {
+    @Override
+    protected void processData() {
+        // Specific CSV processing logic
+    }
+}</pre>
+      <div class="tip"><div class="t-title">Tip</div>Template Method uses inheritance to share algorithm structure while allowing subclass to customize steps</div>
+    </div>
+  </div>
+
+</div><!-- end row 4 -->
+
+<div class="footer">
+  <a href="../PRO192.html">← PRO192 Index</a>
+  <span>Core Java Vol I, 12th Edition · Horstmann &amp; Cornell</span>
+  <span>CH05 / 09</span>
+</div>
+
+<script>
+(function(){
+  var toc=document.getElementById('page-toc');
+  var body=document.getElementById('tocBody');
+  var open=true;
+  function toggleTOC(){open=!open;toc.className=open?'toc-open':'toc-collapsed';}
+  document.querySelector('.toc-hdr').addEventListener('click',toggleTOC);
+  var cards=Array.from(document.querySelectorAll('.card[id]'));
+  cards.forEach(function(c){
+    var a=document.createElement('a');
+    a.className='toc-link';
+    a.href='#'+c.id;
+    a.textContent=c.querySelector('h3')?c.querySelector('h3').textContent:'';
+    body.appendChild(a);
+  });
+  window.addEventListener('scroll',function(){
+    var sy=window.scrollY+120;
+    var active=null;
+    cards.forEach(function(c){if(c.offsetTop<=sy)active=c;});
+    body.querySelectorAll('.toc-link').forEach(function(l){l.classList.toggle('active',active&&l.hash==='#'+active.id);});
+  },{passive:true});
+  toc.classList.add('toc-open');
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-java.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code=document.createElement('code');
+      code.className='language-java';
+      code.innerHTML=pre.innerHTML;
+      pre.innerHTML='';
+      pre.appendChild(code);
+    }
+  });
+  if(window.Prism) Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

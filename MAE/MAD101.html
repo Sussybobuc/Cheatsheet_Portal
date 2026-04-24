@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MAD101 — Discrete Mathematics | MAE Study Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --mae:#3fb950;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.5;padding:0;min-height:100vh;}
+
+  .hero{
+    background:linear-gradient(160deg,#0d1117 0%,#161b22 60%,#111b13 100%);
+    border-bottom:1px solid var(--border);
+    padding:60px 40px 48px;
+    position:relative;overflow:hidden;
+  }
+  .hero::before{
+    content:'';position:absolute;inset:0;
+    background:radial-gradient(ellipse 700px 400px at 70% 50%, rgba(63,185,80,0.06) 0%, transparent 70%);
+    pointer-events:none;
+  }
+  .hero-inner{max-width:1200px;margin:0 auto;position:relative;}
+  .hero-eyebrow{
+    display:inline-flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:11px;
+    color:var(--mae);letter-spacing:1px;text-transform:uppercase;
+    background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.25);
+    border-radius:4px;padding:4px 10px;margin-bottom:20px;
+  }
+  .hero-eyebrow::before{content:'◈';font-size:10px;}
+  .hero h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:clamp(32px,5vw,56px);font-weight:700;color:var(--text);letter-spacing:-1.5px;line-height:1.05;margin-bottom:12px;}
+  .hero h1 span{color:var(--mae);}
+  .hero-subtitle{font-size:16px;color:var(--text-muted);font-weight:300;margin-bottom:24px;letter-spacing:0.2px;}
+  .hero-subtitle strong{color:var(--text);font-weight:600;}
+  .hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+  .hero-stat{display:flex;align-items:center;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--text-muted);}
+  .hero-stat .dot{width:6px;height:6px;border-radius:50%;background:var(--mae);flex-shrink:0;}
+  .hero-stat.r .dot{background:var(--accent3);}
+  .hero-stat.p .dot{background:var(--accent4);}
+
+  .search-wrap{padding:0 40px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .search-box{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:8px;padding:10px 0;}
+  .search-prompt{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--mae);flex-shrink:0;}
+  .search-input{flex:1;background:none;border:none;outline:none;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text);caret-color:var(--mae);}
+  .search-input::placeholder{color:var(--text-dim);}
+  .search-clear{background:none;border:none;cursor:pointer;color:var(--text-dim);font-size:16px;padding:0 2px;display:none;line-height:1;transition:color .15s;}
+  .search-clear:hover{color:var(--text-muted);}
+  .search-count{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);white-space:nowrap;}
+  .no-results{text-align:center;padding:32px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-dim);display:none;}
+
+  .main{max-width:1200px;margin:0 auto;padding:40px 40px 60px;}
+
+  .part{margin-bottom:48px;}
+  .part-header{display:flex;align-items:center;gap:14px;margin-bottom:20px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+  .part-bar{width:4px;height:36px;border-radius:2px;flex-shrink:0;}
+  .part-label{font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:1px;margin-bottom:3px;}
+  .part-title{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.3px;color:var(--text);}
+  .part-count{margin-left:auto;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:3px 8px;white-space:nowrap;}
+
+  .part-green .part-bar{background:var(--mae);}
+  .part-green .part-label{color:var(--mae);}
+  .part-blue .part-bar{background:var(--accent);}
+  .part-blue .part-label{color:var(--accent);}
+
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media(max-width:900px){.cards{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.cards{grid-template-columns:1fr;}.hero{padding:40px 20px 36px;}.main{padding:28px 20px 48px;}.search-wrap{padding:0 20px;}}
+
+  .chapter-card{display:block;text-decoration:none;color:inherit;background:var(--surface);border:1px solid var(--border);border-radius:8px;overflow:hidden;transition:transform 0.18s ease,border-color 0.18s ease,box-shadow 0.18s ease;position:relative;}
+  .part-green .chapter-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);border-color:rgba(63,185,80,0.6);}
+  .part-blue .chapter-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.4);border-color:rgba(88,166,255,0.6);}
+
+  .card-accent{height:3px;width:100%;}
+  .part-green .card-accent{background:var(--mae);}
+  .part-blue .card-accent{background:var(--accent);}
+
+  .card-inner{padding:16px 18px 18px;}
+  .card-num{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);margin-bottom:8px;letter-spacing:0.5px;}
+  .card-title{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:-0.2px;margin-bottom:6px;}
+  .card-tags{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);line-height:1.6;}
+  .card-footer{display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border);margin-top:12px;}
+  .card-src{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .card-arrow{font-size:14px;color:var(--text-dim);transition:color 0.18s ease,transform 0.18s ease;}
+  .chapter-card:hover .card-arrow{color:var(--text-muted);transform:translate(2px,-1px);}
+  .chapter-card.hidden{display:none;}
+
+  .footer{border-top:1px solid var(--border);background:var(--surface);padding:20px 40px;}
+  .footer-inner{max-width:1200px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer-inner a{color:var(--mae);text-decoration:none;}
+  .footer-inner a:hover{text-decoration:underline;}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="hero-eyebrow">MAE · Discrete Mathematics</div>
+    <h1>MAD<span>101</span></h1>
+    <p class="hero-subtitle"><strong>Discrete Mathematics</strong> &nbsp;·&nbsp; Discrete Mathematics and Its Applications 7th Ed. · Rosen</p>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="dot"></div>8 Chapters</div>
+      <div class="hero-stat r"><div class="dot"></div>Rosen · 7th Ed.</div>
+      <div class="hero-stat p"><div class="dot"></div>Logic · Graphs · Cryptography</div>
+    </div>
+  </div>
+</header>
+
+<div class="search-wrap">
+  <div class="search-box">
+    <span class="search-prompt">❯</span>
+    <input class="search-input" id="searchInput" type="search" placeholder="filter chapters, topics…" autocomplete="off" spellcheck="false">
+    <span class="search-count" id="searchCount"></span>
+    <button class="search-clear" id="searchClear" title="Clear">✕</button>
+  </div>
+</div>
+<div class="no-results" id="noResults">No chapters match "<span id="noQuery"></span>"</div>
+
+<main class="main">
+
+  <!-- ━━━ PART 1: Foundations ━━━ -->
+  <section class="part part-green" id="part1">
+    <div class="part-header">
+      <div class="part-bar"></div>
+      <div>
+        <div class="part-label">Part 1</div>
+        <div class="part-title">Foundations</div>
+      </div>
+      <div class="part-count">CH01 – CH05 · 5 chapters</div>
+    </div>
+    <div class="cards" id="cards-p1">
+
+      <a class="chapter-card" href="MAD101/CH01-Logic-Proofs-CheatSheet.html" data-search="logic proposition connective truth table implication tautology predicate quantifier forall exists inference modus ponens proof contradiction contrapositive">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 01</div>
+          <div class="card-title">Logic &amp; Proofs</div>
+          <div class="card-tags">Propositions · Truth Tables · Quantifiers · Inference · Proof Methods</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.1</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="chapter-card" href="MAD101/CH02-Sets-Functions-CheatSheet.html" data-search="set subset power set Cartesian product union intersection complement difference function injective surjective bijective sequence summation cardinality countable">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 02</div>
+          <div class="card-title">Sets, Functions &amp; Sequences</div>
+          <div class="card-tags">Set Ops · Functions · Bijection · Sequences · Cardinality</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.2</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="chapter-card" href="MAD101/CH03-Algorithms-CheatSheet.html" data-search="algorithm searching sorting Big-O complexity growth functions linear binary search bubble insertion merge sort pseudocode NP tractable intractable">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 03</div>
+          <div class="card-title">Algorithms</div>
+          <div class="card-tags">Big-O · Searching · Sorting · Complexity · Growth Functions</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.3</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="chapter-card" href="MAD101/CH04-Number-Theory-CheatSheet.html" data-search="divisibility modular arithmetic congruence prime gcd lcm Euclidean algorithm RSA Fermat Chinese Remainder Theorem cryptography encryption number theory">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 04</div>
+          <div class="card-title">Number Theory &amp; Cryptography</div>
+          <div class="card-tags">Divisibility · Modular Arithmetic · Primes · GCD · RSA</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.4</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="chapter-card" href="MAD101/CH05-Induction-Recursion-CheatSheet.html" data-search="induction base case inductive step strong induction recursion recursive definition well-ordering loop invariant program correctness">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 05</div>
+          <div class="card-title">Induction &amp; Recursion</div>
+          <div class="card-tags">Mathematical Induction · Strong Induction · Recursion · Loop Invariants</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.5</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ━━━ PART 2: Probability, Relations & Graphs ━━━ -->
+  <section class="part part-blue" id="part2">
+    <div class="part-header">
+      <div class="part-bar"></div>
+      <div>
+        <div class="part-label">Part 2</div>
+        <div class="part-title">Probability, Relations &amp; Graphs</div>
+      </div>
+      <div class="part-count">CH07, CH09, CH10 · 3 chapters</div>
+    </div>
+    <div class="cards" id="cards-p2">
+
+      <a class="chapter-card" href="MAD101/CH07-Discrete-Probability-CheatSheet.html" data-search="probability sample space event complement union conditional Bayes independent Bernoulli binomial expected value variance random variable Chebyshev">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 07</div>
+          <div class="card-title">Discrete Probability</div>
+          <div class="card-tags">Sample Space · Conditional · Bayes · Expected Value · Variance</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.7</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="chapter-card" href="MAD101/CH09-Relations-CheatSheet.html" data-search="relation reflexive symmetric antisymmetric transitive equivalence equivalence class partition partial order POSET Hasse diagram closure Warshall topological sort">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 09</div>
+          <div class="card-title">Relations</div>
+          <div class="card-tags">Properties · Equivalence · POSET · Hasse · Warshall · Closure</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.9</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="chapter-card" href="MAD101/CH10-Graphs-CheatSheet.html" data-search="graph vertex edge degree path connectivity Euler Hamilton Dijkstra planar chromatic number coloring isomorphism adjacency matrix bipartite Kuratowski">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-num">Chapter 10</div>
+          <div class="card-title">Graphs</div>
+          <div class="card-tags">Connectivity · Euler · Hamilton · Dijkstra · Planar · Coloring</div>
+          <div class="card-footer">
+            <span class="card-src">Rosen · Ch.10</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>MAD101 · Discrete Mathematics · Rosen 7th Edition</span>
+    <a href="../index.html">← Back to Portal</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var input = document.getElementById('searchInput');
+  var clearBtn = document.getElementById('searchClear');
+  var countEl = document.getElementById('searchCount');
+  var noResults = document.getElementById('noResults');
+  var noQuery = document.getElementById('noQuery');
+  var cards = Array.from(document.querySelectorAll('.chapter-card'));
+  function filter(q){
+    q = q.trim().toLowerCase();
+    clearBtn.style.display = q ? 'block' : 'none';
+    var vis = 0;
+    cards.forEach(function(c){
+      var text = (c.getAttribute('data-search')||'') + ' ' + c.textContent;
+      var show = !q || text.toLowerCase().indexOf(q) >= 0;
+      c.classList.toggle('hidden', !show);
+      if(show) vis++;
+    });
+    countEl.textContent = q ? vis+' result'+(vis!==1?'s':'') : '';
+    noResults.style.display = (!vis && q) ? 'flex' : 'none';
+    if(noQuery) noQuery.textContent = q;
+  }
+  input.addEventListener('input', function(){ filter(input.value); });
+  clearBtn.addEventListener('click', function(){ input.value=''; filter(''); input.focus(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH05 – IP Routing | NWC204</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --nwc:#ffa657;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--nwc);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--nwc);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--nwc);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--nwc);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(255,166,87,0.07);border:1px solid rgba(255,166,87,0.25);border-left:3px solid var(--nwc);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--nwc);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--nwc);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--accent2);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--nwc);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+  #page-toc{position:fixed;right:14px;top:80px;width:172px;background:var(--surface);border:1px solid var(--border);border-radius:6px;padding:0;z-index:100;max-height:calc(100vh - 100px);overflow:hidden;font-family:'IBM Plex Mono',monospace;transition:max-height 0.22s ease;}
+  #page-toc.toc-open{overflow-y:auto;max-height:calc(100vh - 100px);}
+  #page-toc.toc-collapsed{max-height:30px;overflow:hidden;}
+  #page-toc::-webkit-scrollbar{width:3px;}
+  #page-toc::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+  .toc-hdr{font-size:9px;font-weight:600;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;padding:6px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;height:30px;box-sizing:border-box;}
+  .toc-hdr:hover{color:var(--text-muted);}
+  .toc-chevron{font-size:10px;transition:transform 0.22s ease;display:inline-block;}
+  #page-toc.toc-collapsed .toc-chevron{transform:rotate(-90deg);}
+  .toc-body{padding:4px 0;}
+  .toc-link{display:block;font-size:10px;color:var(--text-muted);padding:4px 12px;text-decoration:none;border-left:2px solid transparent;transition:color 0.15s,border-color 0.15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.3;}
+  .toc-link:hover{color:var(--text);background:rgba(255,255,255,0.03);}
+  .toc-link.active{color:var(--nwc);border-left-color:var(--nwc);background:rgba(255,166,87,0.06);}
+  @media(max-width:1200px){#page-toc{display:none;}}
+  @media(min-width:1200px){body{padding-right:200px;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+/* ── Overflow & scaling fixes ── */
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+
+/* ── Prism: match site dark theme ── */
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-cisco-ios{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+
+/* ── Cisco IOS token colors ── */
+.token.cio-comment{color:#8b949e!important;font-style:italic;}
+.token.cio-prompt{color:#ffa657!important;font-weight:600;}
+.token.cio-ip{color:#79c0ff!important;}
+.token.cio-iface{color:#d2a8ff!important;}
+.token.cio-keyword{color:#58a6ff!important;}
+.token.cio-hex{color:#a5d6ff!important;}
+.token.cio-num{color:#79c0ff!important;}
+.token.cio-string{color:#a5d6ff!important;}
+</style>
+</head>
+<body>
+<nav id="page-toc">
+  <div class="toc-hdr" onclick="toggleTOC()">Contents <span class="toc-chevron">▾</span></div>
+  <div class="toc-body" id="tocBody"></div>
+</nav>
+
+<div class="header">
+  <div class="header-left">
+    <h1>CH05 — IP Routing</h1>
+    <h2>CCNA INTRO · Todd Lammle, Sybex 2006 · Pages 213–252</h2>
+    <div class="toc" style="margin-top:10px;">
+      <span class="toc-item">Routing Basics</span>
+      <span class="toc-item">Admin Distance</span>
+      <span class="toc-item">Route Flags</span>
+      <span class="toc-item">Routing Process</span>
+      <span class="toc-item">Route Selection</span>
+      <span class="toc-item">Static Routes</span>
+      <span class="toc-item">Default Route</span>
+      <span class="toc-item">show ip route</span>
+      <span class="toc-item">Topology Config</span>
+      <span class="toc-item">Verification</span>
+    </div>
+  </div>
+  <div><span class="badge">NWC204</span></div>
+</div>
+
+<!-- ROW 1 -->
+<div class="grid">
+  <div class="card blue" id="routing-basics">
+    <div class="card-header"><div class="dot"></div><h3>Routing Fundamentals</h3></div>
+    <div class="card-body">
+      <p>A <span class="tt" data-t="A router makes forwarding decisions based solely on the destination IP address in the packet header — it ignores the source address.">router</span> forwards packets by examining the <strong>destination IP address</strong> and matching it to the best entry in its <span class="tt" data-t="A database in RAM storing all known networks, their next-hop addresses, exit interfaces, admin distance, and metric values.">routing table</span>.</p>
+      <div class="label">Routing Table Entry Components</div>
+      <table class="tbl">
+        <tr><th>Field</th><th>Description</th><th>Example</th></tr>
+        <tr><td>Network</td><td>Destination network address</td><td><code>172.16.1.0</code></td></tr>
+        <tr><td>Mask</td><td>Subnet mask / prefix length</td><td><code>/24</code> or <code>255.255.255.0</code></td></tr>
+        <tr><td>Next-hop</td><td>IP of next router toward destination</td><td><code>172.16.2.1</code></td></tr>
+        <tr><td>Exit Interface</td><td>Local interface to send packet out</td><td><code>Serial0/0</code></td></tr>
+        <tr><td>AD</td><td>Administrative distance (source trust)</td><td><code>110</code> for OSPF</td></tr>
+        <tr><td>Metric</td><td>Cost to reach destination</td><td>hop count, bandwidth</td></tr>
+      </table>
+      <div class="label">How Routes are Added</div>
+      <ul class="items">
+        <li><strong>Connected (C)</strong> — automatically when interface is up with IP</li>
+        <li><strong>Static (S)</strong> — manually configured with <code>ip route</code></li>
+        <li><strong>Dynamic (R/O/I/D)</strong> — learned via routing protocols</li>
+      </ul>
+      <div class="formula">Best route = longest prefix match → lowest AD → lowest metric</div>
+    </div>
+  </div>
+
+  <div class="card green" id="admin-distance">
+    <div class="card-header"><div class="dot"></div><h3>Administrative Distance (AD)</h3></div>
+    <div class="card-body">
+      <p><span class="tt" data-t="Administrative Distance is a rating of the trustworthiness of a routing information source. Lower AD = more trusted. Used to choose between routes from different sources.">Administrative Distance</span> determines which route source is preferred when multiple protocols know a route. <strong>Lower = more trusted</strong>.</p>
+      <table class="tbl">
+        <tr><th>Source</th><th>AD Value</th><th>Flag</th></tr>
+        <tr><td>Connected interface</td><td style="color:var(--accent2)"><strong>0</strong></td><td><code>C</code></td></tr>
+        <tr><td>Static route</td><td style="color:var(--accent2)"><strong>1</strong></td><td><code>S</code></td></tr>
+        <tr><td>EIGRP Summary</td><td><strong>5</strong></td><td><code>D</code></td></tr>
+        <tr><td>External BGP</td><td><strong>20</strong></td><td><code>B</code></td></tr>
+        <tr><td>Internal EIGRP</td><td><strong>90</strong></td><td><code>D</code></td></tr>
+        <tr><td>IGRP</td><td><strong>100</strong></td><td><code>I</code></td></tr>
+        <tr><td>OSPF</td><td><strong>110</strong></td><td><code>O</code></td></tr>
+        <tr><td>IS-IS</td><td><strong>115</strong></td><td><code>i</code></td></tr>
+        <tr><td>RIP v1 / v2</td><td><strong>120</strong></td><td><code>R</code></td></tr>
+        <tr><td>External EIGRP</td><td><strong>170</strong></td><td><code>D EX</code></td></tr>
+        <tr><td>Internal BGP</td><td><strong>200</strong></td><td><code>B</code></td></tr>
+        <tr><td>Unknown / unusable</td><td style="color:var(--accent3)"><strong>255</strong></td><td>—</td></tr>
+      </table>
+      <div class="info" style="margin-top:8px;">
+        <div class="i-title">Floating Static Route</div>
+        Set AD higher than dynamic protocol to use as backup:<br>
+        <code>ip route 10.0.0.0 255.0.0.0 1.1.1.1 <strong>130</strong></code><br>
+        Only activates if OSPF (AD 110) route disappears.
+      </div>
+    </div>
+  </div>
+
+  <div class="card purple" id="route-flags">
+    <div class="card-header"><div class="dot"></div><h3>Routing Table Flags</h3></div>
+    <div class="card-body">
+      <div class="label">Protocol Flags (show ip route)</div>
+      <table class="tbl">
+        <tr><th>Flag</th><th>Protocol / Source</th></tr>
+        <tr><td><code style="color:var(--accent2)">C</code></td><td>Connected — directly attached network</td></tr>
+        <tr><td><code style="color:var(--accent2)">L</code></td><td>Local — router's own interface address (/32)</td></tr>
+        <tr><td><code style="color:var(--accent)">S</code></td><td>Static — manually configured route</td></tr>
+        <tr><td><code style="color:var(--accent3)">R</code></td><td>RIP — Routing Information Protocol</td></tr>
+        <tr><td><code style="color:var(--accent5)">I</code></td><td>IGRP — Interior Gateway Routing Protocol</td></tr>
+        <tr><td><code style="color:var(--accent4)">O</code></td><td>OSPF — Open Shortest Path First</td></tr>
+        <tr><td><code style="color:var(--yellow)">D</code></td><td>EIGRP — Enhanced IGRP</td></tr>
+        <tr><td><code style="color:var(--accent)">B</code></td><td>BGP — Border Gateway Protocol</td></tr>
+        <tr><td><code style="color:var(--accent2)">*</code></td><td>Candidate default route (gateway of last resort)</td></tr>
+        <tr><td><code>EX</code></td><td>External (used with EIGRP, OSPF)</td></tr>
+        <tr><td><code>IA</code></td><td>OSPF Inter-Area route</td></tr>
+        <tr><td><code>E1/E2</code></td><td>OSPF External type 1 or 2</td></tr>
+      </table>
+      <div class="label">Route Entry Format</div>
+      <pre style="font-size:10px;">R  172.16.0.0/16 [120/1] via 10.0.0.2, 00:00:23, Serial0/0
+^  ^             ^ ^     ^            ^           ^
+|  network/mask  | |     next-hop     timestamp   exit interface
+|                | metric
+|                AD</pre>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 2 -->
+<div class="grid section-gap">
+  <div class="card orange col-span-2" id="ip-routing-process">
+    <div class="card-header"><div class="dot"></div><h3>IP Routing Process — Step-by-Step Packet Walk</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <ol class="steps">
+            <li>Source host creates IP packet with <strong>destination IP address</strong> of remote host</li>
+            <li>Host checks: is destination on same subnet? If yes, ARP for MAC and send directly. If no, send to <span class="tt" data-t="The default gateway is the router's IP address on the local subnet. All traffic for remote networks goes here first.">default gateway</span></li>
+            <li>Host ARPs for the <strong>default gateway MAC address</strong>, encapsulates packet in an Ethernet frame addressed to the gateway MAC</li>
+            <li>Router receives frame on ingress interface, checks destination MAC — matches its own MAC, accepts the frame</li>
+            <li>Router <strong>strips (de-encapsulates)</strong> the Layer 2 frame, exposing the Layer 3 IP packet</li>
+            <li>Router reads the <strong>destination IP address</strong> from the IP header</li>
+          </ol>
+        </div>
+        <div>
+          <ol class="steps" style="counter-reset:steps 6;">
+            <li>Router performs <strong>routing table lookup</strong> — finds longest prefix match for destination IP</li>
+            <li>Router decrements <span class="tt" data-t="Time To Live — an 8-bit field in the IP header decremented by 1 at each router hop. When it reaches 0, the packet is discarded and an ICMP Time Exceeded message is sent back to source.">TTL</span> by 1. If TTL = 0, discard and send ICMP Time Exceeded</li>
+            <li>Router determines: exit interface + next-hop IP address</li>
+            <li>If next-hop is Ethernet: ARP for next-hop MAC (or use ARP cache)</li>
+            <li>Router <strong>re-encapsulates</strong> packet in NEW Layer 2 frame with: new source MAC (router's egress int MAC) and new dest MAC (next-hop MAC)</li>
+            <li>Frame transmitted out the correct egress interface toward destination</li>
+          </ol>
+        </div>
+      </div>
+      <hr class="divider">
+      <div class="info">
+        <div class="i-title">Key Rule — L2 Changes, L3 Does Not</div>
+        At every router hop, the <strong>Layer 2 frame is rebuilt</strong> (new source/dest MAC). The <strong>Layer 3 IP header stays the same</strong> (source and destination IP never change, except with NAT).
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="route-selection">
+    <div class="card-header"><div class="dot"></div><h3>Route Selection Logic</h3></div>
+    <div class="card-body">
+      <div class="label">Selection Priority (in order)</div>
+      <ol class="steps">
+        <li><strong>Longest prefix match</strong> — most specific route wins regardless of source</li>
+        <li><strong>Lowest Administrative Distance</strong> — if same prefix from multiple sources</li>
+        <li><strong>Lowest Metric</strong> — if same AD (multiple paths from same protocol)</li>
+        <li><strong>Equal-cost load balancing</strong> — if metric also equal</li>
+      </ol>
+      <div class="note" style="margin-top:8px;">
+        <div class="n-title">Longest Prefix Example</div>
+        Packet to <code>10.1.1.5</code> — routing table has:<br>
+        <code>10.0.0.0/8</code> via 1.1.1.1<br>
+        <code>10.1.1.0/24</code> via 2.2.2.2 ← <strong>WINS</strong> (more specific)
+      </div>
+      <div class="label">No Match = Packet Dropped</div>
+      <div class="warn">
+        <div class="w-title">Packet Dropped</div>
+        If no route matches and no default route exists, router drops the packet and sends ICMP <strong>Destination Unreachable</strong> to source.
+      </div>
+      <div class="label">Gateway of Last Resort</div>
+      <p>The <code>ip route 0.0.0.0 0.0.0.0</code> default route matches ALL destinations not in the table — the "catch-all" route.</p>
+      <div class="formula">0.0.0.0/0 — matches every possible destination</div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 3 -->
+<div class="grid section-gap">
+  <div class="card blue col-span-2" id="static-routing">
+    <div class="card-header"><div class="dot"></div><h3>Static Route Configuration</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Syntax</div>
+          <div class="formula">ip route [dest-network] [mask] [next-hop-IP | exit-interface] [AD]</div>
+          <div class="label">Static Route Examples</div>
+          <pre>! Via next-hop IP address (preferred for point-to-point)
+Router(config)# ip route 172.16.1.0 255.255.255.0 172.16.2.1
+
+! Via exit interface (Ethernet — triggers proxy ARP)
+Router(config)# ip route 192.168.3.0 255.255.255.0 Serial0/0
+
+! Multiple static routes
+Router(config)# ip route 10.1.0.0 255.255.0.0 10.0.0.2
+Router(config)# ip route 10.2.0.0 255.255.0.0 10.0.0.2
+Router(config)# ip route 10.3.0.0 255.255.0.0 10.0.0.2
+
+! Floating static (backup, AD=130 beats out nothing until OSPF fails)
+Router(config)# ip route 10.0.0.0 255.0.0.0 1.1.1.2 130
+
+! Remove a static route
+Router(config)# no ip route 172.16.1.0 255.255.255.0 172.16.2.1</pre>
+          <div class="tip">
+            <div class="t-title">Next-Hop vs Exit Interface</div>
+            Use <strong>next-hop IP</strong> on multi-access (Ethernet) — router knows which neighbor to ARP for.<br>
+            Use <strong>exit interface</strong> on point-to-point (Serial) — only one device on the link.
+          </div>
+        </div>
+        <div>
+          <div class="label">Three-Router Static Route Lab</div>
+          <pre style="font-size:10px;">Topology:
+R1 f0/0: 192.168.1.1/24  (LAN A)
+R1 s0/0: 10.1.1.1/30     (WAN R1-R2)
+R2 s0/0: 10.1.1.2/30     (WAN R1-R2)
+R2 s0/1: 10.2.2.1/30     (WAN R2-R3)
+R3 s0/1: 10.2.2.2/30     (WAN R2-R3)
+R3 f0/0: 192.168.3.1/24  (LAN C)
+
+! R1 needs route to LAN C and WAN R2-R3:
+R1(config)# ip route 192.168.3.0 255.255.255.0 10.1.1.2
+R1(config)# ip route 10.2.2.0 255.255.255.252 10.1.1.2
+
+! R3 needs route back to LAN A and WAN R1-R2:
+R3(config)# ip route 192.168.1.0 255.255.255.0 10.2.2.1
+R3(config)# ip route 10.1.1.0 255.255.255.252 10.2.2.1
+
+! R2 needs routes to both LANs:
+R2(config)# ip route 192.168.1.0 255.255.255.0 10.1.1.1
+R2(config)# ip route 192.168.3.0 255.255.255.0 10.2.2.2</pre>
+          <div class="label">Verify Static Routes</div>
+          <pre>show ip route static      ! only static routes
+show ip route             ! full routing table
+show ip route 10.1.1.0    ! specific network</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="default-route">
+    <div class="card-header"><div class="dot"></div><h3>Default Route</h3></div>
+    <div class="card-body">
+      <p>The <span class="tt" data-t="Also called the Gateway of Last Resort. Matches any destination not found in the routing table. Essential for stub routers pointing to the Internet.">default route</span> is a catch-all — it matches ANY destination not explicitly listed in the routing table.</p>
+      <div class="label">Configure Default Route</div>
+      <pre>! Quad-zero route — matches everything
+Router(config)# ip route 0.0.0.0 0.0.0.0 [next-hop]
+
+! Examples:
+Router(config)# ip route 0.0.0.0 0.0.0.0 172.16.1.1
+Router(config)# ip route 0.0.0.0 0.0.0.0 Serial0/0</pre>
+      <div class="label">Propagate to Other Routers</div>
+      <pre>! In RIP — advertise default to neighbors:
+Router(config-router)# default-information originate
+
+! In OSPF:
+Router(config-router)# default-information originate</pre>
+      <div class="label">Verify Default Route</div>
+      <pre>show ip route
+! Look for: Gateway of last resort is X.X.X.X
+! Look for: S* 0.0.0.0/0 [1/0] via X.X.X.X</pre>
+      <div class="info">
+        <div class="i-title">S* Notation</div>
+        <code>S*</code> = Static + Candidate Default. The asterisk (*) marks the active default route (gateway of last resort).
+      </div>
+      <div class="note">
+        <div class="n-title">Stub Router Use Case</div>
+        A branch router with only one path to the network — configure a default route pointing to HQ instead of full routing table.
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 4 — full width show ip route -->
+<div class="grid section-gap">
+  <div class="card green col-span-3" id="show-ip-route">
+    <div class="card-header"><div class="dot"></div><h3>Reading show ip route Output</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+        <div>
+          <div class="label">Sample Output</div>
+          <pre>Router# show ip route
+Codes: C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       * - candidate default, U - per-user static route
+
+Gateway of last resort is 10.1.1.2 to network 0.0.0.0
+
+     10.0.0.0/8 is variably subnetted, 2 subnets, 2 masks
+C       10.1.1.0/30 is directly connected, Serial0/0
+L       10.1.1.1/32 is directly connected, Serial0/0
+C    192.168.1.0/24 is directly connected, FastEthernet0/0
+L    192.168.1.1/32 is directly connected, FastEthernet0/0
+S    172.16.1.0/24 [1/0] via 10.1.1.2
+R    172.16.2.0/24 [120/1] via 10.1.1.2, 00:00:17, Serial0/0
+O    10.2.2.0/30 [110/65] via 10.1.1.2, 00:15:42, Serial0/0
+S*   0.0.0.0/0 [1/0] via 10.1.1.2</pre>
+        </div>
+        <div>
+          <div class="label">Decoding Each Line</div>
+          <table class="tbl">
+            <tr><th>Part</th><th>Meaning</th></tr>
+            <tr><td><code>C</code></td><td>Source: Connected interface</td></tr>
+            <tr><td><code>L</code></td><td>Local: router's own address (/32)</td></tr>
+            <tr><td><code>S</code></td><td>Source: Static route (manually configured)</td></tr>
+            <tr><td><code>R</code></td><td>Source: Learned via RIP</td></tr>
+            <tr><td><code>O</code></td><td>Source: Learned via OSPF</td></tr>
+            <tr><td><code>[1/0]</code></td><td>[AD / Metric] — AD=1, Metric=0</td></tr>
+            <tr><td><code>[120/1]</code></td><td>AD=120 (RIP), Metric=1 hop</td></tr>
+            <tr><td><code>[110/65]</code></td><td>AD=110 (OSPF), Metric=65 (cost)</td></tr>
+            <tr><td><code>via 10.1.1.2</code></td><td>Next-hop IP address</td></tr>
+            <tr><td><code>00:00:17</code></td><td>Time since last update received</td></tr>
+            <tr><td><code>Serial0/0</code></td><td>Exit interface on this router</td></tr>
+            <tr><td><code>S*</code></td><td>Static + Candidate Default (gateway of last resort)</td></tr>
+            <tr><td><code>/30</code></td><td>Prefix length (subnet mask notation)</td></tr>
+          </table>
+          <div class="label">Useful Filters</div>
+          <pre>show ip route static        ! only S routes
+show ip route connected      ! only C routes
+show ip route rip            ! only R routes
+show ip route 172.16.0.0     ! specific network
+show ip route 172.16.1.5     ! lookup for specific host</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 5 -->
+<div class="grid section-gap">
+  <div class="card purple col-span-2" id="topology-config">
+    <div class="card-header"><div class="dot"></div><h3>Full Topology Configuration Example</h3></div>
+    <div class="card-body">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+        <div>
+          <div class="label">Topology Diagram (Text)</div>
+          <pre style="font-size:10px;">  [LAN-A 192.168.1.0/24]
+        |
+    [R1 f0/0: 192.168.1.1/24]
+    [R1 s0/0: 172.16.1.1/30] ---DCE---
+                                       |
+                               [R2 s0/0: 172.16.1.2/30]
+                               [R2 s0/1: 172.16.2.1/30] ---DCE---
+                                                                   |
+                                                    [R3 s0/1: 172.16.2.2/30]
+                                                    [R3 f0/0: 192.168.3.1/24]
+                                                              |
+                                                      [LAN-C 192.168.3.0/24]</pre>
+          <div class="label">R1 Configuration</div>
+          <pre style="font-size:10px;">hostname R1
+interface FastEthernet0/0
+ ip address 192.168.1.1 255.255.255.0
+ no shutdown
+interface Serial0/0
+ ip address 172.16.1.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+! Static routes to reach R3 LAN and WAN:
+ip route 192.168.3.0 255.255.255.0 172.16.1.2
+ip route 172.16.2.0 255.255.255.252 172.16.1.2</pre>
+        </div>
+        <div>
+          <div class="label">R2 Configuration</div>
+          <pre style="font-size:10px;">hostname R2
+interface Serial0/0
+ ip address 172.16.1.2 255.255.255.252
+ no shutdown
+interface Serial0/1
+ ip address 172.16.2.1 255.255.255.252
+ clock rate 64000
+ no shutdown
+! Routes to both LANs:
+ip route 192.168.1.0 255.255.255.0 172.16.1.1
+ip route 192.168.3.0 255.255.255.0 172.16.2.2</pre>
+          <div class="label">R3 Configuration</div>
+          <pre style="font-size:10px;">hostname R3
+interface FastEthernet0/0
+ ip address 192.168.3.1 255.255.255.0
+ no shutdown
+interface Serial0/1
+ ip address 172.16.2.2 255.255.255.252
+ no shutdown
+! Routes back to R1 LAN and WAN R1-R2:
+ip route 192.168.1.0 255.255.255.0 172.16.2.1
+ip route 172.16.1.0 255.255.255.252 172.16.2.1</pre>
+          <div class="tip">
+            <div class="t-title">Bidirectional Routes Required</div>
+            Every router needs routes in <strong>both directions</strong>. Missing a return route causes one-way reachability (packets go but replies can't return).
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card blue" id="verification">
+    <div class="card-header"><div class="dot"></div><h3>Verification Commands</h3></div>
+    <div class="card-body">
+      <div class="label">Routing Table</div>
+      <pre>show ip route
+show ip route static
+show ip route connected
+show ip route 10.1.0.0      ! specific network
+show ip route summary       ! counts by type</pre>
+      <div class="label">Connectivity Testing</div>
+      <pre>! Basic ping (User or Priv EXEC):
+ping 192.168.3.1
+ping 172.16.1.2
+
+! Extended ping (Priv EXEC only):
+ping
+ Protocol [ip]:
+ Target IP address: 192.168.3.1
+ Repeat count [5]: 100
+ Datagram size [100]: 1500
+ Source address: 192.168.1.1
+ Timeout in seconds [2]: 5</pre>
+      <div class="label">Traceroute</div>
+      <pre>traceroute 192.168.3.1
+! Shows each hop with IP and latency</pre>
+      <div class="label">Ping Output Symbols</div>
+      <table class="tbl">
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td><code style="color:var(--accent2)">!</code></td><td>Success — ICMP echo reply received</td></tr>
+        <tr><td><code style="color:var(--accent3)">.</code></td><td>Timeout — no reply within timeout period</td></tr>
+        <tr><td><code style="color:var(--accent3)">U</code></td><td>Destination Unreachable — ICMP error from router</td></tr>
+        <tr><td><code>N</code></td><td>Network Unreachable</td></tr>
+        <tr><td><code>H</code></td><td>Host Unreachable</td></tr>
+        <tr><td><code>P</code></td><td>Protocol Unreachable</td></tr>
+        <tr><td><code>Q</code></td><td>Source Quench (congestion)</td></tr>
+        <tr><td><code>M</code></td><td>Could not fragment</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ROW 6 -->
+<div class="grid section-gap">
+  <div class="card orange" id="ping-detail">
+    <div class="card-header"><div class="dot"></div><h3>ping & Extended ping</h3></div>
+    <div class="card-body">
+      <div class="label">Standard vs Extended ping</div>
+      <table class="tbl">
+        <tr><th>Feature</th><th>Standard</th><th>Extended</th></tr>
+        <tr><td>Mode</td><td>User or Priv</td><td>Priv EXEC only</td></tr>
+        <tr><td>Source IP</td><td>Outgoing interface</td><td>Configurable</td></tr>
+        <tr><td>Packet size</td><td>100 bytes</td><td>Configurable (up to 18000)</td></tr>
+        <tr><td>Repeat count</td><td>5</td><td>Configurable</td></tr>
+        <tr><td>Timeout</td><td>2 seconds</td><td>Configurable</td></tr>
+        <tr><td>TTL</td><td>Default</td><td>Configurable</td></tr>
+      </table>
+      <div class="label">Test Specific Source Interface</div>
+      <pre>Router# ping
+Protocol [ip]: 
+Target IP address: 192.168.3.1
+Repeat count [5]: 
+Datagram size [100]: 
+Source address or interface: 192.168.1.1
+Type escape sequence to abort.
+Sending 5, 100-byte ICMP Echos to 192.168.3.1
+!!!!!</pre>
+      <div class="tip">
+        <div class="t-title">Source Ping for Route Testing</div>
+        Use extended ping with a specific source address to test a path from a different segment — simulates end-host perspective.
+      </div>
+    </div>
+  </div>
+
+  <div class="card yellow" id="traceroute-detail">
+    <div class="card-header"><div class="dot"></div><h3>traceroute Output</h3></div>
+    <div class="card-body">
+      <div class="label">Sample traceroute Output</div>
+      <pre>Router# traceroute 192.168.3.1
+Type escape sequence to abort.
+Tracing the route to 192.168.3.1
+  1 172.16.1.2   4 msec  4 msec  4 msec
+  2 172.16.2.2   8 msec  8 msec  8 msec
+  3 192.168.3.1  12 msec  12 msec  12 msec</pre>
+      <div class="label">How traceroute Works</div>
+      <ul class="items">
+        <li>Sends UDP datagrams with incrementing TTL (starts at 1)</li>
+        <li>Each router decrements TTL — when TTL=0, sends <strong>ICMP Time Exceeded</strong> back</li>
+        <li>Source records that router's IP and latency</li>
+        <li>TTL increments each round until destination reached</li>
+      </ul>
+      <div class="label">traceroute Symbols</div>
+      <table class="tbl">
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td><code>msec</code></td><td>Round-trip time in milliseconds</td></tr>
+        <tr><td><code>*</code></td><td>No response / timeout at this hop</td></tr>
+        <tr><td><code>!H</code></td><td>Host unreachable at this hop</td></tr>
+        <tr><td><code>!N</code></td><td>Network unreachable at this hop</td></tr>
+        <tr><td><code>!P</code></td><td>Protocol unreachable</td></tr>
+      </table>
+      <div class="note">
+        <div class="n-title">Windows vs IOS traceroute</div>
+        Windows: <code>tracert</code> (uses ICMP)<br>
+        IOS / Linux: <code>traceroute</code> (uses UDP by default)
+      </div>
+    </div>
+  </div>
+
+  <div class="card red" id="routing-troubleshoot">
+    <div class="card-header"><div class="dot"></div><h3>Routing Troubleshooting</h3></div>
+    <div class="card-body">
+      <div class="label">Common Problems & Solutions</div>
+      <table class="tbl">
+        <tr><th>Symptom</th><th>Likely Cause</th><th>Fix</th></tr>
+        <tr><td>Ping fails, U returned</td><td>No return route on remote router</td><td>Add return static route</td></tr>
+        <tr><td>5 dots (.....) from ping</td><td>Route missing or interface down</td><td><code>show ip route</code>, <code>show int</code></td></tr>
+        <tr><td>Route not in table</td><td>Wrong network/mask in ip route</td><td>Remove and re-add route</td></tr>
+        <tr><td>Correct route but still fails</td><td>Interface shutdown or down/down</td><td><code>no shutdown</code></td></tr>
+        <tr><td>Serial up/down</td><td>Encapsulation mismatch or no clock</td><td>Check encap + clock rate on DCE</td></tr>
+      </table>
+      <div class="label">Diagnostic Sequence</div>
+      <ol class="steps">
+        <li><code>show ip interface brief</code> — are interfaces up/up?</li>
+        <li><code>show ip route</code> — is destination in table?</li>
+        <li><code>ping [next-hop]</code> — can we reach adjacent router?</li>
+        <li><code>traceroute [dest]</code> — where does it fail?</li>
+        <li>Check remote router — does it have a return route?</li>
+      </ol>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>NWC204 · CH05 — IP Routing · Pages 213–252</span>
+  <span>CCNA INTRO · Todd Lammle · Sybex 2006</span>
+</div>
+
+<script>
+function toggleTOC(){var el=document.getElementById('page-toc');el.classList.toggle('toc-collapsed');}
+(function(){
+  var sections=document.querySelectorAll('.card[id]');
+  var toc=document.getElementById('tocBody');
+  sections.forEach(function(s){
+    var a=document.createElement('a');a.className='toc-link';a.href='#'+s.id;
+    a.textContent=s.querySelector('h3')?s.querySelector('h3').textContent:'Section';
+    toc.appendChild(a);
+  });
+  var links=toc.querySelectorAll('.toc-link');
+  window.addEventListener('scroll',function(){
+    var pos=window.scrollY+120;
+    sections.forEach(function(s,i){
+      if(s.offsetTop<=pos)links.forEach(function(l){l.classList.remove('active');});
+      if(s.offsetTop<=pos)links[i]&&links[i].classList.add('active');
+    });
+  });
+})();
+</script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script>
+(function(){
+  // ── Custom Cisco IOS grammar ──────────────────────────────────────────────
+  Prism.languages['cisco-ios'] = {
+    'cio-comment': { pattern: /!.*/, greedy: true },
+    'cio-prompt':  { pattern: /(?:Router|Switch|R\d+|S\d+|[A-Z][A-Za-z0-9_-]*)\s*(?:\([^)]*\))?\s*[#>]\s*/, greedy: true },
+    'cio-ip':      { pattern: /\b\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}(?:\/\d{1,2})?\b/ },
+    'cio-iface':   { pattern: /\b(?:GigabitEthernet|FastEthernet|TenGigabitEthernet|HundredGigE|Serial|Loopback|Vlan|Tunnel|Ethernet|Port-channel|Fa|Gi|Te|Se|Lo|Tu|Po|Vl)\d[\d\/.]*/i },
+    'cio-keyword': { pattern: /\b(?:enable|disable|configure|terminal|interface|ip|ipv6|no|show|router|network|area|ospf|eigrp|rip|bgp|access-list|permit|deny|any|host|crypto|key|generate|rsa|username|password|secret|line|vty|console|login|transport|input|output|ssh|telnet|spanning-tree|vlan|trunk|encapsulation|clock|rate|bandwidth|description|shutdown|switchport|mode|access|native|service|hostname|logging|ntp|snmp|cdp|lldp|exit|end|copy|running-config|startup-config|startup|flash|tftp|write|memory|reload|debug|undebug|ping|traceroute|clear|arp|mac|address|table|default|route|static|distance|metric|passive|auto|duplex|speed|full|half|summary|redistribute|connected|version|aaa|authentication|authorization|accounting|neighbor|maximum-paths|variance|delay|hello-interval|dead-interval|priority|cost|hello|world|portfast|bpduguard|stp|root|bridge|timers|holddown|update|invalid|flush)\b/i },
+    'cio-hex':     { pattern: /\b0x[0-9a-fA-F]+\b/ },
+    'cio-num':     { pattern: /\b\d+\b/ }
+  };
+
+  // ── Wrap all <pre> blocks ──────────────────────────────────────────────────
+  document.querySelectorAll('pre').forEach(function(pre){
+    if(!pre.querySelector('code')){
+      var code = document.createElement('code');
+      code.className = 'language-cisco-ios';
+      code.innerHTML = pre.innerHTML;
+      pre.innerHTML = '';
+      pre.appendChild(code);
+    }
+  });
+  Prism.highlightAll();
+})();
+</script>
+</body>
+</html>

@@ -13,7 +13,7 @@
   :root {
     --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
     --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
-    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;--osg:#56d3c8;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.5;padding:0;min-height:100vh;}
@@ -102,6 +102,12 @@
   .area-mae .area-label{color:var(--accent2);}
   .area-csi .area-bar{background:var(--accent4);}
   .area-csi .area-label{color:var(--accent4);}
+  .area-nwc .area-bar{background:var(--accent5);}
+  .area-nwc .area-label{color:var(--accent5);}
+  .area-pro .area-bar{background:var(--yellow);}
+  .area-pro .area-label{color:var(--yellow);}
+  .area-osg .area-bar{background:var(--osg);}
+  .area-osg .area-label{color:var(--osg);}
 
   /* ── Subject cards grid ── */
   .cards{
@@ -131,11 +137,17 @@
   .area-cea .card-accent{background:var(--accent);}
   .area-mae .card-accent{background:var(--accent2);}
   .area-csi .card-accent{background:var(--accent4);}
+  .area-nwc .card-accent{background:var(--accent5);}
+  .area-pro .card-accent{background:var(--yellow);}
+  .area-osg .card-accent{background:var(--osg);}
 
   /* Card hover border color */
   .area-cea .subject-card:not(.coming-soon):hover{border-color:rgba(88,166,255,0.6);}
   .area-mae .subject-card:not(.coming-soon):hover{border-color:rgba(63,185,80,0.6);}
   .area-csi .subject-card:not(.coming-soon):hover{border-color:rgba(210,168,255,0.6);}
+  .area-nwc .subject-card:not(.coming-soon):hover{border-color:rgba(255,166,87,0.6);}
+  .area-pro .subject-card:not(.coming-soon):hover{border-color:rgba(227,179,65,0.6);}
+  .area-osg .subject-card:not(.coming-soon):hover{border-color:rgba(86,211,200,0.6);}
 
   .card-inner{padding:16px 18px 18px;}
   .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
@@ -153,6 +165,15 @@
   }
   .area-csi .subject-code{
     color:var(--accent4);border-color:rgba(210,168,255,0.3);background:rgba(210,168,255,0.08);
+  }
+  .area-nwc .subject-code{
+    color:var(--accent5);border-color:rgba(255,166,87,0.3);background:rgba(255,166,87,0.08);
+  }
+  .area-pro .subject-code{
+    color:var(--yellow);border-color:rgba(227,179,65,0.3);background:rgba(227,179,65,0.08);
+  }
+  .area-osg .subject-code{
+    color:var(--osg);border-color:rgba(86,211,200,0.3);background:rgba(86,211,200,0.08);
   }
 
   .badge-soon{
@@ -266,9 +287,9 @@
     <h1>Study Reference <span>Portal</span></h1>
     <p class="hero-subtitle"><strong>Quick-reference cheatsheets</strong> &nbsp;·&nbsp; Organized by subject area</p>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="dot"></div>3 Subject Areas</div>
-      <div class="hero-stat r"><div class="dot"></div>5 Active Subjects</div>
-      <div class="hero-stat p"><div class="dot"></div>65 Chapters Available</div>
+      <div class="hero-stat"><div class="dot"></div>6 Subject Areas</div>
+      <div class="hero-stat r"><div class="dot"></div>9 Active Subjects</div>
+      <div class="hero-stat p"><div class="dot"></div>100 Chapters Available</div>
     </div>
   </div>
 </header>
@@ -355,6 +376,102 @@
     </div>
   </section>
 
+  <!-- ━━━ NWC ━━━ -->
+  <section class="area area-nwc">
+    <div class="area-header">
+      <div class="area-bar"></div>
+      <div class="area-header-text">
+        <div class="area-label">NWC</div>
+        <div class="area-title">Computer Networking</div>
+      </div>
+      <div class="area-desc">1 subject · 9 chapters</div>
+    </div>
+    <div class="cards">
+
+      <a class="subject-card" href="NWC/NWC204.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="subject-code">NWC204</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Computer Networking</div>
+            <div class="card-meta">OSI, TCP/IP, Routing &amp; Switching</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-edition">CCNA INTRO · Lammle · 9 Chapters</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ━━━ PRO ━━━ -->
+  <section class="area area-pro">
+    <div class="area-header">
+      <div class="area-bar"></div>
+      <div class="area-header-text">
+        <div class="area-label">PRO</div>
+        <div class="area-title">Programming</div>
+      </div>
+      <div class="area-desc">1 subject · 9 chapters</div>
+    </div>
+    <div class="cards">
+
+      <a class="subject-card" href="PRO/PRO192.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="subject-code">PRO192</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Object-Oriented Programming</div>
+            <div class="card-meta">Classes, Inheritance &amp; Collections</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-edition">Core Java Vol I · Horstmann · 9 Chapters</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
+  <!-- ━━━ OSG ━━━ -->
+  <section class="area area-osg">
+    <div class="area-header">
+      <div class="area-bar"></div>
+      <div class="area-header-text">
+        <div class="area-label">OSG</div>
+        <div class="area-title">Operating Systems</div>
+      </div>
+      <div class="area-desc">1 subject · 9 chapters</div>
+    </div>
+    <div class="cards">
+
+      <a class="subject-card" href="OSG/OSG202.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="subject-code">OSG202</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Operating Systems</div>
+            <div class="card-meta">Processes, Memory &amp; Security</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-edition">Modern OS 4th Ed. · Tanenbaum · 9 Chapters</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+
   <!-- ━━━ MAE ━━━ -->
   <section class="area area-mae">
     <div class="area-header">
@@ -363,7 +480,7 @@
         <div class="area-label">MAE</div>
         <div class="area-title">Mathematics &amp; Engineering</div>
       </div>
-      <div class="area-desc">3 subjects · 24 chapters</div>
+      <div class="area-desc">4 subjects · 32 chapters</div>
     </div>
     <div class="cards">
 
@@ -413,6 +530,23 @@
           </div>
           <div class="card-footer">
             <span class="card-edition">Nicholson · 11 Chapters</span>
+            <span class="card-arrow">↗</span>
+          </div>
+        </div>
+      </a>
+
+      <a class="subject-card" href="MAE/MAD101.html">
+        <div class="card-accent"></div>
+        <div class="card-inner">
+          <div class="card-top">
+            <span class="subject-code">MAD101</span>
+          </div>
+          <div class="card-body">
+            <div class="card-title">Discrete Mathematics</div>
+            <div class="card-meta">Logic, Sets, Graphs &amp; Number Theory</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-edition">Rosen 7th Ed. · 8 Chapters</span>
             <span class="card-arrow">↗</span>
           </div>
         </div>
@@ -526,6 +660,35 @@
     {code:'CAL2',subject:'Calculus 2',num:'CH05',name:'Sequences & Series',url:'MAE/CAL2/CH05-Sequences-Series-CheatSheet.html',tags:['sequence','series','convergence','divergence','ratio test','root test','comparison','alternating']},
     {code:'CAL2',subject:'Calculus 2',num:'CH06',name:'Power Series',url:'MAE/CAL2/CH06-Power-Series-CheatSheet.html',tags:['power series','Taylor','Maclaurin','radius of convergence','interval','representation']},
     {code:'CAL2',subject:'Calculus 2',num:'CH07',name:'Parametric Equations & Polar Coordinates',url:'MAE/CAL2/CH07-Parametric-Polar-CheatSheet.html',tags:['parametric','polar','coordinates','curve','area','arc length','conic']},
+    // PRO192 — Object-Oriented Programming with Java
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH01',name:'Introduction to Java',url:'PRO/PRO192/CH01-Introduction-Java-CheatSheet.html',tags:['java','introduction','history','JVM','JDK','JRE','bytecode','platform','compile','hello world']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH02',name:'Java Environment',url:'PRO/PRO192/CH02-Java-Environment-CheatSheet.html',tags:['environment','IDE','eclipse','IntelliJ','classpath','jar','package','javac','java','tools']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH03',name:'Fundamental Structures',url:'PRO/PRO192/CH03-Fundamental-Structures-CheatSheet.html',tags:['variables','types','operators','control flow','if','for','while','switch','array','string','primitive']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH04',name:'Objects & Classes',url:'PRO/PRO192/CH04-Objects-Classes-CheatSheet.html',tags:['class','object','constructor','field','method','encapsulation','access','static','this','instantiation']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH05',name:'Inheritance',url:'PRO/PRO192/CH05-Inheritance-CheatSheet.html',tags:['inheritance','extends','super','override','polymorphism','abstract','final','casting','instanceof']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH06',name:'Interfaces, Lambda & Inner Classes',url:'PRO/PRO192/CH06-Interfaces-Lambda-CheatSheet.html',tags:['interface','lambda','functional','inner class','anonymous','default method','comparator','predicate']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH07',name:'Exceptions, Assertions & Logging',url:'PRO/PRO192/CH07-Exceptions-Logging-CheatSheet.html',tags:['exception','try','catch','finally','throw','checked','unchecked','logging','assert','error handling']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH08',name:'Generic Programming',url:'PRO/PRO192/CH08-Generic-Programming-CheatSheet.html',tags:['generics','type parameter','wildcard','bounds','type erasure','PECS','generic class','generic method']},
+    {code:'PRO192',subject:'Object-Oriented Programming',num:'CH09',name:'Collections',url:'PRO/PRO192/CH09-Collections-CheatSheet.html',tags:['collection','ArrayList','HashMap','HashSet','LinkedList','TreeMap','iterator','streams','queue','stack']},
+    // OSG202 — Operating Systems
+    {code:'OSG202',subject:'Operating Systems',num:'CH01',name:'Introduction to Operating Systems',url:'OSG/OSG202/CH01-Introduction-OS-CheatSheet.html',tags:['OS','kernel','history','hardware','system call','process','thread','shell','batch','multiprogramming','time-sharing']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH02',name:'Processes & Threads',url:'OSG/OSG202/CH02-Processes-Threads-CheatSheet.html',tags:['process','thread','IPC','semaphore','mutex','race condition','critical section','scheduling','fork','exec','producer consumer','deadlock']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH03',name:'Memory Management',url:'OSG/OSG202/CH03-Memory-Management-CheatSheet.html',tags:['memory','paging','segmentation','virtual memory','page table','TLB','page fault','demand paging','swap','address space','MMU']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH04',name:'File Systems',url:'OSG/OSG202/CH04-File-Systems-CheatSheet.html',tags:['file','directory','inode','FAT','NTFS','ext4','disk','journaling','link','symbolic','block','allocation','filesystem']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH05',name:'Input / Output',url:'OSG/OSG202/CH05-Input-Output-CheatSheet.html',tags:['IO','input','output','device driver','interrupt','DMA','polling','disk scheduling','RAID','USB','controller']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH06',name:'Deadlocks',url:'OSG/OSG202/CH06-Deadlocks-CheatSheet.html',tags:['deadlock','banker','resource allocation','prevention','avoidance','detection','recovery','starvation','livelock','Coffman']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH07',name:'Virtualization & Cloud',url:'OSG/OSG202/CH07-Virtualization-Cloud-CheatSheet.html',tags:['virtualization','hypervisor','VM','virtual machine','cloud','container','Docker','type1','type2','VMware','Xen','KVM','paravirtualization']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH08',name:'Multiple Processor Systems',url:'OSG/OSG202/CH08-Multiple-Processors-CheatSheet.html',tags:['multiprocessor','SMP','NUMA','cache coherence','MESI','memory consistency','distributed','shared memory','UMA','multicore','scheduling']},
+    {code:'OSG202',subject:'Operating Systems',num:'CH09',name:'Security',url:'OSG/OSG202/CH09-Security-CheatSheet.html',tags:['security','authentication','cryptography','access control','malware','buffer overflow','rootkit','firewall','encryption','RSA','AES','PKI','threat']},
+    // MAD101 — Discrete Mathematics
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH01',name:'Logic & Proofs',url:'MAE/MAD101/CH01-Logic-Proofs-CheatSheet.html',tags:['logic','proposition','connective','truth table','implication','biconditional','tautology','predicate','quantifier','inference','proof','modus ponens','contradiction']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH02',name:'Sets, Functions & Sequences',url:'MAE/MAD101/CH02-Sets-Functions-CheatSheet.html',tags:['set','subset','power set','Cartesian product','union','intersection','complement','function','injective','surjective','bijective','sequence','summation','cardinality']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH03',name:'Algorithms',url:'MAE/MAD101/CH03-Algorithms-CheatSheet.html',tags:['algorithm','searching','sorting','Big-O','Big-Theta','Big-Omega','complexity','growth','linear','binary search','bubble sort','pseudocode','tractable','NP']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH04',name:'Number Theory & Cryptography',url:'MAE/MAD101/CH04-Number-Theory-CheatSheet.html',tags:['divisibility','modular arithmetic','congruence','prime','gcd','lcm','Euclidean algorithm','RSA','Fermat','Chinese Remainder Theorem','cryptography','encryption']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH05',name:'Induction & Recursion',url:'MAE/MAD101/CH05-Induction-Recursion-CheatSheet.html',tags:['induction','base case','inductive step','strong induction','recursion','recursive definition','well-ordering','loop invariant','program correctness']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH07',name:'Discrete Probability',url:'MAE/MAD101/CH07-Discrete-Probability-CheatSheet.html',tags:['probability','sample space','event','complement','conditional','Bayes','independent','Bernoulli','binomial','expected value','variance','random variable','Chebyshev']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH09',name:'Relations',url:'MAE/MAD101/CH09-Relations-CheatSheet.html',tags:['relation','reflexive','symmetric','antisymmetric','transitive','equivalence','equivalence class','partition','partial order','POSET','Hasse diagram','closure','Warshall','topological sort']},
+    {code:'MAD101',subject:'Discrete Mathematics',num:'CH10',name:'Graphs',url:'MAE/MAD101/CH10-Graphs-CheatSheet.html',tags:['graph','vertex','edge','degree','path','connectivity','Euler','Hamilton','Dijkstra','planar','chromatic number','coloring','isomorphism','adjacency matrix','bipartite']},
   ];
 
   var MAX_CHAPTER_RESULTS = 8;
