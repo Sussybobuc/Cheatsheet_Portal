@@ -13,7 +13,7 @@
   :root {
     --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
     --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
-    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;--osg:#56d3c8;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;--osg:#56d3c8;--mad:#ff7bb1;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:14px;line-height:1.5;padding:0;min-height:100vh;}
@@ -108,6 +108,8 @@
   .area-pro .area-label{color:var(--yellow);}
   .area-osg .area-bar{background:var(--osg);}
   .area-osg .area-label{color:var(--osg);}
+  .area-mad .area-bar{background:var(--mad);}
+  .area-mad .area-label{color:var(--mad);}
 
   /* ── Subject cards grid ── */
   .cards{
@@ -140,6 +142,7 @@
   .area-nwc .card-accent{background:var(--accent5);}
   .area-pro .card-accent{background:var(--yellow);}
   .area-osg .card-accent{background:var(--osg);}
+  .area-mad .card-accent{background:var(--mad);}
 
   /* Card hover border color */
   .area-cea .subject-card:not(.coming-soon):hover{border-color:rgba(88,166,255,0.6);}
@@ -148,6 +151,7 @@
   .area-nwc .subject-card:not(.coming-soon):hover{border-color:rgba(255,166,87,0.6);}
   .area-pro .subject-card:not(.coming-soon):hover{border-color:rgba(227,179,65,0.6);}
   .area-osg .subject-card:not(.coming-soon):hover{border-color:rgba(86,211,200,0.6);}
+  .area-mad .subject-card:not(.coming-soon):hover{border-color:rgba(255,123,177,0.6);}
 
   .card-inner{padding:16px 18px 18px;}
   .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:10px;}
@@ -287,7 +291,7 @@
     <h1>Study Reference <span>Portal</span></h1>
     <p class="hero-subtitle"><strong>Quick-reference cheatsheets</strong> &nbsp;·&nbsp; Organized by subject area</p>
     <div class="hero-stats">
-      <div class="hero-stat"><div class="dot"></div>6 Subject Areas</div>
+      <div class="hero-stat"><div class="dot"></div>7 Subject Areas</div>
       <div class="hero-stat r"><div class="dot"></div>9 Active Subjects</div>
       <div class="hero-stat p"><div class="dot"></div>100 Chapters Available</div>
     </div>
@@ -480,7 +484,7 @@
         <div class="area-label">MAE</div>
         <div class="area-title">Mathematics &amp; Engineering</div>
       </div>
-      <div class="area-desc">4 subjects · 32 chapters</div>
+      <div class="area-desc">3 subjects · 24 chapters</div>
     </div>
     <div class="cards">
 
@@ -534,6 +538,21 @@
           </div>
         </div>
       </a>
+
+    </div>
+  </section>
+
+  <!-- ━━━ MAD ━━━ -->
+  <section class="area area-mad">
+    <div class="area-header">
+      <div class="area-bar"></div>
+      <div class="area-header-text">
+        <div class="area-label">MAD</div>
+        <div class="area-title">Discrete Mathematics</div>
+      </div>
+      <div class="area-desc">1 subject · 8 chapters</div>
+    </div>
+    <div class="cards">
 
       <a class="subject-card" href="MAE/MAD101.html">
         <div class="card-accent"></div>

@@ -1,0 +1,365 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH03 – Algorithms | MAD101</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {--bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;--accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;--text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;--mae:#3fb950;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--mae);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--mae);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}.toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}.col-span-2{grid-column:span 2;}.col-span-3{grid-column:span 3;}.section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}.card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}.card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}.card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}.card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);}.blue .dot{background:var(--accent);}.blue h3{color:var(--accent);}.green .card-header{background:rgba(63,185,80,0.08);}.green .dot{background:var(--accent2);}.green h3{color:var(--accent2);}.red .card-header{background:rgba(247,129,102,0.08);}.red .dot{background:var(--accent3);}.red h3{color:var(--accent3);}.purple .card-header{background:rgba(210,168,255,0.08);}.purple .dot{background:var(--accent4);}.purple h3{color:var(--accent4);}.orange .card-header{background:rgba(255,166,87,0.08);}.orange .dot{background:var(--accent5);}.orange h3{color:var(--accent5);}.yellow .card-header{background:rgba(227,179,65,0.08);}.yellow .dot{background:var(--yellow);}.yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;}p:last-child{margin-bottom:0;}.label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}.label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--mae);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--mae);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-left:3px solid var(--mae);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mae);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}ul.items li:last-child{border-bottom:none;}ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}ol.steps li:last-child{border-bottom:none;}ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}.tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}.tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}.tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.tip .t-title{color:var(--mae);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}.footer a{color:var(--mae);text-decoration:none;}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-python{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}.token.function{color:#d2a8ff!important;}.token.string{color:#a5d6ff!important;}.token.number{color:#79c0ff!important;}.token.comment{color:#8b949e!important;font-style:italic!important;}.token.operator{color:#3fb950!important;}.token.boolean{color:#56d3c8!important;}.token.builtin{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⟨ Algorithms ⟩</h1>
+    <h2>Paradigms & Analysis | Rosen 7th Ed.</h2>
+  </div>
+  <div style="text-align:right;">
+    <div class="badge">CH03</div>
+    <div class="toc">
+      <span class="toc-item">Big-O Notation</span>
+      <span class="toc-item">Sorting</span>
+      <span class="toc-item">Complexity</span>
+      <span class="toc-item">Paradigms</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>⟨⟩ Algorithm Basics</h3></div>
+    <div class="card-body">
+      <p><strong style="color:var(--mae)">Algorithm:</strong> Finite sequence of precise steps to solve problem</p>
+      <p class="label">Properties</p>
+      <ul class="items">
+        <li>Input: values provided to algorithm</li>
+        <li>Output: solution(s) produced</li>
+        <li>Definiteness: steps unambiguous</li>
+        <li>Finiteness: always terminates</li>
+        <li>Effectiveness: can be done in finite time</li>
+      </ul>
+      <p class="label">Specification</p>
+      <p>Pseudocode: high-level, language-independent description</p>
+      <p>Implementation: concrete code in specific language</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>O(n) Complexity Analysis</h3></div>
+    <div class="card-body">
+      <p class="label">Big-O Notation</p>
+      <p>f(n) = O(g(n)) if ∃ constants c, k: |f(n)| ≤ c|g(n)| for n > k</p>
+      <p>Describes <strong>upper bound</strong> on growth rate</p>
+      
+      <p class="label">Common Complexities (fastest → slowest)</p>
+      <ul class="items">
+        <li>O(1) – Constant</li>
+        <li>O(log n) – Logarithmic</li>
+        <li>O(n) – Linear</li>
+        <li>O(n log n) – Linearithmic</li>
+        <li>O(n²) – Quadratic</li>
+        <li>O(n³) – Cubic</li>
+        <li>O(2ⁿ) – Exponential</li>
+        <li>O(n!) – Factorial</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>Ω(n) Θ(n)</h3></div>
+    <div class="card-body">
+      <p class="label">Big-Omega Ω(n)</p>
+      <p>f(n) = Ω(g(n)): <strong>lower bound</strong></p>
+      <p>∃ c, k: f(n) ≥ c·g(n) for n > k</p>
+      
+      <p class="label">Big-Theta Θ(n)</p>
+      <p>f(n) = Θ(g(n)): <strong>tight bound</strong> (both upper & lower)</p>
+      <p>f(n) = O(g(n)) AND f(n) = Ω(g(n))</p>
+      <p>Growth rates same (same order)</p>
+      
+      <div class="formula">O describes "at most"<br>Ω describes "at least"<br>Θ describes "exactly (asymptotically)"</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>🔄 Algorithm Paradigms</h3></div>
+    <div class="card-body">
+      <p class="label">Brute Force</p>
+      <p>Try all possible solutions; check each for validity</p>
+      <p>Simple, often inefficient; exhaustive search</p>
+      
+      <p class="label">Divide and Conquer</p>
+      <p>Divide problem into subproblems, solve recursively, combine</p>
+      <p>Examples: Merge sort, Quick sort, Binary search</p>
+      
+      <p class="label">Greedy Algorithm</p>
+      <p>Make locally optimal choice at each step</p>
+      <p>Hope: leads to global optimum; not always correct</p>
+      
+      <p class="label">Dynamic Programming</p>
+      <p>Solve overlapping subproblems, store results (memoization)</p>
+      <p>Trade memory for speed; optimal substructure required</p>
+      
+      <p class="label">Backtracking</p>
+      <p>Explore search tree; abandon paths that violate constraints</p>
+      <p>Depth-first search with pruning</p>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>⎕ Searching</h3></div>
+    <div class="card-body">
+      <p class="label">Linear Search</p>
+      <p>Check each element sequentially | O(n)</p>
+      
+      <p class="label">Binary Search</p>
+      <p>Requires sorted array; divide search space in half | O(log n)</p>
+      <p>Compare middle element; recurse left/right half</p>
+      
+      <p class="label">Pseudocode: Binary Search</p>
+      <pre>function binarySearch(a, x, left, right)
+  if left > right return -1
+  mid := ⌊(left+right)/2⌋
+  if x = a[mid] return mid
+  else if x < a[mid] 
+    return binarySearch(a, x, left, mid-1)
+  else return binarySearch(a, x, mid+1, right)</pre>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>▲ Sorting Algorithms</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th></tr>
+        <tr><td><strong>Bubble Sort</strong></td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+        <tr><td><strong>Insertion</strong></td><td>O(n)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+        <tr><td><strong>Selection</strong></td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+        <tr><td><strong>Merge Sort</strong></td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
+        <tr><td><strong>Quick Sort</strong></td><td>O(n log n)</td><td>O(n log n)</td><td>O(n²)</td><td>O(log n)</td></tr>
+        <tr><td><strong>Heap Sort</strong></td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(1)</td></tr>
+      </table>
+      
+      <div class="info"><div class="i-title">Info</div>
+      No O(n log n) sort exists with O(1) space for arbitrary data (comparison-based)</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>🔀 Bubble Sort</h3></div>
+    <div class="card-body">
+      <p class="label">Idea</p>
+      <p>Repeatedly swap adjacent elements if in wrong order</p>
+      <p>Largest elements "bubble" to end each pass</p>
+      
+      <pre>procedure bubbleSort(a: array)
+  n := length(a)
+  for i := 1 to n-1
+    for j := 1 to n-i
+      if a[j] > a[j+1]
+        swap a[j] and a[j+1]</pre>
+      
+      <p class="label">Complexity: O(n²)</p>
+      <p>Simple, stable, in-place</p>
+      <p>Very slow for large arrays</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>⤓ Merge Sort</h3></div>
+    <div class="card-body">
+      <p class="label">Idea</p>
+      <p>Divide array in half, recursively sort, merge sorted halves</p>
+      <p>Stable, optimal O(n log n) guaranteed</p>
+      
+      <p class="label">Merge Procedure</p>
+      <p>Two sorted arrays → one sorted array in O(n)</p>
+      <p>Compare first elements, add smaller to result</p>
+      
+      <p class="label">Complexity: O(n log n)</p>
+      <p>Stable, predictable</p>
+      <p>Requires O(n) extra space (not in-place)</p>
+      
+      <div class="tip"><div class="t-title">Tip</div>
+      Excellent for linked lists; no random access needed</div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>↥ Quick Sort</h3></div>
+    <div class="card-body">
+      <p class="label">Idea</p>
+      <p>Choose pivot, partition into smaller/larger, recursively sort</p>
+      <p>In-place, cache-friendly, widely used</p>
+      
+      <p class="label">Partition</p>
+      <p>Rearrange so all < pivot on left, all > pivot on right</p>
+      <p>Pivot position may vary from initial choice</p>
+      
+      <p class="label">Complexity</p>
+      <p>Average: O(n log n) | Worst: O(n²) (bad pivot choice)</p>
+      <p>Space: O(log n) recursion stack</p>
+      
+      <div class="warn"><div class="w-title">Warning</div>
+      Not stable; pivot selection critical for performance</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>📊 Algorithm Comparison</h3></div>
+    <div class="card-body">
+      <p class="label">When n = 1,000,000</p>
+      <p><code>O(n²)</code>: ~10¹² operations (1 sec ≈ 10⁸ ops) → ~3 hours</p>
+      <p><code>O(n log n)</code>: ~2×10⁷ operations → 0.2 seconds</p>
+      <p><code>O(n)</code>: ~10⁶ operations → 0.01 seconds</p>
+      
+      <p class="label">Rule of Thumb</p>
+      <ul class="items">
+        <li>n < 50: Any algorithm fine</li>
+        <li>n = 100-1000: O(n²) acceptable</li>
+        <li>n = 1000-1,000,000: Need O(n log n) or better</li>
+        <li>n > 1,000,000: O(n) required; constants matter</li>
+      </ul>
+      
+      <div class="formula">Exponential (2ⁿ) is NEVER acceptable for n > 30</div>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>⟲ Recurrence Relations</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Relation between function terms: T(n) = expression + T(smaller)</p>
+      
+      <p class="label">Example: Merge Sort</p>
+      <p><code>T(n) = 2·T(n/2) + O(n)</code></p>
+      <p>T(1) = O(1) (base case)</p>
+      
+      <p class="label">Master Theorem</p>
+      <p>For T(n) = a·T(n/b) + f(n):</p>
+      <ul class="items">
+        <li>If f(n) = O(n^(log_b(a)-ε)): T(n) = Θ(n^(log_b(a)))</li>
+        <li>If f(n) = Θ(n^(log_b(a))): T(n) = Θ(n^(log_b(a))·log n)</li>
+        <li>If f(n) = Ω(n^(log_b(a)+ε)): T(n) = Θ(f(n))</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>💾 Space Complexity</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Maximum memory needed as function of input size</p>
+      <p>Often traded for time: more space → faster</p>
+      
+      <p class="label">In-Place Algorithm</p>
+      <p>Uses O(1) or O(log n) extra space (not counting input)</p>
+      <p>Examples: Bubble, Quick sort (if pivot chosen well)</p>
+      
+      <p class="label">Auxiliary Space</p>
+      <p>Extra space beyond input; includes recursion stack</p>
+      
+      <p class="label">Space-Time Tradeoff</p>
+      <p>Hash tables: O(n) space for O(1) lookup (vs O(n²) time)</p>
+      <p>Memoization: store results to avoid recomputation</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>📈 Growth Rates (n=1000)</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>f(n)</th><th>Value</th><th>Interpretation</th></tr>
+        <tr><td>O(1)</td><td>1</td><td>Same cost always</td></tr>
+        <tr><td>O(log n)</td><td>~10</td><td>Very efficient</td></tr>
+        <tr><td>O(√n)</td><td>~32</td><td>Good</td></tr>
+        <tr><td>O(n)</td><td>1,000</td><td>Linear</td></tr>
+        <tr><td>O(n log n)</td><td>~10,000</td><td>Nearly linear</td></tr>
+        <tr><td>O(n²)</td><td>1,000,000</td><td>Quadratic</td></tr>
+        <tr><td>O(2ⁿ)</td><td>2¹⁰⁰⁰</td><td>Infeasible</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>🎯 Optimization Tips</h3></div>
+    <div class="card-body">
+      <ul class="items">
+        <li><strong>Profile first:</strong> measure actual bottlenecks</li>
+        <li><strong>Algorithm choice:</strong> 10x better than code optimization</li>
+        <li><strong>Data structures:</strong> right structure for operations</li>
+        <li><strong>Cache locality:</strong> sequential memory access</li>
+        <li><strong>Precomputation:</strong> trade space for time</li>
+        <li><strong>Parallelization:</strong> multi-core speedup possible</li>
+        <li><strong>Avoid redundant work:</strong> detect/skip identical operations</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>🔧 Quick Reference</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Notation</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td>O(g(n))</td><td>Upper bound</td><td>≤ 2n²</td></tr>
+        <tr><td>Ω(g(n))</td><td>Lower bound</td><td>≥ n²</td></tr>
+        <tr><td>Θ(g(n))</td><td>Tight bound</td><td>= Θ(n²)</td></tr>
+        <tr><td>o(g(n))</td><td>Strictly less</td><td>< n²</td></tr>
+        <tr><td>ω(g(n))</td><td>Strictly greater</td><td>> n</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>MAD101 · Discrete Mathematics · Rosen 7th Ed.</span>
+  <a href="../MAD101.html">← Back to MAD101</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+<script>
+(function(){document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){var code=document.createElement('code');code.className='language-python';code.textContent=pre.textContent;pre.textContent='';pre.appendChild(code);});Prism.highlightAll();})();
+</script>
+
+</body>
+</html>

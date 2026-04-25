@@ -1,0 +1,449 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH02 – Sets & Functions | MAD101</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --mae:#3fb950;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--mae);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--mae);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--mae);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--mae);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-left:3px solid var(--mae);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mae);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--mae);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--mae);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-python{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;} .token.function{color:#d2a8ff!important;} .token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;} .token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#3fb950!important;} .token.boolean{color:#56d3c8!important;} .token.builtin{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⟨ Sets & Functions ⟩</h1>
+    <h2>Basic Structures | Rosen 7th Ed.</h2>
+  </div>
+  <div style="text-align:right;">
+    <div class="badge">CH02</div>
+    <div class="toc">
+      <span class="toc-item">Set Operations</span>
+      <span class="toc-item">Functions</span>
+      <span class="toc-item">Cardinality</span>
+      <span class="toc-item">Power Sets</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>⊆ Sets Basics</h3></div>
+    <div class="card-body">
+      <p>A <strong style="color:var(--mae)">set</strong> is an unordered collection of distinct objects (elements)</p>
+      <p class="label">Notation</p>
+      <p><code>a ∈ A</code> (a belongs to A) | <code>a ∉ A</code> (a doesn't belong)</p>
+      
+      <p class="label">Roster Method</p>
+      <p><code>V = {a, e, i, o, u}</code> (list all elements)</p>
+      
+      <p class="label">Set-Builder</p>
+      <p><code>O = {x | x odd, x < 10}</code> or <code>{x ∈ Z⁺ | x is odd}</code></p>
+      
+      <p class="label">Special Sets</p>
+      <ul class="items">
+        <li>ℕ = {0, 1, 2, ...} (natural numbers)</li>
+        <li>ℤ = {..., -2, -1, 0, 1, 2, ...} (integers)</li>
+        <li>ℚ = {p/q | p, q ∈ ℤ, q ≠ 0} (rationals)</li>
+        <li>ℝ (reals) | ℂ (complex)</li>
+        <li>∅ (empty set) | {∅} (set containing empty set)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>⊂ Subset Relations</h3></div>
+    <div class="card-body">
+      <p class="label">Subset: A ⊆ B</p>
+      <p>Every element of A is in B: ∀x(x ∈ A → x ∈ B)</p>
+      
+      <p class="label">Proper Subset: A ⊂ B</p>
+      <p>A ⊆ B and A ≠ B (A strictly contained in B)</p>
+      
+      <p class="label">Equality: A = B</p>
+      <p>A ⊆ B AND B ⊆ A (same elements)</p>
+      
+      <div class="formula">∅ ⊆ S for any set S<br>S ⊆ S for any set S</div>
+      
+      <div class="tip"><div class="t-title">Proof Technique</div>
+      To prove A = B: show A ⊆ B, then show B ⊆ A</div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>∪ ∩ Set Operations</h3></div>
+    <div class="card-body">
+      <p class="label">Union: A ∪ B</p>
+      <p>All elements in A or B (or both): {x | x ∈ A ∨ x ∈ B}</p>
+      
+      <p class="label">Intersection: A ∩ B</p>
+      <p>Elements in both A and B: {x | x ∈ A ∧ x ∈ B}</p>
+      
+      <p class="label">Complement: Ā or A'</p>
+      <p>Elements in U but not in A: {x | x ∈ U, x ∉ A}</p>
+      
+      <p class="label">Difference: A − B</p>
+      <p>Elements in A but not B: {x | x ∈ A, x ∉ B} = A ∩ B̄</p>
+      
+      <p class="label">Symmetric Difference: A ⊕ B</p>
+      <p>Elements in A or B but not both: (A − B) ∪ (B − A)</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>⟨⟩ Set Laws & Properties</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Law</th><th>Formula</th></tr>
+        <tr><td><strong>Idempotent</strong></td><td>A ∪ A = A, A ∩ A = A</td></tr>
+        <tr><td><strong>Commutative</strong></td><td>A ∪ B = B ∪ A</td></tr>
+        <tr><td><strong>Associative</strong></td><td>(A ∪ B) ∪ C = A ∪ (B ∪ C)</td></tr>
+        <tr><td><strong>Distributive</strong></td><td>A ∪ (B ∩ C) = (A ∪ B) ∩ (A ∪ C)</td></tr>
+        <tr><td><strong>De Morgan's</strong></td><td>A ∪ B = Ā ∩ B̄</td></tr>
+        <tr><td><strong>Complement</strong></td><td>A ∪ Ā = U, A ∩ Ā = ∅</td></tr>
+        <tr><td><strong>Absorption</strong></td><td>A ∪ (A ∩ B) = A</td></tr>
+        <tr><td><strong>Identity</strong></td><td>A ∪ ∅ = A, A ∩ U = A</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>2ˢ Power Set</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>P(S) = set of all subsets of S (including ∅ and S itself)</p>
+      
+      <p class="label">Cardinality</p>
+      <p>If |S| = n, then |P(S)| = 2ⁿ</p>
+      
+      <p class="label">Example</p>
+      <p><code>S = {0, 1, 2}</code></p>
+      <p><code>P(S) = {∅, {0}, {1}, {2}, {0,1}, {0,2}, {1,2}, {0,1,2}}</code></p>
+      <p><code>|P(S)| = 2³ = 8</code></p>
+      
+      <div class="formula">P(∅) = {∅}<br>P({a}) = {∅, {a}}</div>
+      
+      <p class="label">Used For</p>
+      <p>Enumerating all combinations, determining all possible states</p>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>× Cartesian Product</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>A × B = {(a, b) | a ∈ A, b ∈ B} (ordered pairs)</p>
+      
+      <p class="label">Key Property</p>
+      <p>Order matters: (a, b) ≠ (b, a) unless a = b</p>
+      <p>A × B ≠ B × A in general</p>
+      
+      <p class="label">Cardinality</p>
+      <p>|A × B| = |A| · |B|</p>
+      
+      <p class="label">Multiple Sets</p>
+      <p>A × B × C = {(a, b, c) | a ∈ A, b ∈ B, c ∈ C}</p>
+      <p>Aⁿ = A × A × ... × A (n times)</p>
+      
+      <p class="label">Example</p>
+      <p><code>A = {1, 2}, B = {a, b, c}</code></p>
+      <p><code>A × B = {(1,a), (1,b), (1,c), (2,a), (2,b), (2,c)}</code></p>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>ƒ Functions Basics</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Function f: A → B assigns to each element a ∈ A exactly one element b ∈ B</p>
+      <p><code>f(a) = b</code> means element a maps to element b</p>
+      
+      <p class="label">Terminology</p>
+      <ul class="items">
+        <li><strong>Domain:</strong> set A (inputs)</li>
+        <li><strong>Codomain:</strong> set B (possible outputs)</li>
+        <li><strong>Range/Image:</strong> {f(a) | a ∈ A} (actual outputs)</li>
+        <li><strong>Pre-image of b:</strong> {a | f(a) = b}</li>
+      </ul>
+      
+      <p class="label">Functions vs Relations</p>
+      <p>Function: each input has <strong>exactly one</strong> output</p>
+      <p>Relation: input may have 0, 1, or multiple outputs</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>🔄 Function Types</h3></div>
+    <div class="card-body">
+      <p class="label">Injective (One-to-One)</p>
+      <p>Different inputs map to different outputs: f(a) = f(b) → a = b</p>
+      <p>Pre-image of each element ≤ 1</p>
+      
+      <p class="label">Surjective (Onto)</p>
+      <p>Every element of codomain is mapped to: ∀b ∈ B ∃a ∈ A with f(a) = b</p>
+      <p>Range = Codomain</p>
+      
+      <p class="label">Bijective (One-to-One Correspondence)</p>
+      <p>Both injective AND surjective</p>
+      <p>Perfect pairing between A and B</p>
+      <p>If |A| = |B| finite, bijection exists iff injection exists iff surjection exists</p>
+      
+      <div class="formula">Bijection ⟺ Bijection has inverse ƒ⁻¹: B → A</div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>⟶ Function Operations</h3></div>
+    <div class="card-body">
+      <p class="label">Composition: (ƒ ∘ g)(a) = ƒ(g(a))</p>
+      <p>Apply g first, then f | Note: not commutative</p>
+      
+      <p class="label">Inverse: ƒ⁻¹</p>
+      <p>If f: A → B bijection, then ƒ⁻¹: B → A</p>
+      <p>ƒ(ƒ⁻¹(b)) = b and ƒ⁻¹(ƒ(a)) = a</p>
+      
+      <p class="label">Image of Set S</p>
+      <p>ƒ(S) = {ƒ(a) | a ∈ S} (where S ⊆ A)</p>
+      
+      <p class="label">Pre-image of Set T</p>
+      <p>ƒ⁻¹(T) = {a ∈ A | ƒ(a) ∈ T} (where T ⊆ B)</p>
+      
+      <div class="formula">ƒ: A → B is bijection ⟺ ƒ inverse exists</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>|A| Cardinality</h3></div>
+    <div class="card-body">
+      <p class="label">Finite Cardinality</p>
+      <p>|A| = n means set A has exactly n distinct elements</p>
+      
+      <p class="label">Equal Cardinality</p>
+      <p>|A| = |B| iff there exists bijection between A and B</p>
+      
+      <p class="label">Infinite Cardinality</p>
+      <p><strong>Countably Infinite:</strong> |A| = |ℕ| (can list all elements)</p>
+      <p><strong>Uncountably Infinite:</strong> |A| > |ℕ| (cannot list all)</p>
+      
+      <p class="label">Examples</p>
+      <ul class="items">
+        <li>ℤ, ℚ are countably infinite (bijection with ℕ)</li>
+        <li>ℝ, ℂ are uncountably infinite</li>
+        <li>Power set P(ℕ) is uncountable</li>
+      </ul>
+      
+      <div class="formula">|A| ≤ |P(A)| for any set A<br>|P(A)| > |A| (Cantor's theorem)</div>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>📊 Sequences</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Function f: ℤ⁺ → S (or ℕ → S) that lists elements in order</p>
+      <p>Usually written as {aₙ} where aₙ = f(n)</p>
+      
+      <p class="label">Types</p>
+      <ul class="items">
+        <li><strong>Arithmetic:</strong> aₙ = a₁ + (n-1)d (constant difference d)</li>
+        <li><strong>Geometric:</strong> aₙ = a₁ · rⁿ⁻¹ (constant ratio r)</li>
+        <li><strong>Recursive:</strong> each term defined using previous terms</li>
+      </ul>
+      
+      <p class="label">Summation: ∑</p>
+      <p><code>∑ᵏ₌₁ⁿ aₖ = a₁ + a₂ + ... + aₙ</code></p>
+      
+      <p class="label">Common Sums</p>
+      <p><code>∑ᵏ₌₁ⁿ k = n(n+1)/2</code></p>
+      <p><code>∑ᵏ₌₁ⁿ k² = n(n+1)(2n+1)/6</code></p>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>🔗 Relations</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Relation from A to B: R ⊆ A × B (subset of Cartesian product)</p>
+      <p><code>(a, b) ∈ R</code> means a is related to b</p>
+      
+      <p class="label">Relation on A</p>
+      <p>R ⊆ A × A (set related to itself)</p>
+      
+      <p class="label">Representation</p>
+      <ul class="items">
+        <li><strong>Set notation:</strong> pairs listed or described</li>
+        <li><strong>Matrix:</strong> rows = first elements, columns = second</li>
+        <li><strong>Digraph:</strong> nodes for elements, arrows for relations</li>
+        <li><strong>Table:</strong> rows and columns indexed</li>
+      </ul>
+      
+      <p class="label">Function vs Relation</p>
+      <p>Every function is a relation (special case)</p>
+      <p>Not every relation is a function</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>📐 Interval Notation</h3></div>
+    <div class="card-body">
+      <p class="label">Closed Interval: [a, b]</p>
+      <p>{x | a ≤ x ≤ b} (includes endpoints)</p>
+      
+      <p class="label">Open Interval: (a, b)</p>
+      <p>{x | a < x < b} (excludes endpoints)</p>
+      
+      <p class="label">Half-Open: [a, b), (a, b]</p>
+      <p>[a, b) = {x | a ≤ x < b} (includes left, excludes right)</p>
+      
+      <p class="label">Infinite Intervals</p>
+      <p>[a, ∞) = {x | x ≥ a}</p>
+      <p>(−∞, b) = {x | x < b}</p>
+      <p>(−∞, ∞) = ℝ</p>
+      
+      <div class="formula">Length of [a, b] = b − a</div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>💡 Applications</h3></div>
+    <div class="card-body">
+      <p class="label">Database Design</p>
+      <p>Relations model data tables, functions model attributes</p>
+      
+      <p class="label">Hash Functions</p>
+      <p>Functions from data domain to hash table indices</p>
+      
+      <p class="label">Graph Theory</p>
+      <p>Vertices, edges as relations; adjacency via functions</p>
+      
+      <p class="label">Counting</p>
+      <p>Cardinality used in combinatorics (permutations, combinations)</p>
+      
+      <p class="label">Encoding</p>
+      <p>ASCII maps characters to integers (bijection)</p>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>🎯 Quick Reference</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>∈</td><td>Element of</td></tr>
+        <tr><td>⊆</td><td>Subset</td></tr>
+        <tr><td>⊂</td><td>Proper subset</td></tr>
+        <tr><td>∪</td><td>Union</td></tr>
+        <tr><td>∩</td><td>Intersection</td></tr>
+        <tr><td>Ā or A'</td><td>Complement</td></tr>
+        <tr><td>−</td><td>Difference</td></tr>
+        <tr><td>×</td><td>Cartesian product</td></tr>
+        <tr><td>P(A)</td><td>Power set</td></tr>
+        <tr><td>|A|</td><td>Cardinality</td></tr>
+        <tr><td>ƒ: A→B</td><td>Function from A to B</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>MAD101 · Discrete Mathematics · Rosen 7th Ed.</span>
+  <a href="../MAD101.html">← Back to MAD101</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code = document.createElement('code');
+    code.className = 'language-python';
+    code.textContent = pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+
+</body>
+</html>

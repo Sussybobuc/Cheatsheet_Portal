@@ -1,0 +1,323 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH07 – Discrete Probability | MAD101</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {--bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;--accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;--text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;--mae:#3fb950;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--mae);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--mae);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}.toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}.col-span-2{grid-column:span 2;}.col-span-3{grid-column:span 3;}.section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}.card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}.card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}.card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}.card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);}.blue .dot{background:var(--accent);}.blue h3{color:var(--accent);}.green .card-header{background:rgba(63,185,80,0.08);}.green .dot{background:var(--accent2);}.green h3{color:var(--accent2);}.red .card-header{background:rgba(247,129,102,0.08);}.red .dot{background:var(--accent3);}.red h3{color:var(--accent3);}.purple .card-header{background:rgba(210,168,255,0.08);}.purple .dot{background:var(--accent4);}.purple h3{color:var(--accent4);}.orange .card-header{background:rgba(255,166,87,0.08);}.orange .dot{background:var(--accent5);}.orange h3{color:var(--accent5);}.yellow .card-header{background:rgba(227,179,65,0.08);}.yellow .dot{background:var(--yellow);}.yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;}p:last-child{margin-bottom:0;}.label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}.label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--mae);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--mae);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-left:3px solid var(--mae);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mae);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}ul.items li:last-child{border-bottom:none;}ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}ol.steps li:last-child{border-bottom:none;}ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}.tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}.tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}.tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.tip .t-title{color:var(--mae);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}.footer a{color:var(--mae);text-decoration:none;}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-python{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}.token.function{color:#d2a8ff!important;}.token.string{color:#a5d6ff!important;}.token.number{color:#79c0ff!important;}.token.comment{color:#8b949e!important;font-style:italic!important;}.token.operator{color:#3fb950!important;}.token.boolean{color:#56d3c8!important;}.token.builtin{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⟨ Discrete Probability ⟩</h1>
+    <h2>Distributions & Expectation | Rosen 7th Ed.</h2>
+  </div>
+  <div style="text-align:right;">
+    <div class="badge">CH07</div>
+    <div class="toc">
+      <span class="toc-item">Sample Space</span>
+      <span class="toc-item">Conditional</span>
+      <span class="toc-item">Expected Value</span>
+      <span class="toc-item">Distributions</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>Ω Sample Space</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>S (or Ω) = set of all possible outcomes of experiment</p>
+      <p><code>|S|</code> = number of possible outcomes</p>
+      
+      <p class="label">Event</p>
+      <p>Subset E ⊆ S (one or more outcomes)</p>
+      <p>Elementary: single outcome {x}</p>
+      <p>Compound: multiple outcomes</p>
+      
+      <p class="label">Examples</p>
+      <ul class="items">
+        <li><strong>Coin:</strong> S = {H, T}, |S| = 2</li>
+        <li><strong>Die:</strong> S = {1,2,3,4,5,6}, |S| = 6</li>
+        <li><strong>Two dice:</strong> |S| = 36 ordered pairs</li>
+        <li><strong>Cards:</strong> |S| = 52</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>P(E) Probability</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>P(E) = |E| / |S| (for equally likely outcomes)</p>
+      <p>Number of favorable outcomes / total outcomes</p>
+      
+      <p class="label">Properties</p>
+      <ul class="items">
+        <li>0 ≤ P(E) ≤ 1 for any event E</li>
+        <li>P(S) = 1 (certain event)</li>
+        <li>P(∅) = 0 (impossible event)</li>
+        <li>P(Ē) = 1 − P(E) (complement)</li>
+      </ul>
+      
+      <p class="label">Examples</p>
+      <p>Fair coin: P(H) = 1/2</p>
+      <p>Fair die: P(even) = 3/6 = 1/2</p>
+      <p>Two dice: P(sum=7) = 6/36 = 1/6</p>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>∪ ∩ Events</h3></div>
+    <div class="card-body">
+      <p class="label">Union: E₁ ∪ E₂</p>
+      <p>"E₁ or E₂" (or both)</p>
+      <p><code>P(E₁ ∪ E₂) = P(E₁) + P(E₂) − P(E₁ ∩ E₂)</code></p>
+      
+      <p class="label">Intersection: E₁ ∩ E₂</p>
+      <p>"E₁ and E₂" (both occur)</p>
+      
+      <p class="label">Mutually Exclusive</p>
+      <p>E₁ ∩ E₂ = ∅ (can't both happen)</p>
+      <p><code>P(E₁ ∪ E₂) = P(E₁) + P(E₂)</code></p>
+      
+      <p class="label">Disjoint Events</p>
+      <p>Same as mutually exclusive</p>
+      
+      <div class="formula">P(E₁ ∪ E₂ ∪ E₃) = P(E₁) + P(E₂) + P(E₃)<br>− P(E₁ ∩ E₂) − P(E₁ ∩ E₃) − P(E₂ ∩ E₃)<br>+ P(E₁ ∩ E₂ ∩ E₃)</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>| P(A|B) Conditional</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>P(A|B) = probability of A given B occurred</p>
+      <p><code>P(A|B) = P(A ∩ B) / P(B)</code> (if P(B) > 0)</p>
+      
+      <p class="label">Intuition</p>
+      <p>Restrict sample space to B, then find A proportion</p>
+      
+      <p class="label">Law of Total Probability</p>
+      <p>If B₁, B₂, ..., Bₙ partition S:</p>
+      <p><code>P(A) = Σᵢ P(A|Bᵢ)·P(Bᵢ)</code></p>
+      
+      <p class="label">Bayes' Theorem</p>
+      <p><code>P(A|B) = P(B|A)·P(A) / P(B)</code></p>
+      <p>Reverse conditional probability</p>
+      
+      <div class="formula">P(A ∩ B) = P(A|B) · P(B)</div>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>⊥ Independence</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Events A and B independent if:</p>
+      <p><code>P(A ∩ B) = P(A) · P(B)</code></p>
+      <p>Or equivalently: <code>P(A|B) = P(A)</code></p>
+      
+      <p class="label">Intuition</p>
+      <p>Occurrence of B doesn't affect probability of A</p>
+      
+      <p class="label">For Multiple Events</p>
+      <p>A₁, A₂, ..., Aₙ mutually independent if:</p>
+      <p>For any subset: P(∩ᵢ Aᵢ) = ∏ P(Aᵢ)</p>
+      
+      <p class="label">Examples</p>
+      <p>Two fair coin flips (each independent)</p>
+      <p>Rolling two dice</p>
+      <p>NOT: drawing cards without replacement</p>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>𝔼[X] Expected Value</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>E[X] = Σ x · P(X=x) (weighted average)</p>
+      
+      <p class="label">Properties</p>
+      <ul class="items">
+        <li>E[c] = c (constant)</li>
+        <li>E[X + Y] = E[X] + E[Y]</li>
+        <li>E[cX] = c · E[X]</li>
+        <li>If X, Y indep: E[XY] = E[X]E[Y]</li>
+      </ul>
+      
+      <p class="label">Examples</p>
+      <p>Fair die: E[X] = (1+2+3+4+5+6)/6 = 3.5</p>
+      <p>Coin (H=1, T=0): E[X] = 0.5</p>
+      <p>Fair die doubled: E[2X] = 2·3.5 = 7</p>
+      
+      <div class="formula">E[X] = Average outcome (long-run mean)</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>σ² Variance</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Var(X) = E[(X − E[X])²] = E[X²] − (E[X])²</p>
+      <p>Measures spread around mean</p>
+      
+      <p class="label">Standard Deviation</p>
+      <p>σ = √Var(X)</p>
+      
+      <p class="label">Properties</p>
+      <ul class="items">
+        <li>Var(c) = 0 (constant has no variance)</li>
+        <li>Var(X+c) = Var(X) (shifting doesn't matter)</li>
+        <li>Var(cX) = c² · Var(X)</li>
+        <li>If indep: Var(X+Y) = Var(X) + Var(Y)</li>
+      </ul>
+      
+      <div class="formula">Larger variance = more spread</div>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>🎲 Distributions</h3></div>
+    <div class="card-body">
+      <p class="label">Uniform Distribution</p>
+      <p>All n outcomes equally likely: P(X=k) = 1/n</p>
+      <p>E[X] = (n+1)/2 (for 1 to n)</p>
+      
+      <p class="label">Bernoulli (p)</p>
+      <p>Binary outcome: P(X=1)=p, P(X=0)=1−p</p>
+      <p>E[X] = p | Var(X) = p(1−p)</p>
+      
+      <p class="label">Binomial (n, p)</p>
+      <p>n independent Bernoulli trials</p>
+      <p>P(X=k) = C(n,k)·pᵏ·(1−p)ⁿ⁻ᵏ</p>
+      <p>E[X] = np | Var(X) = np(1−p)</p>
+      
+      <p class="label">Geometric (p)</p>
+      <p>Trials until first success</p>
+      <p>P(X=k) = (1−p)ᵏ⁻¹·p</p>
+      <p>E[X] = 1/p</p>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>📋 Examples</h3></div>
+    <div class="card-body">
+      <p class="label">Coin Flips</p>
+      <p>P(3 heads in 5 flips) = C(5,3)·(1/2)⁵ = 10/32</p>
+      
+      <p class="label">Dice Roll</p>
+      <p>P(sum > 7 with 2 dice)</p>
+      <p>= P(8,9,10,11,12) = (5+6+5+4+3)/36 = 23/36</p>
+      
+      <p class="label">Conditional Example</p>
+      <p>P(B|A) given P(A)=0.3, P(B)=0.4, P(A∩B)=0.12</p>
+      <p>= 0.12 / 0.3 = 0.4</p>
+      
+      <p class="label">Bayes Example</p>
+      <p>Disease test: P(disease|+) given P(+|disease)=0.99</p>
+      <p>P(+|no disease)=0.01, P(disease)=0.001</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>🎯 Common Probabilities</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Event</th><th>Probability</th></tr>
+        <tr><td>At least 2 heads in 3 flips</td><td>4/8 = 1/2</td></tr>
+        <tr><td>One pair in 2 dice</td><td>6/36 = 1/6</td></tr>
+        <tr><td>Sum = 7 (2 dice)</td><td>6/36 = 1/6</td></tr>
+        <tr><td>All same suit (5 cards)</td><td>≈0.002</td></tr>
+        <tr><td>At least one 6 (2 dice)</td><td>11/36</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>💡 Counting for Probability</h3></div>
+    <div class="card-body">
+      <p class="label">Permutations</p>
+      <p>P(n,k) = n!/(n−k)! (order matters)</p>
+      
+      <p class="label">Combinations</p>
+      <p>C(n,k) = n!/(k!(n−k)!) (order doesn't matter)</p>
+      
+      <p class="label">Usage</p>
+      <p>P(E) = (# favorable) / (# possible)</p>
+      <p>Use combinations for unordered outcomes</p>
+      
+      <p class="label">Example</p>
+      <p>P(2 from deck is pair) = C(4,2)·13 / C(52,2)</p>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>📊 Quick Reference</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Symbol</th><th>Meaning</th></tr>
+        <tr><td>P(E)</td><td>Probability of event E</td></tr>
+        <tr><td>E₁ ∪ E₂</td><td>E₁ or E₂</td></tr>
+        <tr><td>E₁ ∩ E₂</td><td>E₁ and E₂</td></tr>
+        <tr><td>P(A|B)</td><td>Conditional probability</td></tr>
+        <tr><td>E[X]</td><td>Expected value</td></tr>
+        <tr><td>Var(X)</td><td>Variance</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>MAD101 · Discrete Mathematics · Rosen 7th Ed.</span>
+  <a href="../MAD101.html">← Back to MAD101</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+<script>
+(function(){document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){var code=document.createElement('code');code.className='language-python';code.textContent=pre.textContent;pre.textContent='';pre.appendChild(code);});Prism.highlightAll();})();
+</script>
+
+</body>
+</html>

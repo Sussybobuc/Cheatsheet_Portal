@@ -1,0 +1,339 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH05 – Induction & Recursion | MAD101</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {--bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;--accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;--text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;--mae:#3fb950;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--mae);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--mae);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}.toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}.col-span-2{grid-column:span 2;}.col-span-3{grid-column:span 3;}.section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}.card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}.card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}.card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}.card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);}.blue .dot{background:var(--accent);}.blue h3{color:var(--accent);}.green .card-header{background:rgba(63,185,80,0.08);}.green .dot{background:var(--accent2);}.green h3{color:var(--accent2);}.red .card-header{background:rgba(247,129,102,0.08);}.red .dot{background:var(--accent3);}.red h3{color:var(--accent3);}.purple .card-header{background:rgba(210,168,255,0.08);}.purple .dot{background:var(--accent4);}.purple h3{color:var(--accent4);}.orange .card-header{background:rgba(255,166,87,0.08);}.orange .dot{background:var(--accent5);}.orange h3{color:var(--accent5);}.yellow .card-header{background:rgba(227,179,65,0.08);}.yellow .dot{background:var(--yellow);}.yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;}p:last-child{margin-bottom:0;}.label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}.label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--mae);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--mae);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-left:3px solid var(--mae);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mae);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}ul.items li:last-child{border-bottom:none;}ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}ol.steps li:last-child{border-bottom:none;}ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}.tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}.tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}.tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.tip .t-title{color:var(--mae);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}.warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}.footer a{color:var(--mae);text-decoration:none;}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-python{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;}.token.function{color:#d2a8ff!important;}.token.string{color:#a5d6ff!important;}.token.number{color:#79c0ff!important;}.token.comment{color:#8b949e!important;font-style:italic!important;}.token.operator{color:#3fb950!important;}.token.boolean{color:#56d3c8!important;}.token.builtin{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⟨ Induction & Recursion ⟩</h1>
+    <h2>Proof & Algorithms | Rosen 7th Ed.</h2>
+  </div>
+  <div style="text-align:right;">
+    <div class="badge">CH05</div>
+    <div class="toc">
+      <span class="toc-item">Induction</span>
+      <span class="toc-item">Recursion</span>
+      <span class="toc-item">Recurrence</span>
+      <span class="toc-item">Verification</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>⟳ Mathematical Induction</h3></div>
+    <div class="card-body">
+      <p class="label">Principle</p>
+      <p>To prove P(n) true ∀n ≥ base_case:</p>
+      <ol class="steps">
+        <li><strong>Base case:</strong> Prove P(base) is true</li>
+        <li><strong>Inductive step:</strong> Assume P(k), prove P(k+1)</li>
+      </ol>
+      
+      <p class="label">Inductive Hypothesis</p>
+      <p>The assumption P(k) made in step 2</p>
+      
+      <div class="formula">∀n ∈ ℕ: P(n) is true</div>
+      
+      <p class="label">When to Use</p>
+      <p>Prove properties of natural numbers, sums, recursion</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>💪 Strong Induction</h3></div>
+    <div class="card-body">
+      <p class="label">Principle</p>
+      <p>Assume ALL of P(base), P(base+1), ..., P(k), prove P(k+1)</p>
+      
+      <p class="label">Steps</p>
+      <ol class="steps">
+        <li>Base case(s): prove P(base), P(base+1), etc.</li>
+        <li>Inductive step: assume P(i) ∀ base ≤ i ≤ k</li>
+        <li>Prove P(k+1) from these</li>
+      </ol>
+      
+      <p class="label">Stronger Hypothesis</p>
+      <p>Allows use of multiple previous cases</p>
+      <p>Sometimes easier than regular induction</p>
+      
+      <div class="info"><div class="i-title">Equivalence</div>
+      Regular induction ≡ Strong induction (in power)</div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>🔁 Recursion</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Function defined in terms of itself</p>
+      <p>Must have base case(s) and recursive case(s)</p>
+      
+      <p class="label">Structure</p>
+      <pre>function f(n):
+  if n == base: return base_value
+  else: return f(smaller_input)</pre>
+      
+      <p class="label">Key Requirements</p>
+      <ul class="items">
+        <li>Base case: non-recursive termination</li>
+        <li>Progress: each call gets "closer" to base</li>
+        <li>Trust: assume recursive calls work</li>
+      </ul>
+      
+      <div class="formula">Recursive proof ≡ Induction proof</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>📝 Induction Examples</h3></div>
+    <div class="card-body">
+      <p class="label">Sum Formula</p>
+      <p><strong>Prove:</strong> ∑ᵏ₌₁ⁿ k = n(n+1)/2</p>
+      <p><strong>Base:</strong> n=1: 1 = 1(2)/2 ✓</p>
+      <p><strong>Step:</strong> Assume true for n=k</p>
+      <p>∑ᵏ₌₁ᵏ⁺¹ i = (∑ᵏ₌₁ᵏ i) + (k+1) = k(k+1)/2 + (k+1)</p>
+      <p>= (k+1)(k/2 + 1) = (k+1)(k+2)/2 ✓</p>
+      
+      <p class="label">Divisibility</p>
+      <p><strong>Prove:</strong> 3 ∣ (4ⁿ − 1) for all n ≥ 0</p>
+      <p><strong>Base:</strong> 4⁰ − 1 = 0, and 3 ∣ 0 ✓</p>
+      <p><strong>Step:</strong> 4^(k+1) − 1 = 4·4ᵏ − 1 = 4(4ᵏ − 1) + 3</p>
+      <p>Both terms divisible by 3 ✓</p>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>ⁿ Recursive Examples</h3></div>
+    <div class="card-body">
+      <p class="label">Factorial</p>
+      <pre>factorial(n):
+  if n = 0: return 1
+  else: return n * factorial(n-1)</pre>
+      <p>n! = n · (n-1)!</p>
+      
+      <p class="label">Fibonacci</p>
+      <pre>fib(n):
+  if n ≤ 1: return n
+  else: return fib(n-1) + fib(n-2)</pre>
+      <p>f(n) = f(n-1) + f(n-2)</p>
+      <p>⚠️ Exponential without memoization!</p>
+      
+      <p class="label">Binary Search</p>
+      <pre>search(a, x, low, high):
+  if low > high: return -1
+  mid = (low+high)/2
+  if a[mid] = x: return mid
+  else if x < a[mid]: return search(..., low, mid-1)
+  else: return search(..., mid+1, high)</pre>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>⟲ Recurrence Relations</h3></div>
+    <div class="card-body">
+      <p class="label">Definition</p>
+      <p>Equation expressing term via previous terms</p>
+      <p><code>aₙ = f(aₙ₋₁, aₙ₋₂, ..., aₙ₋ₖ)</code></p>
+      
+      <p class="label">Examples</p>
+      <p><strong>Fibonacci:</strong> f(n) = f(n-1) + f(n-2), f(0)=0, f(1)=1</p>
+      <p><strong>Merge Sort:</strong> T(n) = 2T(n/2) + O(n), T(1) = O(1)</p>
+      
+      <p class="label">Solving Methods</p>
+      <ul class="items">
+        <li>Iteration: expand to find pattern</li>
+        <li>Substitution: guess solution, verify</li>
+        <li>Master theorem: for divide-and-conquer</li>
+        <li>Characteristic equation: for linear recurrences</li>
+      </ul>
+      
+      <div class="formula">Linear recurrence: aₙ = c₁aₙ₋₁ + c₂aₙ₋₂ + ... + cₖaₙ₋ₖ</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>🔍 Solving Recurrences</h3></div>
+    <div class="card-body">
+      <p class="label">Iteration Method</p>
+      <p>Expand recurrence, find pattern, verify</p>
+      <p><code>T(n) = T(n-1) + 1</code></p>
+      <p>T(n) = T(n-2) + 1 + 1 = T(n-3) + 3 = ... = T(1) + (n-1)</p>
+      <p>Result: T(n) = O(n)</p>
+      
+      <p class="label">Substitution (Guess & Check)</p>
+      <p>Guess solution form, verify by induction</p>
+      <p>For T(n) = 2T(n/2) + n: guess T(n) = O(n log n)</p>
+      <p>Check: T(n) = 2·cn/2·log(n/2) + n = cn·log n - cn + n</p>
+      
+      <p class="label">Telescoping</p>
+      <p>Rewrite so terms cancel</p>
+      <p>aₙ − aₙ₋₁ = f(n), sum from 1 to n</p>
+      <p>aₙ − a₀ = ∑ f(i)</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>💾 Memoization</h3></div>
+    <div class="card-body">
+      <p class="label">Idea</p>
+      <p>Cache results of function calls; avoid recomputation</p>
+      
+      <p class="label">Example: Fibonacci</p>
+      <pre>memo = {}
+function fib(n):
+  if n in memo: return memo[n]
+  if n ≤ 1: result = n
+  else: result = fib(n-1) + fib(n-2)
+  memo[n] = result
+  return result</pre>
+      
+      <p class="label">Complexity Change</p>
+      <p>Without memo: O(2ⁿ) exponential</p>
+      <p>With memo: O(n) linear!</p>
+      
+      <p class="label">Trade-off</p>
+      <p>Time: improved | Space: O(n) for cache</p>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>🐛 Common Recursion Errors</h3></div>
+    <div class="card-body">
+      <p class="label">Missing Base Case</p>
+      <p>Function never stops, infinite recursion</p>
+      
+      <p class="label">Wrong Base Case</p>
+      <p>Function returns incorrect value initially</p>
+      
+      <p class="label">No Progress</p>
+      <p>Recursive call doesn't get "smaller"</p>
+      <p>Example: f(n) = f(n) (infinite loop)</p>
+      
+      <p class="label">Stack Overflow</p>
+      <p>Too many recursive calls, stack exhausted</p>
+      <p>Solution: convert to iteration (tail recursion optimization)</p>
+      
+      <div class="warn"><div class="w-title">Warning</div>
+      Deep recursion can crash; use iteration for large inputs</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>⏱️ Recursion Complexity</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Recurrence</th><th>Solution</th><th>Example</th></tr>
+        <tr><td>T(n)=T(n-1)+1</td><td>O(n)</td><td>Linear search</td></tr>
+        <tr><td>T(n)=T(n/2)+1</td><td>O(log n)</td><td>Binary search</td></tr>
+        <tr><td>T(n)=2T(n/2)+n</td><td>O(n log n)</td><td>Merge sort</td></tr>
+        <tr><td>T(n)=T(n-1)+T(n-2)</td><td>O(φⁿ)</td><td>Fib (naive)</td></tr>
+        <tr><td>T(n)=nT(n-1)</td><td>O(n!)</td><td>Permutations</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>🎯 Induction Proof Structure</h3></div>
+    <div class="card-body">
+      <p class="label">Template</p>
+      <ol class="steps">
+        <li><strong>Claim:</strong> State P(n) to prove</li>
+        <li><strong>Base Case:</strong> Prove P(0) or P(1)</li>
+        <li><strong>IH:</strong> "Assume P(k) for some k ≥ [base]"</li>
+        <li><strong>Step:</strong> Show P(k) ⟹ P(k+1)</li>
+        <li><strong>Conclusion:</strong> "By induction, P(n) ∀n"</li>
+      </ol>
+      
+      <p class="label">Keys</p>
+      <ul class="items">
+        <li>Be explicit about assumptions</li>
+        <li>Clearly label base vs step</li>
+        <li>Show ALL work in step</li>
+        <li>Conclude with "QED" or similar</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>📊 Recursion Tree</h3></div>
+    <div class="card-body">
+      <p class="label">Visualizing Recursion</p>
+      <p>T(n) = 2T(n/2) + n (Merge sort)</p>
+      <pre>        n
+       / \
+     n/2 n/2    = n
+     / \  / \
+    /   \/   \   = n (4 calls)
+   ...
+   depth = log₂ n
+   work per level = n
+   total = n · log n</pre>
+      
+      <p class="label">Counting Leaves</p>
+      <p>Leaves (base cases) = number of actual recursive returns</p>
+      <p>Internal nodes = remaining recursive calls</p>
+      
+      <p class="label">Work per Level</p>
+      <p>Sum of all nodes at depth d</p>
+      <p>Total = sum of work across all levels</p>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>MAD101 · Discrete Mathematics · Rosen 7th Ed.</span>
+  <a href="../MAD101.html">← Back to MAD101</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+<script>
+(function(){document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){var code=document.createElement('code');code.className='language-python';code.textContent=pre.textContent;pre.textContent='';pre.appendChild(code);});Prism.highlightAll();})();
+</script>
+
+</body>
+</html>

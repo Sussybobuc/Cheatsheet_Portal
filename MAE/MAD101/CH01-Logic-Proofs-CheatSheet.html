@@ -1,0 +1,469 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CH01 – Logic & Proofs | MAD101</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@300;400;600;700&family=IBM+Plex+Sans+Condensed:wght@700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0d1117;--surface:#161b22;--surface2:#1c2330;--border:#30363d;
+    --accent:#58a6ff;--accent2:#3fb950;--accent3:#f78166;--accent4:#d2a8ff;--accent5:#ffa657;
+    --text:#e6edf3;--text-muted:#8b949e;--text-dim:#6e7681;--yellow:#e3b341;
+    --mae:#3fb950;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{background:var(--bg);color:var(--text);font-family:'IBM Plex Sans',sans-serif;font-size:13px;line-height:1.5;padding:24px;max-width:1400px;margin:0 auto;}
+  .header{display:flex;align-items:flex-start;justify-content:space-between;border-bottom:2px solid var(--mae);padding-bottom:16px;margin-bottom:24px;gap:20px;}
+  .header-left h1{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:28px;color:var(--mae);letter-spacing:-0.5px;line-height:1.1;}
+  .header-left h2{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--text-muted);font-weight:400;margin-top:4px;}
+  .badge{background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
+  .toc{display:flex;flex-wrap:wrap;gap:6px;}
+  .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+  .col-span-2{grid-column:span 2;}
+  .col-span-3{grid-column:span 3;}
+  .section-gap{margin-top:20px;}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
+  .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
+  .card-header .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+  .card-header h3{font-family:'IBM Plex Sans Condensed',sans-serif;font-size:13px;font-weight:700;letter-spacing:0.3px;text-transform:uppercase;}
+  .card-body{padding:12px;}
+  .blue .card-header{background:rgba(88,166,255,0.08);} .blue .dot{background:var(--accent);} .blue h3{color:var(--accent);}
+  .green .card-header{background:rgba(63,185,80,0.08);} .green .dot{background:var(--accent2);} .green h3{color:var(--accent2);}
+  .red .card-header{background:rgba(247,129,102,0.08);} .red .dot{background:var(--accent3);} .red h3{color:var(--accent3);}
+  .purple .card-header{background:rgba(210,168,255,0.08);} .purple .dot{background:var(--accent4);} .purple h3{color:var(--accent4);}
+  .orange .card-header{background:rgba(255,166,87,0.08);} .orange .dot{background:var(--accent5);} .orange h3{color:var(--accent5);}
+  .yellow .card-header{background:rgba(227,179,65,0.08);} .yellow .dot{background:var(--yellow);} .yellow h3{color:var(--yellow);}
+  p{color:var(--text);margin-bottom:6px;} p:last-child{margin-bottom:0;}
+  .label{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;margin-top:10px;}
+  .label:first-child{margin-top:0;}
+  code{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:1px 5px;color:var(--mae);}
+  pre{font-family:'IBM Plex Mono',monospace;font-size:11px;background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:8px 10px;color:var(--mae);overflow-x:auto;margin-bottom:6px;line-height:1.6;}
+  .mono{font-family:'IBM Plex Mono',monospace;font-size:11px;}
+  .rule{background:var(--surface2);border:1px solid var(--border);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--yellow);margin-bottom:6px;}
+  .formula{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-left:3px solid var(--mae);border-radius:4px;padding:7px 10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--mae);margin-bottom:6px;}
+  ul.items{list-style:none;padding:0;}
+  ul.items li{padding:4px 0 4px 14px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);font-size:12px;}
+  ul.items li:last-child{border-bottom:none;}
+  ul.items li::before{content:'›';position:absolute;left:0;color:var(--text-dim);}
+  ol.steps{list-style:none;padding:0;counter-reset:steps;}
+  ol.steps li{padding:5px 0 5px 26px;position:relative;color:var(--text);border-bottom:1px solid rgba(255,255,255,0.04);counter-increment:steps;font-size:12px;}
+  ol.steps li:last-child{border-bottom:none;}
+  ol.steps li::before{content:counter(steps);position:absolute;left:0;top:5px;width:18px;height:18px;background:var(--mae);color:#000;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+  .tbl{width:100%;border-collapse:collapse;font-size:11px;}
+  .tbl th{background:var(--surface2);color:var(--text-muted);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;padding:5px 8px;border:1px solid var(--border);text-align:left;}
+  .tbl td{padding:4px 8px;border:1px solid var(--border);font-size:11px;vertical-align:top;}
+  .tbl tr:nth-child(even) td{background:rgba(255,255,255,0.02);}
+  .warn{background:rgba(247,129,102,0.08);border:1px solid rgba(247,129,102,0.3);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .warn .w-title{color:var(--accent3);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .info{background:rgba(88,166,255,0.07);border:1px solid rgba(88,166,255,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .info .i-title{color:var(--accent);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .tip{background:rgba(63,185,80,0.07);border:1px solid rgba(63,185,80,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .tip .t-title{color:var(--mae);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .note{background:rgba(227,179,65,0.07);border:1px solid rgba(227,179,65,0.25);border-radius:4px;padding:7px 10px;margin-bottom:6px;font-size:12px;}
+  .note .n-title{color:var(--yellow);font-family:'IBM Plex Mono',monospace;font-size:10px;text-transform:uppercase;font-weight:600;margin-bottom:3px;}
+  .divider{border:none;border-top:1px solid var(--border);margin:10px 0;}
+  .footer{margin-top:20px;border-top:1px solid var(--border);padding-top:10px;display:flex;justify-content:space-between;align-items:center;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-dim);}
+  .footer a{color:var(--mae);text-decoration:none;}
+  @media print{body{background:white;color:black;} .card{border:1px solid #ccc;break-inside:avoid;}}
+  .tt{position:relative;border-bottom:1px dotted var(--yellow);cursor:help;display:inline;background:rgba(227,179,65,0.15);color:var(--yellow);border-radius:2px;padding:0 2px;}
+  .tt::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(calc(-50% + var(--tt-shift,0px)));background:#1c2128;color:#e6edf3;padding:6px 10px;border-radius:6px;font-size:11px;font-family:'IBM Plex Sans',sans-serif;font-weight:400;line-height:1.4;white-space:normal;width:220px;z-index:200;opacity:0;pointer-events:none;transition:opacity .18s ease;border:1px solid #30363d;box-shadow:0 4px 12px rgba(0,0,0,.5);}
+  .tt:hover::after{opacity:1;}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/themes/prism-tomorrow.min.css">
+<style>
+.grid>*,.grid-2>*{min-width:0;}
+pre{font-size:0.85em!important;overflow-x:auto!important;}
+pre[class*="language-"]{background:var(--surface2)!important;border:1px solid var(--border)!important;border-radius:4px!important;padding:8px 10px!important;margin-bottom:6px!important;line-height:1.6!important;}
+code.language-python{color:var(--text)!important;font-family:'IBM Plex Mono',monospace!important;font-size:inherit!important;background:transparent!important;border:none!important;padding:0!important;}
+.token.keyword{color:#ff7b72!important;} .token.function{color:#d2a8ff!important;} .token.string{color:#a5d6ff!important;}
+.token.number{color:#79c0ff!important;} .token.comment{color:#8b949e!important;font-style:italic!important;}
+.token.operator{color:#3fb950!important;} .token.boolean{color:#56d3c8!important;} .token.builtin{color:#3fb950!important;}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <h1>⟨ Logic & Proofs ⟩</h1>
+    <h2>Foundations | Rosen 7th Ed.</h2>
+  </div>
+  <div style="text-align:right;">
+    <div class="badge">CH01</div>
+    <div class="toc">
+      <span class="toc-item">Propositional Logic</span>
+      <span class="toc-item">Quantifiers</span>
+      <span class="toc-item">Inference</span>
+      <span class="toc-item">Proofs</span>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>⊨ Propositions</h3></div>
+    <div class="card-body">
+      <p>A <strong style="color:var(--mae)">proposition</strong> is a declarative sentence that is either <code>T</code> (true) or <code>F</code> (false), but not both.</p>
+      <div class="rule">Valid: "2+2=4", "DC is capital of USA"<br>Invalid: "What time?", "x+1=2"</div>
+      <p class="label">Propositional Variables</p>
+      <p>Denoted <code>p, q, r, s, ...</code> representing propositions. Truth values: <code>T</code> or <code>F</code></p>
+      <p class="label">Compound Propositions</p>
+      <p>Form new propositions by combining existing ones using <strong style="color:var(--mae)">logical operators</strong> (connectives).</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>∧ ∨ ¬ Operators</h3></div>
+    <div class="card-body">
+      <p class="label">Negation: ¬p</p>
+      <p><code>¬p</code> ≡ "not p" | Truth value is opposite of <code>p</code></p>
+      
+      <p class="label">Conjunction: p ∧ q</p>
+      <p><code>p ∧ q</code> ≡ "p AND q" | True only when <strong>both</strong> are true</p>
+      
+      <p class="label">Disjunction: p ∨ q</p>
+      <p><code>p ∨ q</code> ≡ "p OR q" (inclusive) | False only when <strong>both</strong> are false</p>
+      
+      <p class="label">Exclusive Or: p ⊕ q</p>
+      <p><code>p ⊕ q</code> ≡ "p XOR q" | True when <strong>exactly one</strong> is true</p>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>→ ↔ Conditionals</h3></div>
+    <div class="card-body">
+      <p class="label">Conditional: p → q</p>
+      <p><code>p → q</code> ≡ "if p then q" | False only when p=T and q=F</p>
+      <p><code>p</code> = hypothesis (antecedent) | <code>q</code> = conclusion</p>
+      
+      <p class="label">Biconditional: p ↔ q</p>
+      <p><code>p ↔ q</code> ≡ "p if and only if q" | True when both have <strong>same</strong> truth value</p>
+      <div class="formula">p ↔ q ≡ (p → q) ∧ (q → p)</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>⊕ Truth Tables</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>p</th><th>q</th><th>¬p</th><th>p∧q</th><th>p∨q</th><th>p→q</th><th>p↔q</th></tr>
+        <tr><td>T</td><td>T</td><td>F</td><td>T</td><td>T</td><td>T</td><td>T</td></tr>
+        <tr><td>T</td><td>F</td><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td></tr>
+        <tr><td>F</td><td>T</td><td>T</td><td>F</td><td>T</td><td>T</td><td>F</td></tr>
+        <tr><td>F</td><td>F</td><td>T</td><td>F</td><td>F</td><td>T</td><td>T</td></tr>
+      </table>
+      <p class="label" style="margin-top:8px;">Precedence (highest to lowest)</p>
+      <ol class="steps" style="font-size:11px;"><li>Negation (¬)</li><li>Conjunction (∧)</li><li>Disjunction (∨)</li><li>Conditional (→)</li><li>Biconditional (↔)</li></ol>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>↔ Conditional Forms</h3></div>
+    <div class="card-body">
+      <p class="label">Standard Forms of p → q</p>
+      <ul class="items">
+        <li>"if p then q"</li>
+        <li>"p implies q"</li>
+        <li>"p only if q"</li>
+        <li>"q if p"</li>
+        <li>"q whenever p"</li>
+        <li>"p is sufficient for q"</li>
+        <li>"q is necessary for p"</li>
+      </ul>
+      <p class="label">Related Statements</p>
+      <ul class="items">
+        <li><code>Converse: q → p</code> (NOT equivalent)</li>
+        <li><code>Inverse: ¬p → ¬q</code> (NOT equivalent)</li>
+        <li><code>Contrapositive: ¬q → ¬p</code> <strong>✓ EQUIVALENT</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>∀ ∃ Quantifiers</h3></div>
+    <div class="card-body">
+      <p class="label">Predicate P(x)</p>
+      <p>Statement with variable <code>x</code>; becomes proposition when <code>x</code> assigned value</p>
+      
+      <p class="label">Universal: ∀x P(x)</p>
+      <p>"for all x, P(x)" | True only if <code>P(x)</code> true for <strong>every</strong> x in domain</p>
+      
+      <p class="label">Existential: ∃x P(x)</p>
+      <p>"there exists x such that P(x)" | True if <code>P(x)</code> true for <strong>at least one</strong> x</p>
+      
+      <div class="formula">¬(∀x P(x)) ≡ ∃x ¬P(x)<br>¬(∃x P(x)) ≡ ∀x ¬P(x)</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>⟹ Rules of Inference</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Rule</th><th>Form</th></tr>
+        <tr><td><strong>Modus Ponens</strong></td><td>p, p→q ⟹ q</td></tr>
+        <tr><td><strong>Modus Tollens</strong></td><td>¬q, p→q ⟹ ¬p</td></tr>
+        <tr><td><strong>Hypothetical</strong></td><td>p→q, q→r ⟹ p→r</td></tr>
+        <tr><td><strong>Disjunctive</strong></td><td>¬p, p∨q ⟹ q</td></tr>
+        <tr><td><strong>Resolution</strong></td><td>p∨q, ¬p∨r ⟹ q∨r</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>≡ Equivalences</h3></div>
+    <div class="card-body">
+      <ul class="items">
+        <li><strong>Idempotent:</strong> p∧p≡p, p∨p≡p</li>
+        <li><strong>Commutative:</strong> p∧q≡q∧p</li>
+        <li><strong>Associative:</strong> (p∧q)∧r≡p∧(q∧r)</li>
+        <li><strong>Distributive:</strong> p∧(q∨r)≡(p∧q)∨(p∧r)</li>
+        <li><strong>De Morgan's:</strong> ¬(p∧q)≡¬p∨¬q</li>
+        <li><strong>Absorption:</strong> p∨(p∧q)≡p</li>
+        <li><strong>Double Negation:</strong> ¬(¬p)≡p</li>
+        <li><strong>Tautology:</strong> p∨¬p≡T</li>
+        <li><strong>Contradiction:</strong> p∧¬p≡F</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>⊢ Proof Strategies</h3></div>
+    <div class="card-body">
+      <p class="label">Direct Proof</p>
+      <p>Assume hypothesis, deduce conclusion through logical steps</p>
+      
+      <p class="label">Proof by Contrapositive</p>
+      <p>To prove p→q, prove ¬q→¬p (logically equivalent)</p>
+      
+      <p class="label">Proof by Contradiction</p>
+      <p>Assume ¬p and derive contradiction; conclude p must be true</p>
+      
+      <p class="label">Proof by Cases</p>
+      <p>Show statement true for all possible cases</p>
+      
+      <p class="label">Existence Proof</p>
+      <p>Constructive: build example | Non-constructive: show must exist</p>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>🔄 Nested Quantifiers</h3></div>
+    <div class="card-body">
+      <p class="label">Order Matters!</p>
+      <p><code>∀x ∃y P(x,y)</code> ≠ <code>∃y ∀x P(x,y)</code></p>
+      
+      <p class="label">First statement</p>
+      <p>"For every x, there exists y such that P(x,y)"</p>
+      
+      <p class="label">Second statement</p>
+      <p>"There exists y such that for all x, P(x,y)"</p>
+      
+      <div class="formula">Negation of ∀x ∃y P: ∃x ∀y ¬P(x,y)<br>Negation of ∃x ∀y Q: ∀x ∃y ¬Q(x,y)</div>
+      
+      <p class="label">Scope Rules</p>
+      <ul class="items">
+        <li>∀ and ∃ have equal precedence</li>
+        <li>Read left to right</li>
+        <li>Quantifier applies to everything following it</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>⟨x⟩ Variable Scope</h3></div>
+    <div class="card-body">
+      <p class="label">Bound Variable</p>
+      <p>Variable within scope of quantifier: <code>∀x P(x)</code> – x is bound</p>
+      
+      <p class="label">Free Variable</p>
+      <p>Variable not bound by quantifier: <code>P(x)</code> without quantifier – x is free</p>
+      
+      <p class="label">Domain Restrictions</p>
+      <p><code>∀x>0 P(x)</code> means "for all positive x"</p>
+      
+      <p class="label">Domain Changes Truth Value</p>
+      <p>Same statement can be true for one domain, false for another</p>
+      
+      <div class="formula">∀x∈ℕ (x² ≥ 0) is TRUE<br>∀x∈ℝ (x ≥ 0) is FALSE</div>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>⊨ Valid Arguments</h3></div>
+    <div class="card-body">
+      <p class="label">Argument Structure</p>
+      <p><strong>Premises</strong> (hypotheses) + logical steps → <strong>Conclusion</strong></p>
+      
+      <p class="label">Valid Argument</p>
+      <p>Conclusion is true whenever ALL premises are true</p>
+      
+      <p class="label">Invalid Argument (Fallacy)</p>
+      <p>Counterexample where premises true but conclusion false</p>
+      
+      <p class="label">Common Fallacies</p>
+      <ul class="items">
+        <li><strong>Affirming Consequent:</strong> q, p→q ⟹ p (INVALID)</li>
+        <li><strong>Denying Antecedent:</strong> ¬p, p→q ⟹ ¬q (INVALID)</li>
+        <li><strong>Begging the Question:</strong> Assuming conclusion</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card blue">
+    <div class="card-header"><div class="dot"></div><h3>💡 Proof Examples</h3></div>
+    <div class="card-body">
+      <p class="label">If n is odd, then n² is odd.</p>
+      <p class="label">Direct Proof</p>
+      <p>Assume n is odd, so n=2k+1 for integer k. Then n²=(2k+1)²=4k²+4k+1=2(2k²+2k)+1, which is odd. ✓</p>
+      
+      <p class="label">If n² is even, then n is even.</p>
+      <p class="label">Proof by Contrapositive</p>
+      <p>Prove: if n is odd, then n² is odd (shown above). Therefore, if n² is even, n must be even. ✓</p>
+      
+      <p class="label">√2 is irrational.</p>
+      <p class="label">Proof by Contradiction</p>
+      <p>Assume √2 = p/q (p,q coprime). Then 2q²=p², so p² even, thus p even. Let p=2m. Then 2q²=4m², so q²=2m², making q even. But then both even, contradicting coprimality. ✓</p>
+    </div>
+  </div>
+
+  <div class="card green">
+    <div class="card-header"><div class="dot"></div><h3>🎯 Proof Writing</h3></div>
+    <div class="card-body">
+      <p class="label">Structure</p>
+      <ol class="steps">
+        <li>State what you'll prove</li>
+        <li>State assumptions explicitly</li>
+        <li>Use logical steps (each justified)</li>
+        <li>Conclude statement proven</li>
+      </ol>
+      
+      <p class="label">Key Phrases</p>
+      <ul class="items">
+        <li>"Assume..." (for hypothesis)</li>
+        <li>"Suppose not..." (for contradiction)</li>
+        <li>"By definition..." (justify terms)</li>
+        <li>"Therefore..." (draw conclusion)</li>
+        <li>"This completes the proof" or "Q.E.D."</li>
+      </ul>
+      
+      <div class="tip"><div class="t-title">Pro Tip</div>
+      Work backwards: start with conclusion, determine what suffices to prove it.</div>
+    </div>
+  </div>
+
+  <div class="card red">
+    <div class="card-header"><div class="dot"></div><h3>📋 Theorem vs Lemma</h3></div>
+    <div class="card-body">
+      <p class="label">Theorem</p>
+      <p>Major result; often primary goal of proof</p>
+      
+      <p class="label">Lemma</p>
+      <p>Minor theorem used to prove a more important result</p>
+      
+      <p class="label">Corollary</p>
+      <p>Result that follows easily from theorem</p>
+      
+      <p class="label">Conjecture</p>
+      <p>Statement believed true but not yet proven</p>
+      
+      <div class="info"><div class="i-title">Note</div>
+      Organizing proofs with lemmas makes complex results clearer!</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid col-span-3 section-gap">
+  <div class="card purple">
+    <div class="card-header"><div class="dot"></div><h3>🔑 Key Concepts</h3></div>
+    <div class="card-body">
+      <p class="label">Tautology</p>
+      <p>Statement always true (T for all truth assignments)</p>
+      
+      <p class="label">Contradiction</p>
+      <p>Statement always false (F for all truth assignments)</p>
+      
+      <p class="label">Contingency</p>
+      <p>Statement sometimes true, sometimes false</p>
+      
+      <p class="label">Satisfiable</p>
+      <p>Exists at least one assignment making formula true</p>
+      
+      <p class="label">Unsatisfiable</p>
+      <p>No assignment makes formula true (contradiction)</p>
+      
+      <div class="formula">p ∨ ¬p is TAUTOLOGY<br>p ∧ ¬p is CONTRADICTION</div>
+    </div>
+  </div>
+
+  <div class="card orange">
+    <div class="card-header"><div class="dot"></div><h3>🧩 Applications</h3></div>
+    <div class="card-body">
+      <p class="label">Circuit Design</p>
+      <p>Logic gates implement logical operators: AND, OR, NOT, XOR</p>
+      
+      <p class="label">Programming</p>
+      <p>If-then-else, boolean operators, loop conditions</p>
+      
+      <p class="label">Database Queries</p>
+      <p>WHERE clauses use logical operators to filter records</p>
+      
+      <p class="label">AI & Reasoning</p>
+      <p>Inference engines, knowledge bases, automated theorem provers</p>
+      
+      <p class="label">Formal Verification</p>
+      <p>Verify program correctness using logical proofs</p>
+    </div>
+  </div>
+
+  <div class="card yellow">
+    <div class="card-header"><div class="dot"></div><h3>📐 Quick Reference</h3></div>
+    <div class="card-body">
+      <table class="tbl" style="font-size:10px;">
+        <tr><th>Symbol</th><th>Meaning</th><th>Example</th></tr>
+        <tr><td>∧</td><td>AND</td><td>p ∧ q</td></tr>
+        <tr><td>∨</td><td>OR</td><td>p ∨ q</td></tr>
+        <tr><td>¬</td><td>NOT</td><td>¬p</td></tr>
+        <tr><td>→</td><td>Implies</td><td>p → q</td></tr>
+        <tr><td>↔</td><td>Iff</td><td>p ↔ q</td></tr>
+        <tr><td>⊕</td><td>XOR</td><td>p ⊕ q</td></tr>
+        <tr><td>∀</td><td>For all</td><td>∀x P(x)</td></tr>
+        <tr><td>∃</td><td>Exists</td><td>∃x P(x)</td></tr>
+        <tr><td>⊢</td><td>Provable</td><td>A ⊢ B</td></tr>
+        <tr><td>≡</td><td>Equivalent</td><td>p ≡ q</td></tr>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  <span>MAD101 · Discrete Mathematics · Rosen 7th Ed.</span>
+  <a href="../MAD101.html">← Back to MAD101</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+<script>
+(function(){
+  document.querySelectorAll('pre:not([class*="language-"])').forEach(function(pre){
+    var code = document.createElement('code');
+    code.className = 'language-python';
+    code.textContent = pre.textContent;
+    pre.textContent='';
+    pre.appendChild(code);
+  });
+  Prism.highlightAll();
+})();
+</script>
+
+</body>
+</html>
