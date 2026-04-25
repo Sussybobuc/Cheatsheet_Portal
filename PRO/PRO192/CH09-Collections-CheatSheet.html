@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -20,10 +20,10 @@
   .badge{background:var(--pro);color:#1a1600;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;padding:3px 8px;border-radius:3px;white-space:nowrap;}
   .toc{display:flex;flex-wrap:wrap;gap:6px;}
   .toc-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:3px 8px;border-radius:3px;}
-  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
   .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}`n  .grid>*,.grid-2>*{min-width:0;}
   .col-span-2{grid-column:span 2;}
-  .col-span-3{grid-column:span 3;}
+  .col-span-3{grid-column:span 2;}.grid>*:last-child:nth-child(odd){grid-column:span 2;}
   .section-gap{margin-top:20px;}
   .card{background:var(--surface);border:1px solid var(--border);border-radius:6px;}
   .card-header{display:flex;align-items:center;gap:8px;padding:8px 12px;border-bottom:1px solid var(--border);border-radius:6px 6px 0 0;overflow:hidden;}
